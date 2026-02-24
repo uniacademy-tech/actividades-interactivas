@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Búsqueda en Internet · T5 · Módulo 4 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --blue:#3b82f6;--indigo:#6366f1;--sky:#0ea5e9;
+    --bg:#060b18;--card:#0f1a2e;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(59,130,246,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(99,102,241,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(59,130,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(59,130,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(59,130,246,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--sky);
+    letter-spacing:2px;border:1px solid var(--sky);padding:4px 14px;border-radius:2px;background:rgba(14,165,233,.06);}
+
+  .container{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(59,130,246,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan),var(--blue));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(59,130,246,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:#93c5fd;}
+
+  /* STEP BAR */
+  .step-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;transition:all .3s;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--blue); border-color:var(--blue);transform:scale(1.4);box-shadow:0 0 10px rgba(59,130,246,.6);}
+  .step-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .step-label span{color:var(--sky);font-weight:700;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--indigo));transition:width .5s ease;width:0%;}
+
+  /* SUCCESS FLASH */
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+    border-radius:10px;padding:10px 14px;margin-bottom:12px;
+    font-size:13px;color:var(--green);display:none;animation:fadeIn .3s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  /* SIM WINDOW */
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(59,130,246,.2);
+    border-radius:20px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:14px;}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--sky);
+    padding:7px 16px 5px;border-bottom:1px solid rgba(59,130,246,.1);}
+
+  /* ACTION BTN */
+  .action-wrap{padding:12px 16px;border-top:1px solid rgba(59,130,246,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(59,130,246,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* BROWSER CHROME */
+  .browser-window{background:#f8f9fa;}
+  .browser-titlebar{background:#202124;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+  .win-btns{display:flex;gap:5px;}
+  .win-btn{width:11px;height:11px;border-radius:50%;}
+  .browser-tabs{background:#292b2e;padding:4px 10px 0;display:flex;gap:6px;align-items:flex-end;}
+  .browser-tab{background:#3c3f41;border-radius:6px 6px 0 0;padding:5px 14px 5px;
+    font-size:10px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;max-width:160px;}
+  .browser-tab.active{background:#f8f9fa;color:#222;}
+  .browser-toolbar{background:#f8f9fa;padding:7px 10px;display:flex;align-items:center;gap:7px;
+    border-bottom:1px solid #dadce0;}
+  .nav-btn{width:28px;height:28px;border-radius:50%;border:none;background:transparent;
+    font-size:14px;cursor:pointer;color:#444;display:flex;align-items:center;justify-content:center;
+    transition:background .15s;}
+  .nav-btn:hover{background:rgba(0,0,0,.08);}
+  .nav-btn:disabled{opacity:.35;cursor:default;}
+  .address-bar{flex:1;background:#fff;border:1px solid #dadce0;border-radius:20px;
+    padding:5px 14px;font-size:13px;color:#202124;
+    display:flex;align-items:center;gap:7px;cursor:text;transition:all .2s;}
+  .address-bar.focused{border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.2);}
+  .address-bar.pulse-anim{animation:addrPulse 1s ease-in-out infinite;}
+  @keyframes addrPulse{0%,100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}50%{box-shadow:0 0 0 5px rgba(26,115,232,.2)}}
+  .addr-lock{font-size:12px;color:#137333;}
+  .addr-text{flex:1;font-family:monospace;font-size:12px;color:#1a0dab;}
+  .addr-cursor{display:inline-block;width:1.5px;height:14px;background:#202124;
+    animation:blink .7s ease-in-out infinite;vertical-align:middle;margin-left:1px;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* GOOGLE PAGE */
+  .google-page{background:#fff;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .g-logo{margin-bottom:20px;}
+  .g-logo span{font-size:48px;font-weight:900;letter-spacing:-2px;}
+  .g-search-box{width:100%;max-width:480px;border:1px solid #dfe1e5;border-radius:24px;
+    padding:10px 16px;display:flex;align-items:center;gap:10px;transition:all .2s;background:#fff;}
+  .g-search-box.focused{box-shadow:0 1px 6px rgba(32,33,36,.28);border-color:rgba(223,225,229,0);}
+  .g-search-box.pulse-anim{animation:addrPulse 1s ease-in-out infinite;}
+  .g-search-icon{font-size:16px;color:#9aa0a6;}
+  .g-search-text{flex:1;font-size:14px;color:#202124;font-family:'Exo 2',sans-serif;}
+  .g-search-btn{background:#f8f9fa;border:1px solid #f8f9fa;border-radius:4px;
+    padding:8px 16px;font-size:12px;color:#3c4043;cursor:pointer;transition:all .15s;margin-top:14px;}
+  .g-search-btn:hover,.g-search-btn.pulse-anim{border-color:#dadce0;box-shadow:0 1px 2px rgba(0,0,0,.1);background:#f8f9fa;}
+  .g-btns{display:flex;gap:10px;margin-top:14px;}
+
+  /* SEARCH RESULTS PAGE */
+  .results-page{background:#fff;min-height:220px;padding:14px 20px;}
+  .results-info{font-size:12px;color:#70757a;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ebebeb;}
+  .result-item{margin-bottom:18px;padding:10px;border-radius:8px;cursor:pointer;transition:background .15s;}
+  .result-item:hover{background:rgba(26,115,232,.05);}
+  .result-item.pulse-anim{animation:resultPulse 1s ease-in-out infinite;}
+  @keyframes resultPulse{0%,100%{background:rgba(26,115,232,0);box-shadow:0 0 0 0 rgba(26,115,232,0)}
+    50%{background:rgba(26,115,232,.06);box-shadow:0 0 0 4px rgba(26,115,232,.1)}}
+  .res-url{font-size:11px;color:#137333;margin-bottom:2px;}
+  .res-title{font-size:15px;color:#1a0dab;margin-bottom:3px;font-weight:500;}
+  .res-snippet{font-size:12px;color:#4d5156;line-height:1.5;}
+
+  /* RESULT OPEN PAGE */
+  .open-page{background:#fff;min-height:220px;padding:20px;}
+  .open-page h2{font-size:18px;color:#202124;margin-bottom:10px;}
+  .open-page p{font-size:13px;color:#444;line-height:1.7;margin-bottom:8px;}
+
+  /* FINAL RESULT */
+  .final-result{display:none;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.55);}
+  .final-result.visible{display:block;}
+  .fr-top{height:5px;background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan));}
+  .fr-body{padding:36px 24px;text-align:center;}
+  .fr-stars{font-size:48px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fr-title{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+    background:linear-gradient(135deg,var(--blue),var(--sky));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0 4px;}
+  .fr-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;}
+  .fr-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .fr-msg strong{color:#93c5fd;}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:22px;}
+  .sk-card{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .g-logo span{font-size:36px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 4 · TEMA 5</div>
+</header>
+
+<div class="container">
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(59,130,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#3b82f6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#3b82f6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#6366f1"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#3b82f6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🔍 Vamos a hacer una <strong>búsqueda en Internet</strong> paso a paso. Sigue mis instrucciones y haz clic donde te indico. ¡Tú puedes!</p>
+    </div>
+  </div>
+
+  <!-- STEP BAR -->
+  <div class="step-bar">
+    <div class="sdots" id="sdots"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="step-label">Paso <span id="stepNum">1</span> de <span id="stepTotal">8</span></div>
+  </div>
+
+  <div class="step-ok" id="stepOk">✅ ¡Correcto! Continuando…</div>
+
+  <!-- SIM -->
+  <div class="sim-wrap" id="simWrap">
+    <div class="sim-topbar"></div>
+    <div class="sim-label" id="simLabel">// SIMULACIÓN · GOOGLE CHROME</div>
+    <div id="simBody"></div>
+    <div class="action-wrap">
+      <button class="btn-action" id="btnAction" disabled>SIGUIENTE PASO →</button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final-result" id="finalResult">
+    <div class="fr-top"></div>
+    <div class="fr-body">
+      <div class="fr-stars">⭐⭐⭐</div>
+      <div class="fr-title">¡BÚSQUEDA COMPLETADA!</div>
+      <div class="fr-sub">MÓDULO 4 · TEMA 5 · COMPLETADO</div>
+      <div class="fr-msg">¡Fantástico, Explorador! 🚀 Ya sabes cómo <strong>buscar en Internet</strong>. Abriste el navegador, fuiste a Google, escribiste tu búsqueda y encontraste resultados. ¡Eso es navegar por Internet!</div>
+      <div class="skills-grid">
+        <div class="sk-card"><div class="sk-icon">🌐</div><div class="sk-name">NAVEGAR</div><div class="sk-desc">Abrir el navegador e ir a una página</div></div>
+        <div class="sk-card"><div class="sk-icon">🔗</div><div class="sk-name">URL</div><div class="sk-desc">Escribir la dirección de una página web</div></div>
+        <div class="sk-card"><div class="sk-icon">🔍</div><div class="sk-name">BUSCAR</div><div class="sk-desc">Usar palabras clave para encontrar info</div></div>
+        <div class="sk-card"><div class="sk-icon">📄</div><div class="sk-name">RESULTADOS</div><div class="sk-desc">Leer y abrir los resultados de búsqueda</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;PRACTICAR DE NUEVO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS=[
+  { label:'// ESCRITORIO · WINDOWS',
+    uni:'🖥️ Estás en el escritorio. <strong>Haz doble clic en el ícono de Chrome</strong> para abrir el navegador.',
+    render:renderDesktop, actionText:'→ DOBLE CLIC EN CHROME' },
+  { label:'// CHROME · NUEVA PESTAÑA',
+    uni:'🌐 ¡Chrome abierto! Ahora <strong>haz clic en la barra de direcciones</strong> para escribir una dirección web.',
+    render:renderNewTab, actionText:'→ HACER CLIC EN LA BARRA' },
+  { label:'// CHROME · BARRA ACTIVA',
+    uni:'⌨️ ¡Barra seleccionada! Escribe <strong>www.google.com</strong> y luego presiona Enter para ir a Google.',
+    render:renderTypingUrl, actionText:'→ ESCRIBIR www.google.com + ENTER' },
+  { label:'// GOOGLE · PÁGINA DE INICIO',
+    uni:'🔍 ¡Llegaste a Google! Ahora <strong>haz clic en el cuadro de búsqueda</strong> para escribir lo que quieres buscar.',
+    render:renderGoogle, actionText:'→ HACER CLIC EN EL CUADRO' },
+  { label:'// GOOGLE · ESCRIBIENDO BÚSQUEDA',
+    uni:'✍️ ¡Cuadro seleccionado! Escribe las <strong>palabras clave</strong> de tu búsqueda: <em>"recetas fáciles"</em>.',
+    render:renderTypingSearch, actionText:'→ ESCRIBIR "recetas fáciles"' },
+  { label:'// GOOGLE · LISTO PARA BUSCAR',
+    uni:'🔎 ¡Palabras escritas! Ahora <strong>presiona Enter o el botón Buscar</strong> (🔍) para ver los resultados.',
+    render:renderReadySearch, actionText:'→ PRESIONAR ENTER / BUSCAR' },
+  { label:'// GOOGLE · RESULTADOS DE BÚSQUEDA',
+    uni:'📋 ¡Aparecieron los resultados! Cada resultado es un enlace a una página. <strong>Haz clic en el primer resultado</strong> para abrirlo.',
+    render:renderResults, actionText:'→ HACER CLIC EN UN RESULTADO' },
+  { label:'// PÁGINA WEB · ABIERTA',
+    uni:'🎉 ¡Lo lograste! <strong>Abriste una página web</strong> con información sobre recetas. ¡Así es como se navega por Internet!',
+    render:renderOpenPage, actionText:'✅ ¡COMPLETAR ACTIVIDAD!' },
+];
+
+const TOTAL=STEPS.length;
+let stepIdx=0;
+
+function init(){
+  stepIdx=0;
+  document.getElementById('simWrap').style.display='block';
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('stepTotal').textContent=TOTAL;
+  buildDots();renderStep();
+}
+
+function buildDots(){
+  const r=document.getElementById('sdots');r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='sdot'+(i===0?' cur':'');d.id='sdot-'+i;r.appendChild(d);}
+}
+
+function renderStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('uniMsg').innerHTML=s.uni;
+  document.getElementById('simLabel').textContent=s.label;
+  document.getElementById('stepNum').textContent=stepIdx+1;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('progFill').style.width=((stepIdx)/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');}
+  const btn=document.getElementById('btnAction');
+  btn.disabled=false;
+  btn.textContent=s.actionText;
+  btn.onclick=doStep;
+  s.render(document.getElementById('simBody'));
+}
+
+function doStep(){
+  const ok=document.getElementById('stepOk');
+  ok.textContent='✅ ¡Correcto! '+(stepIdx<TOTAL-1?'Avanzando…':'¡Actividad completada!');
+  ok.classList.add('show');
+  document.getElementById('btnAction').disabled=true;
+  spawnConf();
+  setTimeout(()=>{
+    stepIdx++;
+    ok.classList.remove('show');
+    if(stepIdx>=TOTAL)showFinal();else renderStep();
+  },800);
+}
+
+// ── RENDERS ──
+function renderDesktop(body){
+  body.innerHTML=`
+    <div style="background:linear-gradient(135deg,#0a1628 0%,#160a3a 100%);min-height:240px;padding:20px;position:relative;">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <div id="chromeIcon" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px;border-radius:12px;border:2px solid rgba(59,130,246,.5);background:rgba(59,130,246,.1);animation:addrPulse 1s ease-in-out infinite;">
+          <svg viewBox="0 0 48 48" width="44" height="44">
+            <circle cx="24" cy="24" r="20" fill="#4285f4"/>
+            <path d="M24,4 A20,20 0 0,1 41.3,14 L30.2,14 A8,8 0 0,0 24,16Z" fill="#ea4335"/>
+            <path d="M41.3,14 A20,20 0 0,1 41.3,34 L32.6,28 A8,8 0 0,0 31.6,19Z" fill="#fbbc05"/>
+            <path d="M41.3,34 A20,20 0 0,1 6.7,34 L17.8,28 A8,8 0 0,0 24,32Z" fill="#34a853"/>
+            <path d="M6.7,34 A20,20 0 0,1 6.7,14 L17.8,19 A8,8 0 0,0 16.4,28Z" fill="#4285f4"/>
+            <circle cx="24" cy="24" r="7" fill="white"/>
+            <circle cx="24" cy="24" r="5" fill="#4285f4"/>
+          </svg>
+          <div style="font-size:10px;color:rgba(255,255,255,.75);font-family:'Exo 2',sans-serif;">Google Chrome</div>
+          <div style="font-size:8px;color:rgba(59,130,246,.9);font-family:'Orbitron',monospace;">DOBLE CLIC ↑</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);">
+          <div style="font-size:38px;">🗑️</div><div style="font-size:10px;color:rgba(255,255,255,.4);">Papelera</div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:36px;background:rgba(8,5,20,.97);border-top:1px solid rgba(59,130,246,.2);display:flex;align-items:center;padding:0 10px;gap:6px;">
+        <div style="font-size:18px;">🪟</div>
+        <div style="margin-left:auto;font-family:'Orbitron',monospace;font-size:9px;color:rgba(255,255,255,.4);">10:30</div>
+      </div>
+    </div>`;
+  // Double-click detection
+  let clicks=0,timer=null;
+  document.getElementById('chromeIcon').addEventListener('click',()=>{
+    clicks++;if(clicks===1){timer=setTimeout(()=>clicks=0,600);}
+    else{clearTimeout(timer);clicks=0;doStep();}
+  });
+}
+
+function renderNewTab(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs">
+        <div class="browser-tab active">
+          <svg width="14" height="14" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#4285f4"/><circle cx="24" cy="24" r="7" fill="white"/><circle cx="24" cy="24" r="5" fill="#4285f4"/></svg>
+          Nueva pestaña
+        </div>
+      </div>
+      <div class="browser-toolbar">
+        <button class="nav-btn" disabled>←</button>
+        <button class="nav-btn" disabled>→</button>
+        <button class="nav-btn">🔄</button>
+        <div class="address-bar pulse-anim" id="addrBar" onclick="doStep()" style="cursor:pointer;">
+          <span class="addr-lock">🔍</span>
+          <span class="addr-text" style="color:#9aa0a6;">Buscar o escribir una URL</span>
+        </div>
+      </div>
+      <div style="background:#f8f9fa;min-height:180px;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;color:#70757a;font-size:13px;">
+          <div style="font-size:40px;margin-bottom:8px;">🌐</div>
+          Nueva pestaña
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTypingUrl(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">Nueva pestaña</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn" disabled>←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar focused">
+          <span class="addr-lock">🔍</span>
+          <span class="addr-text" id="urlTyping">www.google.com<span class="addr-cursor"></span></span>
+        </div>
+      </div>
+      <div style="background:#f8f9fa;min-height:180px;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;color:#70757a;font-size:13px;"><div style="font-size:40px;margin-bottom:8px;">⌨️</div>Escribiendo la dirección…</div>
+      </div>
+    </div>`;
+}
+
+function renderGoogle(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">Google</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn" disabled>←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar"><span class="addr-lock">🔒</span><span class="addr-text">www.google.com</span></div>
+      </div>
+      <div class="google-page">
+        <div class="g-logo">
+          <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+        </div>
+        <div class="g-search-box pulse-anim" id="gSearchBox" onclick="doStep()" style="cursor:pointer;">
+          <span class="g-search-icon">🔍</span>
+          <span class="g-search-text" style="color:#9aa0a6;">Busca en Google o escribe una URL</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTypingSearch(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">Google</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn" disabled>←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar"><span class="addr-lock">🔒</span><span class="addr-text">www.google.com</span></div>
+      </div>
+      <div class="google-page">
+        <div class="g-logo">
+          <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+        </div>
+        <div class="g-search-box focused">
+          <span class="g-search-icon">🔍</span>
+          <span class="g-search-text" id="searchTyping">recetas fáciles<span class="addr-cursor" style="background:#202124;"></span></span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderReadySearch(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">Google</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn" disabled>←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar"><span class="addr-lock">🔒</span><span class="addr-text">www.google.com</span></div>
+      </div>
+      <div class="google-page">
+        <div class="g-logo">
+          <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+        </div>
+        <div class="g-search-box focused">
+          <span class="g-search-icon">🔍</span>
+          <span class="g-search-text">recetas fáciles</span>
+        </div>
+        <div class="g-btns">
+          <button class="g-search-btn pulse-anim" onclick="doStep()">🔍 Buscar con Google</button>
+          <button class="g-search-btn" onclick="doStep()">¿Te sientes con suerte?</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderResults(body){
+  const results=[
+    {url:'www.recetasgratis.net',title:'50 Recetas Fáciles y Rápidas para Principiantes',snippet:'Descubre las recetas más fáciles y deliciosas. Ideales para quienes están aprendiendo a cocinar. Ingredientes simples y pasos claros.'},
+    {url:'www.hogarmania.com › cocina',title:'Recetas fáciles de cocina: paso a paso para todos',snippet:'Las mejores recetas fáciles con fotos y videos explicativos. Cocina sin complicaciones en menos de 30 minutos.'},
+    {url:'www.pequerecetas.com',title:'Recetas sencillas y sabrosas | Pequerecetas',snippet:'Recetas fáciles para toda la familia. Platos nutritivos y deliciosos que puedes preparar hoy mismo.'},
+  ];
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">recetas fáciles - Google</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn">←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar"><span class="addr-lock">🔒</span><span class="addr-text">google.com/search?q=recetas+fáciles</span></div>
+      </div>
+      <div class="results-page">
+        <div class="results-info">Aproximadamente 142,000,000 resultados (0.48 segundos)</div>
+        ${results.map((r,i)=>`
+          <div class="result-item${i===0?' pulse-anim':''}" onclick="${i===0?'doStep()':''}">
+            <div class="res-url">${r.url}</div>
+            <div class="res-title">${r.title}</div>
+            <div class="res-snippet">${r.snippet}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderOpenPage(body){
+  body.innerHTML=`
+    <div class="browser-window">
+      <div class="browser-titlebar">
+        <div class="win-btns"><div class="win-btn" style="background:#ff5f57"></div><div class="win-btn" style="background:#ffbd2e"></div><div class="win-btn" style="background:#28ca41"></div></div>
+      </div>
+      <div class="browser-tabs"><div class="browser-tab active">50 Recetas Fáciles - recetasgratis.net</div></div>
+      <div class="browser-toolbar">
+        <button class="nav-btn">←</button><button class="nav-btn" disabled>→</button><button class="nav-btn">🔄</button>
+        <div class="address-bar"><span class="addr-lock" style="color:#137333;">🔒</span><span class="addr-text" style="color:#137333;">www.recetasgratis.net</span></div>
+      </div>
+      <div class="open-page">
+        <h2>🍳 50 Recetas Fáciles y Rápidas para Principiantes</h2>
+        <p>¡Bienvenido! Aquí encontrarás las mejores recetas fáciles para aprender a cocinar. Cada receta tiene fotografías paso a paso y una lista de ingredientes simples.</p>
+        <p><strong>Recetas más populares:</strong> 🥗 Ensalada César · 🍳 Huevos revueltos · 🍝 Pasta con tomate · 🥪 Sándwich especial · 🍰 Bizcocho de yogur</p>
+        <p style="color:#137333;font-size:12px;">✅ ¡Encontraste la información que buscabas usando Internet!</p>
+      </div>
+    </div>`;
+}
+
+function showFinal(){
+  document.getElementById('simWrap').style.display='none';
+  document.getElementById('finalResult').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Actividad completada!</strong> Ya sabes buscar en Internet. ¡Eres un verdadero Explorador Digital! 🌐🔍';
+  document.getElementById('progFill').style.width='100%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  setTimeout(bigConf,200);
+}
+
+function spawnConf(){
+  const colors=['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${25+Math.random()*50}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9','#00f5e4'];
+  for(let i=0;i<55;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){document.getElementById('finalResult').classList.remove('visible');document.getElementById('simWrap').style.display='block';window.scrollTo({top:0,behavior:'smooth'});init();}
+init();
+</script>
+</body>
+</html>
