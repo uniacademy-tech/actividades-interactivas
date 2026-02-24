@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Es Software? · Tema 2 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan:#00f5e4; --magenta:#ff2d9b; --gold:#ffd93d;
+    --green:#00e676; --red:#ff3d3d; --purple:#a855f7;
+    --bg:#060b18; --surface:#0d1628; --card:#111d35; --text:#e8f4ff; --muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;
+    min-height:100vh;overflow-x:hidden;}
+
+  /* Animated background */
+  body::before{content:'';position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse at 15% 50%,rgba(0,245,228,.06) 0%,transparent 50%),
+      radial-gradient(ellipse at 85% 20%,rgba(255,45,155,.05) 0%,transparent 50%),
+      radial-gradient(ellipse at 50% 90%,rgba(168,85,247,.04) 0%,transparent 50%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(0,245,228,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,228,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(0,245,228,.12);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;
+    background:linear-gradient(135deg,var(--cyan),#0055ff);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    color:var(--cyan);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--magenta);
+    letter-spacing:2px;border:1px solid var(--magenta);padding:4px 14px;border-radius:2px;}
+
+  /* MAIN */
+  .container{position:relative;z-index:5;max-width:900px;margin:0 auto;
+    padding:28px 20px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(0,245,228,.18);border-radius:16px;padding:15px 20px;
+    margin-bottom:28px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--purple),var(--cyan));}
+  .uni-svg{width:64px;height:64px;flex-shrink:0;}
+  .speech{background:rgba(0,245,228,.05);border:1px solid rgba(0,245,228,.18);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;
+    transform:translateY(-50%);border:5px solid transparent;
+    border-right-color:rgba(0,245,228,.18);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);
+    letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* PROGRESS ROW */
+  .progress-row{display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+  .prog-info{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);
+    letter-spacing:1px;white-space:nowrap;}
+  .prog-info span{color:var(--cyan);}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);
+    border-radius:4px;overflow:hidden;min-width:120px;}
+  .prog-fill{height:100%;border-radius:4px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta));
+    transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+  .score-pills{display:flex;gap:8px;}
+  .pill{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    padding:5px 14px;border-radius:20px;border:1px solid;}
+  .pill.ok {color:var(--green);border-color:var(--green);background:rgba(0,230,118,.08);}
+  .pill.err{color:var(--red);  border-color:var(--red);  background:rgba(255,61,61,.08);}
+
+  /* ══ CARD STAGE ══ */
+  .stage{display:flex;flex-direction:column;align-items:center;gap:32px;}
+
+  /* Card counter dots */
+  .dots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .dot{width:10px;height:10px;border-radius:50%;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);
+    transition:all .3s ease;}
+  .dot.done-ok {background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,230,118,.5);}
+  .dot.done-err{background:var(--red);  border-color:var(--red);  box-shadow:0 0 8px rgba(255,61,61,.5);}
+  .dot.current {background:var(--gold);border-color:var(--gold);  box-shadow:0 0 8px rgba(255,217,61,.6);
+    transform:scale(1.4);}
+
+  /* ── THE CARD ── */
+  .card-wrap{perspective:1200px;width:340px;height:380px;position:relative;}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.4,0,.2,1);}
+  .card.flipped{transform:rotateY(180deg);}
+  .card-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    padding:28px;}
+  /* Front */
+  .card-front{
+    background:var(--card);
+    border:1.5px solid rgba(0,245,228,.22);
+    box-shadow:0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(0,245,228,.06);
+  }
+  /* Gloss top highlight */
+  .card-front::before{content:'';position:absolute;top:0;left:0;right:0;
+    height:45%;border-radius:24px 24px 0 0;
+    background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 100%);
+    pointer-events:none;}
+  /* Back */
+  .card-back{transform:rotateY(180deg);}
+  .card-back.correct{
+    background:linear-gradient(145deg,#062216,#0a1f12);
+    border:1.5px solid var(--green);
+    box-shadow:0 20px 60px rgba(0,0,0,.5), 0 0 50px rgba(0,230,118,.18);}
+  .card-back.wrong{
+    background:linear-gradient(145deg,#1c0608,#1a0407);
+    border:1.5px solid var(--red);
+    box-shadow:0 20px 60px rgba(0,0,0,.5), 0 0 50px rgba(255,61,61,.18);}
+
+  /* Card type tag */
+  .card-tag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;
+    padding:3px 12px;border-radius:20px;position:absolute;top:18px;
+    border:1px solid;}
+  .tag-software{color:var(--cyan);border-color:rgba(0,245,228,.4);
+    background:rgba(0,245,228,.08);}
+  .tag-hardware{color:var(--magenta);border-color:rgba(255,45,155,.4);
+    background:rgba(255,45,155,.08);}
+  .tag-question{color:var(--gold);border-color:rgba(255,217,61,.4);
+    background:rgba(255,217,61,.08);}
+
+  /* Card emoji/icon */
+  .card-emoji{font-size:72px;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));}
+  /* Card name */
+  .card-name{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;
+    color:#fff;text-align:center;letter-spacing:1px;}
+  /* Card category hint */
+  .card-hint{font-size:13px;color:var(--muted);text-align:center;font-style:italic;}
+
+  /* Card back content */
+  .back-icon{font-size:60px;line-height:1;}
+  .back-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;}
+  .card-back.correct .back-title{color:var(--green);}
+  .card-back.wrong   .back-title{color:var(--red);}
+  .back-explain{font-size:13px;color:rgba(255,255,255,.7);text-align:center;
+    line-height:1.6;max-width:260px;}
+  .back-explain strong{color:var(--gold);}
+
+  /* ── BUTTONS ── */
+  .btn-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+
+  .btn-choice{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    width:150px;padding:18px 20px;border-radius:18px;border:2px solid;
+    background:transparent;cursor:pointer;
+    font-family:'Exo 2',sans-serif;
+    transition:all .2s cubic-bezier(.4,0,.2,1);
+    position:relative;overflow:hidden;
+  }
+  .btn-choice::before{content:'';position:absolute;inset:0;opacity:0;
+    transition:opacity .2s;}
+  .btn-choice:hover::before{opacity:1;}
+  .btn-choice:active{transform:scale(.96);}
+
+  .btn-yes{border-color:var(--green);color:var(--green);}
+  .btn-yes::before{background:rgba(0,230,118,.1);}
+  .btn-yes:hover{box-shadow:0 0 28px rgba(0,230,118,.3);transform:translateY(-3px);}
+
+  .btn-no{border-color:var(--red);color:var(--red);}
+  .btn-no::before{background:rgba(255,61,61,.1);}
+  .btn-no:hover{box-shadow:0 0 28px rgba(255,61,61,.3);transform:translateY(-3px);}
+
+  .btn-choice.disabled{opacity:.45;cursor:not-allowed;transform:none!important;
+    box-shadow:none!important;}
+  .btn-choice.selected-yes{
+    background:rgba(0,230,118,.18)!important;border-color:var(--green)!important;
+    box-shadow:0 0 32px rgba(0,230,118,.35)!important;}
+  .btn-choice.selected-no{
+    background:rgba(255,61,61,.18)!important;border-color:var(--red)!important;
+    box-shadow:0 0 32px rgba(255,61,61,.35)!important;}
+
+  .btn-icon{font-size:28px;}
+  .btn-label{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;}
+  .btn-sub{font-size:11px;opacity:.7;text-align:center;}
+
+  /* NEXT button */
+  .btn-next{
+    display:none;margin-top:8px;padding:12px 36px;
+    background:linear-gradient(135deg,var(--cyan),#0055ff);
+    color:#000;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(0,245,228,.25);}
+  .btn-next:hover{opacity:.88;transform:translateY(-2px);}
+  .btn-next.visible{display:block;}
+
+  /* ══ RESULTS SCREEN ══ */
+  .results{display:none;flex-direction:column;align-items:center;gap:24px;
+    padding:40px 20px;text-align:center;}
+  .results.visible{display:flex;}
+  .stage.hidden{display:none;}
+
+  .results-stars{font-size:44px;letter-spacing:6px;
+    animation:star-pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes star-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .results-score{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;
+    background:linear-gradient(135deg,var(--cyan),var(--gold));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;line-height:1;}
+  .results-label{font-family:'Orbitron',monospace;font-size:11px;
+    color:var(--muted);letter-spacing:3px;}
+  .results-msg{font-size:16px;line-height:1.6;max-width:480px;color:var(--text);}
+  .results-msg strong{color:var(--gold);}
+
+  /* Review grid */
+  .review-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:10px;width:100%;max-width:700px;}
+  .review-item{background:var(--card);border-radius:12px;padding:12px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    border:1px solid;}
+  .review-item.ok {border-color:rgba(0,230,118,.3);}
+  .review-item.err{border-color:rgba(255,61,61,.3);}
+  .review-emoji{font-size:28px;}
+  .review-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    color:var(--text);text-align:center;}
+  .review-verdict{font-size:9px;padding:2px 8px;border-radius:10px;}
+  .review-item.ok  .review-verdict{background:rgba(0,230,118,.15);color:var(--green);}
+  .review-item.err .review-verdict{background:rgba(255,61,61,.15);color:var(--red);}
+
+  .btn-restart{padding:14px 40px;
+    background:linear-gradient(135deg,var(--gold),#ff8c00);
+    color:#000;border:none;border-radius:14px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(255,217,61,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Particle burst (CSS only) */
+  @keyframes burst{
+    0%{transform:translate(0,0) scale(1);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}
+  }
+  .particle{position:absolute;width:8px;height:8px;border-radius:50%;
+    pointer-events:none;animation:burst .7s ease-out forwards;}
+
+  @media(max-width:600px){
+    .header{padding:10px 14px;}
+    .container{padding:14px 12px 40px;}
+    .card-wrap{width:290px;height:330px;}
+    .card-emoji{font-size:56px;}
+    .card-name{font-size:17px;}
+    .btn-choice{width:130px;padding:14px 16px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">EXPLORADOR DIGITAL</div></div>
+  </div>
+  <div class="header-module">MÓDULO INICIAL · TEMA 2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(0,245,228,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".4"/>
+      <circle cx="40" cy="57" r="5" fill="#00e676"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(0,245,228,.2)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".5"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#00f5e4"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff2d9b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola de nuevo, Explorador! 🧠 Ahora aprenderemos sobre el <strong>Software</strong>. Te mostraré elementos uno por uno — tú decides: <strong>¿Es Software o No?</strong> ¡Confío en ti!</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-row">
+    <div class="prog-info">TARJETA <span id="cardNum">1</span> DE <span id="cardTotal">12</span></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="score-pills">
+      <div class="pill ok">✓ <span id="sOk">0</span></div>
+      <div class="pill err">✗ <span id="sErr">0</span></div>
+    </div>
+  </div>
+
+  <!-- ══ GAME STAGE ══ -->
+  <div class="stage" id="stage">
+
+    <!-- Dot indicators -->
+    <div class="dots" id="dots"></div>
+
+    <!-- CARD -->
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <div class="card-tag tag-question" id="cardTag">// ¿QUÉ SOY?</div>
+          <div class="card-emoji" id="cardEmoji">❓</div>
+          <div class="card-name"  id="cardName">Cargando…</div>
+          <div class="card-hint"  id="cardHint">Observa bien y decide</div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face card-back" id="cardBack">
+          <div class="back-icon" id="backIcon">✅</div>
+          <div class="back-title" id="backTitle">¡CORRECTO!</div>
+          <div class="back-explain" id="backExplain">Explicación aquí</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-row" id="btnRow">
+      <button class="btn-choice btn-yes" id="btnYes" onclick="answer(true)">
+        <span class="btn-icon">✅</span>
+        <span class="btn-label">SÍ ES</span>
+        <span class="btn-sub">Software</span>
+      </button>
+      <button class="btn-choice btn-no" id="btnNo" onclick="answer(false)">
+        <span class="btn-icon">❌</span>
+        <span class="btn-label">NO ES</span>
+        <span class="btn-sub">Software</span>
+      </button>
+    </div>
+
+    <!-- NEXT -->
+    <button class="btn-next" id="btnNext" onclick="nextCard()">
+      SIGUIENTE TARJETA →
+    </button>
+
+  </div><!-- /stage -->
+
+  <!-- ══ RESULTS ══ -->
+  <div class="results" id="results">
+    <div class="results-stars" id="resStars">⭐⭐⭐</div>
+    <div class="results-score" id="resScore">12/12</div>
+    <div class="results-label">PUNTUACIÓN FINAL</div>
+    <div class="results-msg" id="resMsg">¡Perfecto!</div>
+    <div class="review-grid" id="reviewGrid"></div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;JUGAR DE NUEVO</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ══ DATA ══
+// isSoftware: true = es software, false = es hardware
+const CARDS = [
+  // ── SOFTWARE DE SISTEMA ──
+  { emoji:'🪟', name:'Windows 11',       hint:'Sistema Operativo',       isSoftware:true,
+    explain:'<strong>Windows 11</strong> es un Sistema Operativo — el software principal que controla toda la computadora.' },
+  { emoji:'🍎', name:'macOS',             hint:'Sistema Operativo',       isSoftware:true,
+    explain:'<strong>macOS</strong> es el Sistema Operativo de las computadoras Apple Mac. ¡Puro software!' },
+  { emoji:'🤖', name:'Android',           hint:'Sistema Operativo Móvil', isSoftware:true,
+    explain:'<strong>Android</strong> es el sistema operativo de la mayoría de teléfonos. Es software, ¡no lo puedes tocar!' },
+  // ── SOFTWARE DE APLICACIÓN ──
+  { emoji:'🌐', name:'Google Chrome',    hint:'Navegador Web',           isSoftware:true,
+    explain:'<strong>Google Chrome</strong> es un navegador web — una aplicación de software para explorar internet.' },
+  { emoji:'📝', name:'Microsoft Word',   hint:'Procesador de Texto',     isSoftware:true,
+    explain:'<strong>Microsoft Word</strong> es una aplicación de software para escribir documentos y textos.' },
+  { emoji:'🎮', name:'Minecraft',        hint:'Videojuego',              isSoftware:true,
+    explain:'<strong>Minecraft</strong> es un videojuego — software de entretenimiento que corre en tu computadora.' },
+  { emoji:'📸', name:'Instagram',        hint:'App Móvil',               isSoftware:true,
+    explain:'<strong>Instagram</strong> es una aplicación de software. Sin el teléfono (hardware) no podría funcionar.' },
+  { emoji:'🎵', name:'Spotify',          hint:'App de Música',           isSoftware:true,
+    explain:'<strong>Spotify</strong> es una aplicación de software para escuchar música en streaming.' },
+  { emoji:'📊', name:'Excel',            hint:'Hoja de Cálculo',         isSoftware:true,
+    explain:'<strong>Excel</strong> es una aplicación de software para crear tablas y hacer cálculos.' },
+  // ── HARDWARE ──
+  { emoji:'🖱️', name:'Mouse / Ratón',   hint:'Dispositivo Físico',      isSoftware:false,
+    explain:'El <strong>Ratón</strong> es Hardware — un dispositivo físico que puedes tocar y mover con tu mano.' },
+  { emoji:'⌨️', name:'Teclado',         hint:'Dispositivo Físico',      isSoftware:false,
+    explain:'El <strong>Teclado</strong> es Hardware — un componente físico con teclas que puedes presionar.' },
+  { emoji:'🖨️', name:'Impresora',       hint:'Dispositivo Físico',      isSoftware:false,
+    explain:'La <strong>Impresora</strong> es Hardware — una máquina física que imprime papel. ¡La puedes tocar!' },
+  { emoji:'💾', name:'Disco Duro',      hint:'Componente Interno',      isSoftware:false,
+    explain:'El <strong>Disco Duro</strong> es Hardware — el componente físico donde se almacenan los datos.' },
+  { emoji:'🖥️', name:'Monitor',         hint:'Dispositivo Físico',      isSoftware:false,
+    explain:'El <strong>Monitor</strong> es Hardware — la pantalla física donde ves la información.' },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let deck=[], idx=0, nOk=0, nErr=0, answered=false, results=[];
+
+const UNI_MSGS = {
+  intro: '¡Hola de nuevo, Explorador! 🧠 Te mostraré elementos uno por uno — tú decides: <strong>¿Es Software o No?</strong> ¡Confío en ti!',
+  correct_soft: ['¡Exacto! 🎉 El software son <strong>programas e instrucciones</strong> — no los puedes tocar físicamente.',
+                 '¡Muy bien! ✨ El software vive en la memoria de la computadora, no tiene forma física.',
+                 '¡Correcto! 💡 Todo lo que <strong>no puedes tocar</strong> pero hace funcionar algo es software.'],
+  correct_hard: ['¡Bien! 💪 El hardware son los <strong>componentes físicos</strong> que puedes tocar y ver.',
+                 '¡Exacto! 🔧 El hardware es la parte <strong>tangible</strong> de la computadora.',
+                 '¡Correcto! ⚙️ Si lo puedes tocar, sostener o mover, ¡es hardware!'],
+  wrong:        ['¡Casi! 🤔 Recuerda: software = <strong>no puedes tocarlo</strong>. Hardware = <strong>puedes tocarlo</strong>.',
+                 '¡Ojo! 👁️ Piensa: ¿puedes sostenerlo en tu mano? Si sí, es hardware. Si no, es software.',
+                 '¡Sigue intentando! 🚀 El truco es preguntarte: ¿existe físicamente?'],
+};
+
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function init(){
+  deck = shuffle([...CARDS]);
+  idx=0; nOk=0; nErr=0; answered=false; results=[];
+  document.getElementById('cardTotal').textContent = deck.length;
+  document.getElementById('stage').classList.remove('hidden');
+  document.getElementById('results').classList.remove('visible');
+  buildDots();
+  showCard();
+  upScore();
+}
+
+function buildDots(){
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  deck.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' current':'');
+    d.id = 'dot-'+i;
+    c.appendChild(d);
+  });
+}
+
+function showCard(){
+  const item = deck[idx];
+  answered = false;
+
+  // Front
+  document.getElementById('cardEmoji').textContent = item.emoji;
+  document.getElementById('cardName').textContent  = item.name;
+  document.getElementById('cardHint').textContent  = item.hint;
+
+  // Reset card flip
+  const card = document.getElementById('card');
+  card.classList.remove('flipped');
+  const back = document.getElementById('cardBack');
+  back.classList.remove('correct','wrong');
+
+  // Reset buttons
+  const bY = document.getElementById('btnYes');
+  const bN = document.getElementById('btnNo');
+  bY.className = 'btn-choice btn-yes';
+  bN.className = 'btn-choice btn-no';
+  document.getElementById('btnNext').classList.remove('visible');
+
+  // Animate card entrance
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'cardIn .4s cubic-bezier(.34,1.2,.64,1)';
+
+  // Progress
+  document.getElementById('cardNum').textContent = idx+1;
+  document.getElementById('progFill').style.width = (idx/deck.length*100)+'%';
+
+  // Dots
+  if(idx>0){
+    const prev = document.getElementById('dot-'+(idx-1));
+    if(prev) prev.className = 'dot ' + (results[idx-1] ? 'done-ok' : 'done-err');
+  }
+  const cur = document.getElementById('dot-'+idx);
+  if(cur) cur.className = 'dot current';
+}
+
+function answer(userSaysYes){
+  if(answered) return;
+  answered = true;
+  const item = deck[idx];
+  const correct = (userSaysYes === item.isSoftware);
+
+  // Button feedback
+  const bY = document.getElementById('btnYes');
+  const bN = document.getElementById('btnNo');
+  bY.classList.add('disabled');
+  bN.classList.add('disabled');
+  if(userSaysYes){
+    bY.classList.add(correct ? 'selected-yes' : 'selected-no');
+    if(!correct) bN.classList.add('selected-yes'); // show correct
+  } else {
+    bN.classList.add(correct ? 'selected-no' : 'selected-yes');
+    if(!correct) bY.classList.add('selected-yes'); // show correct
+  }
+
+  // Scores
+  if(correct){ nOk++; results.push(true); }
+  else        { nErr++; results.push(false); }
+  upScore();
+
+  // Card back
+  const back = document.getElementById('cardBack');
+  back.classList.add(correct ? 'correct' : 'wrong');
+  document.getElementById('backIcon').textContent = correct ? '✅' : '❌';
+  document.getElementById('backTitle').textContent = correct
+    ? (userSaysYes ? '¡SÍ ES SOFTWARE!' : '¡NO ES SOFTWARE!')
+    : (userSaysYes ? 'NO ES SOFTWARE' : 'SÍ ES SOFTWARE');
+  document.getElementById('backExplain').innerHTML = item.explain;
+
+  // Flip card
+  setTimeout(()=>{
+    document.getElementById('card').classList.add('flipped');
+  }, 120);
+
+  // Particles if correct
+  if(correct) spawnParticles();
+
+  // UNI message
+  if(correct){
+    document.getElementById('uniMsg').innerHTML =
+      rand(item.isSoftware ? UNI_MSGS.correct_soft : UNI_MSGS.correct_hard);
+  } else {
+    document.getElementById('uniMsg').innerHTML = rand(UNI_MSGS.wrong);
+  }
+
+  // Show next btn
+  setTimeout(()=>{
+    document.getElementById('btnNext').classList.add('visible');
+  }, 700);
+}
+
+function nextCard(){
+  if(idx >= deck.length-1){
+    showResults();
+    return;
+  }
+  idx++;
+  showCard();
+}
+
+function upScore(){
+  document.getElementById('sOk').textContent  = nOk;
+  document.getElementById('sErr').textContent = nErr;
+}
+
+function spawnParticles(){
+  const wrap = document.querySelector('.card-wrap');
+  const colors = ['#00e676','#00f5e4','#ffd93d'];
+  for(let i=0;i<12;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      background:${colors[i%colors.length]};
+      left:${40+Math.random()*20}%;top:${40+Math.random()*20}%;
+      --tx:${(Math.random()-.5)*140}px;
+      --ty:${(Math.random()-.5)*140}px;
+      animation-delay:${Math.random()*.15}s;`;
+    wrap.appendChild(p);
+    setTimeout(()=>p.remove(), 900);
+  }
+}
+
+function showResults(){
+  document.getElementById('stage').classList.add('hidden');
+  const res = document.getElementById('results');
+  res.classList.add('visible');
+
+  const pct = Math.round((nOk/deck.length)*100);
+  const stars = pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg = pct>=90
+    ? '¡Perfecto, Explorador! 🚀 Distingues el <strong>software</strong> del hardware como todo un experto. ¡UNI está muy orgulloso de ti!'
+    : pct>=60
+    ? '¡Muy bien! Vas entendiendo la diferencia. Recuerda: <strong>software = no lo puedes tocar</strong>. ¡Sigue practicando!'
+    : '¡Buen intento! El truco es recordar: <strong>¿puedes sostenerlo en la mano?</strong> Si no, ¡es software! Vuelve a intentarlo.';
+
+  document.getElementById('resStars').textContent = stars;
+  document.getElementById('resScore').textContent = nOk+'/'+deck.length;
+  document.getElementById('resMsg').innerHTML = msg;
+
+  // Progress fill 100%
+  document.getElementById('progFill').style.width = '100%';
+
+  // UNI final
+  document.getElementById('uniMsg').innerHTML =
+    stars+' <strong>¡Actividad completada!</strong> Obtuviste '+nOk+' de '+deck.length+' correctas. ¡Eres increíble!';
+
+  // Review grid
+  const grid = document.getElementById('reviewGrid');
+  grid.innerHTML = '';
+  deck.forEach((item,i)=>{
+    const div = document.createElement('div');
+    div.className = 'review-item '+(results[i]?'ok':'err');
+    div.innerHTML = `
+      <div class="review-emoji">${item.emoji}</div>
+      <div class="review-name">${item.name}</div>
+      <div class="review-verdict">${item.isSoftware?'SOFTWARE':'HARDWARE'}</div>`;
+    grid.appendChild(div);
+  });
+
+  // Dots final
+  deck.forEach((_,i)=>{
+    const d = document.getElementById('dot-'+i);
+    if(d) d.className = 'dot '+(results[i]?'done-ok':'done-err');
+  });
+}
+
+function restart(){ init(); }
+
+// Card entrance animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes cardIn {
+    from { transform: translateY(30px) scale(.94); opacity:0; }
+    to   { transform: translateY(0)    scale(1);   opacity:1; }
+  }`;
+document.head.appendChild(style);
+
+// GO
+init();
+</script>
+</body>
+</html>
