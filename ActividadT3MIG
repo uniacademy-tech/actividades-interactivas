@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Equipo Perfecto · Tema 3 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--magenta:#ff2d9b;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--purple:#a855f7;--blue:#3b82f6;
+    --bg:#060b18;--surface:#0d1628;--card:#111d35;--card2:#0e1830;
+    --text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;
+    min-height:100vh;overflow-x:hidden;user-select:none;}
+  body::before{content:'';position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse at 10% 40%,rgba(0,245,228,.06) 0%,transparent 50%),
+      radial-gradient(ellipse at 90% 20%,rgba(255,45,155,.05) 0%,transparent 50%),
+      radial-gradient(ellipse at 50% 85%,rgba(59,130,246,.04) 0%,transparent 50%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(0,245,228,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,228,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(0,245,228,.12);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;
+    background:linear-gradient(135deg,var(--cyan),#0055ff);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    color:var(--cyan);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--magenta);
+    letter-spacing:2px;border:1px solid var(--magenta);padding:4px 14px;border-radius:2px;}
+
+  /* CONTAINER */
+  .container{position:relative;z-index:5;max-width:1100px;margin:0 auto;
+    padding:22px 20px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(0,245,228,.18);border-radius:16px;padding:15px 20px;
+    margin-bottom:22px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--purple),var(--cyan));}
+  .uni-svg{width:64px;height:64px;flex-shrink:0;}
+  .speech{background:rgba(0,245,228,.05);border:1px solid rgba(0,245,228,.18);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;
+    transform:translateY(-50%);border:5px solid transparent;
+    border-right-color:rgba(0,245,228,.18);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);
+    letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* PROGRESS */
+  .prog-row{display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+  .prog-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);
+    letter-spacing:1px;white-space:nowrap;}
+  .prog-label span{color:var(--cyan);}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);
+    border-radius:4px;overflow:hidden;min-width:100px;}
+  .prog-fill{height:100%;border-radius:4px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta));
+    transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+  .score-pills{display:flex;gap:8px;}
+  .pill{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    padding:5px 14px;border-radius:20px;border:1px solid;}
+  .pill.ok {color:var(--green);border-color:var(--green);background:rgba(0,230,118,.08);}
+  .pill.err{color:var(--red);  border-color:var(--red);  background:rgba(255,61,61,.08);}
+
+  /* ══ GAME LAYOUT ══ */
+  .game{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:start;}
+
+  /* ── SOFTWARE BANK (left) ── */
+  .bank-wrap{display:flex;flex-direction:column;gap:12px;}
+  .bank-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;
+    color:var(--cyan);display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .bank-title::after{content:'';flex:1;height:1px;background:rgba(0,245,228,.2);}
+
+  .sw-chip{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);
+    border:1.5px solid rgba(0,245,228,.22);
+    border-radius:12px;padding:11px 16px;
+    cursor:grab;
+    transition:all .18s ease;
+    position:relative;
+    touch-action:none;
+  }
+  .sw-chip:hover{border-color:var(--cyan);background:rgba(0,245,228,.08);
+    box-shadow:0 0 18px rgba(0,245,228,.18);transform:translateY(-2px);}
+  .sw-chip.dragging{opacity:.35;transform:scale(.96);cursor:grabbing;}
+  .sw-chip.matched{
+    border-color:var(--green)!important;
+    background:rgba(0,230,118,.1)!important;
+    opacity:.55;cursor:default;pointer-events:none;}
+  .sw-chip.wrong-flash{animation:wrongFlash .4s ease;}
+  @keyframes wrongFlash{
+    0%,100%{border-color:rgba(0,245,228,.22);}
+    50%{border-color:var(--red);background:rgba(255,61,61,.15);box-shadow:0 0 18px rgba(255,61,61,.3);}
+  }
+  .chip-emoji{font-size:22px;line-height:1;}
+  .chip-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;
+    color:var(--text);letter-spacing:.5px;}
+  .chip-sub{font-size:10px;color:var(--muted);}
+
+  /* Ghost element while dragging */
+  .drag-ghost{
+    position:fixed;pointer-events:none;z-index:1000;
+    background:var(--card);border:2px solid var(--cyan);
+    border-radius:12px;padding:11px 16px;
+    box-shadow:0 12px 40px rgba(0,245,228,.35);
+    display:flex;align-items:center;gap:10px;
+    opacity:.92;transform:rotate(3deg) scale(1.05);
+    transition:none;
+  }
+
+  /* ── CENTER CONNECTOR ── */
+  .center-col{display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:8px;padding-top:42px;}
+  .connector-line{width:2px;flex:1;max-height:400px;
+    background:linear-gradient(180deg,transparent,rgba(0,245,228,.15),transparent);}
+  .connector-icon{font-size:22px;color:rgba(0,245,228,.3);}
+
+  /* ── HARDWARE TARGETS (right) ── */
+  .hw-wrap{display:flex;flex-direction:column;gap:12px;}
+  .hw-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;
+    color:var(--magenta);display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .hw-title::before{content:'';flex:1;height:1px;background:rgba(255,45,155,.2);}
+
+  .hw-card{
+    background:var(--card2);
+    border:1.5px dashed rgba(255,45,155,.3);
+    border-radius:16px;padding:14px 16px;
+    min-height:72px;
+    transition:all .2s ease;
+    position:relative;overflow:hidden;
+  }
+  .hw-card.drag-over{
+    border-color:var(--cyan);border-style:solid;
+    background:rgba(0,245,228,.07);
+    box-shadow:0 0 24px rgba(0,245,228,.2);
+    transform:scale(1.02);}
+  .hw-card.matched{
+    border-color:var(--green)!important;border-style:solid!important;
+    background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,245,228,.05))!important;
+    box-shadow:0 0 24px rgba(0,230,118,.2)!important;}
+  .hw-card.wrong-shake{animation:hwShake .4s ease;}
+  @keyframes hwShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .hw-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .hw-emoji{font-size:24px;}
+  .hw-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text);}
+  .hw-hint{font-size:10px;color:var(--muted);}
+
+  /* Drop zone placeholder */
+  .drop-zone{
+    border:1.5px dashed rgba(255,255,255,.12);
+    border-radius:8px;padding:7px 12px;
+    font-size:11px;color:rgba(255,255,255,.2);
+    font-family:'Orbitron',monospace;letter-spacing:1px;
+    text-align:center;transition:all .2s;min-height:34px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .hw-card.drag-over .drop-zone{
+    border-color:rgba(0,245,228,.4);color:rgba(0,245,228,.5);}
+
+  /* Matched chip inside hw-card */
+  .matched-chip{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.3);
+    border-radius:8px;padding:6px 12px;
+    animation:chipLand .35s cubic-bezier(.34,1.4,.64,1);}
+  @keyframes chipLand{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  .matched-chip .chip-emoji{font-size:18px;}
+  .matched-chip .chip-name{font-family:'Orbitron',monospace;font-size:10px;
+    color:var(--green);font-weight:700;}
+  .match-check{margin-left:auto;color:var(--green);font-size:16px;font-weight:900;}
+
+  /* ══ RESULTS ══ */
+  .results{display:none;flex-direction:column;align-items:center;gap:24px;
+    padding:40px 20px;text-align:center;}
+  .results.visible{display:flex;}
+  .game.hidden{display:none;}
+
+  .res-stars{font-size:44px;letter-spacing:6px;
+    animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .res-score{font-family:'Orbitron',monospace;font-size:64px;font-weight:900;
+    background:linear-gradient(135deg,var(--cyan),var(--gold));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;line-height:1;}
+  .res-label{font-family:'Orbitron',monospace;font-size:11px;
+    color:var(--muted);letter-spacing:3px;}
+  .res-msg{font-size:16px;line-height:1.6;max-width:520px;}
+  .res-msg strong{color:var(--gold);}
+
+  /* Review pairs */
+  .pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:12px;width:100%;max-width:760px;}
+  .pair-card{background:var(--card);border-radius:14px;padding:14px 16px;
+    display:flex;align-items:center;gap:10px;border:1px solid;}
+  .pair-card.ok {border-color:rgba(0,230,118,.3);}
+  .pair-card.err{border-color:rgba(255,61,61,.3);}
+  .pair-hw{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
+  .pair-sw{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
+  .pair-emoji{font-size:22px;}
+  .pair-name{font-family:'Orbitron',monospace;font-size:8px;
+    color:var(--muted);letter-spacing:1px;text-align:center;}
+  .pair-arrow{font-size:18px;color:rgba(255,255,255,.2);}
+  .pair-card.ok  .pair-arrow{color:var(--green);}
+  .pair-card.err .pair-arrow{color:var(--red);}
+
+  .btn-restart{padding:14px 40px;
+    background:linear-gradient(135deg,var(--gold),#ff8c00);
+    color:#000;border:none;border-radius:14px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(255,217,61,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti particle */
+  @keyframes confetti{
+    0%{transform:translate(0,0) rotate(0deg);opacity:1;}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0;}
+  }
+  .conf{position:fixed;width:10px;height:10px;border-radius:2px;
+    pointer-events:none;animation:confetti .8s ease-out forwards;z-index:999;}
+
+  @media(max-width:700px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .game{grid-template-columns:1fr;gap:16px;}
+    .center-col{display:none;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .hw-title::before{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">EXPLORADOR DIGITAL</div></div>
+  </div>
+  <div class="header-module">MÓDULO INICIAL · TEMA 3</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(0,245,228,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".4"/>
+      <circle cx="40" cy="57" r="5" fill="#00e676"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(0,245,228,.2)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".5"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#00f5e4"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff2d9b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🔗 En este tema verás que el <strong>hardware y el software se necesitan mutuamente</strong>. Arrastra cada software a su hardware correspondiente. ¡Formen el equipo perfecto!</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-row">
+    <div class="prog-label">PAREJAS <span id="pOk">0</span> / <span id="pTotal">6</span></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="score-pills">
+      <div class="pill ok">✓ <span id="sOk">0</span></div>
+      <div class="pill err">✗ <span id="sErr">0</span></div>
+    </div>
+  </div>
+
+  <!-- ══ GAME ══ -->
+  <div class="game" id="game">
+
+    <!-- LEFT: SOFTWARE CHIPS -->
+    <div class="bank-wrap">
+      <div class="bank-title">SOFTWARE</div>
+      <div id="swBank"></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-col">
+      <div class="connector-line"></div>
+      <div class="connector-icon">⚡</div>
+      <div class="connector-line"></div>
+    </div>
+
+    <!-- RIGHT: HARDWARE TARGETS -->
+    <div class="hw-wrap">
+      <div class="hw-title">HARDWARE</div>
+      <div id="hwTargets"></div>
+    </div>
+
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore">6/6</div>
+    <div class="res-label">PAREJAS CORRECTAS</div>
+    <div class="res-msg"   id="resMsg">¡Perfecto!</div>
+    <div class="pairs-grid" id="pairsGrid"></div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;JUGAR DE NUEVO</button>
+  </div>
+
+</div>
+
+<!-- DRAG GHOST -->
+<div class="drag-ghost" id="dragGhost" style="display:none">
+  <span class="chip-emoji" id="ghostEmoji">💻</span>
+  <div><div class="chip-name" id="ghostName">Software</div></div>
+</div>
+
+<script>
+// ══ DATA ══
+// Each pair: hardware card + the ONE correct software chip
+const PAIRS = [
+  {
+    hw:{ id:'monitor', emoji:'🖥️', name:'Monitor',    hint:'Dispositivo de salida visual' },
+    sw:{ id:'driver',  emoji:'🎨', name:'Driver de Pantalla', sub:'Software de sistema',
+         explain:'El <strong>driver de pantalla</strong> le dice al monitor cómo mostrar colores, resolución y brillo. ¡Sin él la imagen no saldría!' }
+  },
+  {
+    hw:{ id:'printer',  emoji:'🖨️', name:'Impresora',  hint:'Dispositivo de salida' },
+    sw:{ id:'word',     emoji:'📝', name:'Microsoft Word', sub:'Procesador de texto',
+         explain:'<strong>Word</strong> crea los documentos que la impresora convierte en papel. Uno sin el otro no tiene sentido.' }
+  },
+  {
+    hw:{ id:'speakers', emoji:'🔊', name:'Bocinas',    hint:'Dispositivo de audio' },
+    sw:{ id:'spotify',  emoji:'🎵', name:'Spotify',    sub:'App de música',
+         explain:'<strong>Spotify</strong> reproduce la música digital y las bocinas la convierten en sonido que escuchas. ¡Equipo perfecto!' }
+  },
+  {
+    hw:{ id:'mouse',  emoji:'🖱️', name:'Ratón',       hint:'Dispositivo de entrada' },
+    sw:{ id:'chrome', emoji:'🌐', name:'Google Chrome', sub:'Navegador web',
+         explain:'El <strong>ratón</strong> mueve el cursor para hacer clic en los enlaces del navegador. Sin él, navegar sería imposible.' }
+  },
+  {
+    hw:{ id:'camera',  emoji:'📷', name:'Webcam',      hint:'Cámara de video' },
+    sw:{ id:'zoom',    emoji:'📹', name:'Zoom / Meet',  sub:'App de videollamadas',
+         explain:'La <strong>webcam</strong> captura la imagen y Zoom la transmite en tiempo real. Hardware + Software = videollamada.' }
+  },
+  {
+    hw:{ id:'cpu',    emoji:'🖥️', name:'Torre (CPU)',  hint:'Componente principal' },
+    sw:{ id:'windows',emoji:'🪟', name:'Windows',      sub:'Sistema Operativo',
+         explain:'<strong>Windows</strong> es el sistema operativo que controla todo el hardware de la torre — es el "jefe" que coordina todo.' }
+  },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let nOk=0, nErr=0, matched=new Set(), wrongLog=[];
+let dragId=null; // current dragging sw id
+
+const UNI_CORRECT = [
+  '¡Perfecto! 🎉 <strong>Hardware + Software = Equipo perfecto.</strong> Uno no funciona sin el otro.',
+  '¡Excelente conexión! ⚡ Así es como trabajan juntos el hardware y el software.',
+  '¡Correcto! 🚀 Cada hardware necesita su software para ser útil.',
+];
+const UNI_WRONG = [
+  '¡Casi! 🤔 Piensa en <strong>qué tarea comparten</strong> ese hardware y ese software.',
+  '¡Inténtalo de nuevo! 💡 El truco es pensar: ¿para qué sirven los dos?',
+  '¡No te rindas! 🔧 Busca el software que hace útil a ese hardware específico.',
+];
+function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+function init(){
+  nOk=0; nErr=0; matched.clear(); wrongLog=[];
+  document.getElementById('pTotal').textContent = PAIRS.length;
+  document.getElementById('game').classList.remove('hidden');
+  document.getElementById('results').classList.remove('visible');
+  buildBoard();
+  upScore();
+}
+
+function buildBoard(){
+  // Shuffle sw chips order
+  const swOrder = shuffle(PAIRS.map(p=>p.sw));
+  const hwOrder = shuffle(PAIRS.map(p=>p.hw));
+
+  // SW bank
+  const bank = document.getElementById('swBank');
+  bank.innerHTML='';
+  swOrder.forEach(sw=>{
+    const div = document.createElement('div');
+    div.className='sw-chip';
+    div.id='sw-'+sw.id;
+    div.dataset.swId=sw.id;
+    div.innerHTML=`<span class="chip-emoji">${sw.emoji}</span>
+      <div><div class="chip-name">${sw.name}</div><div class="chip-sub">${sw.sub}</div></div>`;
+    // Desktop drag
+    div.addEventListener('mousedown', onMouseDown);
+    // Touch
+    div.addEventListener('touchstart', onTouchStart, {passive:false});
+    bank.appendChild(div);
+  });
+
+  // HW targets
+  const targets = document.getElementById('hwTargets');
+  targets.innerHTML='';
+  hwOrder.forEach(hw=>{
+    const div = document.createElement('div');
+    div.className='hw-card';
+    div.id='hw-'+hw.id;
+    div.dataset.hwId=hw.id;
+    div.innerHTML=`
+      <div class="hw-top">
+        <span class="hw-emoji">${hw.emoji}</span>
+        <div><div class="hw-name">${hw.name}</div><div class="hw-hint">${hw.hint}</div></div>
+      </div>
+      <div class="drop-zone" id="dz-${hw.id}">Arrastra el software aquí…</div>`;
+    targets.appendChild(div);
+  });
+}
+
+// ── MOUSE DRAG ──
+let ghostEl, offsetX, offsetY;
+
+function onMouseDown(e){
+  const chip = e.currentTarget;
+  if(chip.classList.contains('matched')) return;
+  dragId = chip.dataset.swId;
+  const sw = PAIRS.find(p=>p.sw.id===dragId).sw;
+
+  // Ghost
+  ghostEl = document.getElementById('dragGhost');
+  document.getElementById('ghostEmoji').textContent = sw.emoji;
+  document.getElementById('ghostName').textContent  = sw.name;
+  ghostEl.style.display='flex';
+
+  const r = chip.getBoundingClientRect();
+  offsetX = e.clientX - r.left;
+  offsetY = e.clientY - r.top;
+  moveGhost(e.clientX, e.clientY);
+
+  chip.classList.add('dragging');
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup',   onMouseUp);
+  e.preventDefault();
+}
+
+function onMouseMove(e){
+  moveGhost(e.clientX, e.clientY);
+  // Highlight hw-card under cursor
+  clearDragOver();
+  const el = getHwCardAt(e.clientX, e.clientY);
+  if(el) el.classList.add('drag-over');
+}
+
+function onMouseUp(e){
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup',   onMouseUp);
+  ghostEl.style.display='none';
+  const chip = document.getElementById('sw-'+dragId);
+  if(chip) chip.classList.remove('dragging');
+  clearDragOver();
+
+  const el = getHwCardAt(e.clientX, e.clientY);
+  if(el) tryMatch(dragId, el.dataset.hwId, chip, el);
+  dragId=null;
+}
+
+// ── TOUCH DRAG ──
+function onTouchStart(e){
+  const chip = e.currentTarget;
+  if(chip.classList.contains('matched')) return;
+  dragId = chip.dataset.swId;
+  const sw = PAIRS.find(p=>p.sw.id===dragId).sw;
+
+  ghostEl = document.getElementById('dragGhost');
+  document.getElementById('ghostEmoji').textContent = sw.emoji;
+  document.getElementById('ghostName').textContent  = sw.name;
+  ghostEl.style.display='flex';
+
+  const t = e.touches[0];
+  const r = chip.getBoundingClientRect();
+  offsetX = t.clientX - r.left;
+  offsetY = t.clientY - r.top;
+  moveGhost(t.clientX, t.clientY);
+  chip.classList.add('dragging');
+
+  document.addEventListener('touchmove',  onTouchMove, {passive:false});
+  document.addEventListener('touchend',   onTouchEnd);
+  e.preventDefault();
+}
+
+function onTouchMove(e){
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  clearDragOver();
+  const el = getHwCardAt(t.clientX, t.clientY);
+  if(el) el.classList.add('drag-over');
+  e.preventDefault();
+}
+
+function onTouchEnd(e){
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend',  onTouchEnd);
+  ghostEl.style.display='none';
+  const chip = document.getElementById('sw-'+dragId);
+  if(chip) chip.classList.remove('dragging');
+  clearDragOver();
+
+  const t = e.changedTouches[0];
+  const el = getHwCardAt(t.clientX, t.clientY);
+  if(el) tryMatch(dragId, el.dataset.hwId, chip, el);
+  dragId=null;
+}
+
+// ── HELPERS ──
+function moveGhost(x,y){
+  ghostEl.style.left = (x - offsetX)+'px';
+  ghostEl.style.top  = (y - offsetY)+'px';
+}
+
+function clearDragOver(){
+  document.querySelectorAll('.hw-card.drag-over').forEach(el=>el.classList.remove('drag-over'));
+}
+
+function getHwCardAt(x,y){
+  const cards = document.querySelectorAll('.hw-card:not(.matched)');
+  for(const c of cards){
+    const r = c.getBoundingClientRect();
+    if(x>=r.left && x<=r.right && y>=r.top && y<=r.bottom) return c;
+  }
+  return null;
+}
+
+// ── MATCH LOGIC ──
+function tryMatch(swId, hwId, chipEl, hwEl){
+  // Find the correct hw for this sw
+  const pair = PAIRS.find(p=>p.sw.id===swId);
+  const correct = pair.hw.id === hwId;
+
+  if(correct){
+    nOk++;
+    matched.add(swId);
+    // Mark chip
+    chipEl.classList.add('matched');
+    // Mark hw card
+    hwEl.classList.add('matched');
+    // Replace drop zone with matched chip
+    const dz = document.getElementById('dz-'+hwId);
+    dz.outerHTML = `<div class="matched-chip">
+      <span class="chip-emoji">${pair.sw.emoji}</span>
+      <div><div class="chip-name">${pair.sw.name}</div></div>
+      <span class="match-check">✓</span>
+    </div>`;
+    spawnConfetti(hwEl);
+    document.getElementById('uniMsg').innerHTML = rand(UNI_CORRECT)
+      +`<br><em style="font-size:12px;color:var(--muted)">${pair.sw.explain}</em>`;
+    upScore();
+    if(matched.size === PAIRS.length) setTimeout(showResults, 800);
+  } else {
+    nErr++;
+    wrongLog.push({swId,hwId});
+    chipEl.classList.add('wrong-flash');
+    hwEl.classList.add('wrong-shake');
+    setTimeout(()=>{
+      chipEl.classList.remove('wrong-flash');
+      hwEl.classList.remove('wrong-shake');
+    },450);
+    document.getElementById('uniMsg').innerHTML = rand(UNI_WRONG);
+    upScore();
+  }
+}
+
+function upScore(){
+  document.getElementById('sOk').textContent  = nOk;
+  document.getElementById('sErr').textContent = nErr;
+  document.getElementById('pOk').textContent  = matched.size;
+  document.getElementById('progFill').style.width = (matched.size/PAIRS.length*100)+'%';
+}
+
+function spawnConfetti(el){
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width/2;
+  const cy = r.top  + r.height/2;
+  const colors=['#00e676','#00f5e4','#ffd93d','#ff2d9b','#a855f7'];
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};
+      left:${cx}px;top:${cy}px;
+      --tx:${(Math.random()-.5)*200}px;
+      --ty:${(Math.random()-.8)*180}px;
+      --r:${Math.random()*360}deg;
+      animation-delay:${Math.random()*.1}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),950);
+  }
+}
+
+function showResults(){
+  document.getElementById('game').classList.add('hidden');
+  const res = document.getElementById('results');
+  res.classList.add('visible');
+
+  const pct = Math.round((nOk/PAIRS.length)*100);
+  const stars = pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg = pct>=90
+    ? '¡Perfecto, Explorador! 🚀 Formaste todos los equipos correctamente. Entiendes que el <strong>hardware y software se necesitan mutuamente</strong>.'
+    : pct>=60
+    ? '¡Muy bien! Ya entiendes la relación. Recuerda: cada hardware tiene un software que lo <strong>hace útil</strong>.'
+    : '¡Buen intento! La clave es pensar: <strong>¿para qué sirven juntos?</strong> Vuelve a intentarlo.';
+
+  document.getElementById('resStars').textContent = stars;
+  document.getElementById('resScore').textContent = nOk+'/'+PAIRS.length;
+  document.getElementById('resMsg').innerHTML = msg;
+  document.getElementById('uniMsg').innerHTML =
+    stars+' <strong>¡Actividad completada!</strong> Conectaste '+nOk+' de '+PAIRS.length+' parejas. ¡Eres increíble! 🚀';
+
+  // Pairs review
+  const grid = document.getElementById('pairsGrid');
+  grid.innerHTML='';
+  PAIRS.forEach(p=>{
+    const ok = matched.has(p.sw.id);
+    const div = document.createElement('div');
+    div.className='pair-card '+(ok?'ok':'err');
+    div.innerHTML=`
+      <div class="pair-hw">
+        <div class="pair-emoji">${p.hw.emoji}</div>
+        <div class="pair-name">${p.hw.name}</div>
+      </div>
+      <div class="pair-arrow">${ok?'⚡':'?'}</div>
+      <div class="pair-sw">
+        <div class="pair-emoji">${p.sw.emoji}</div>
+        <div class="pair-name">${p.sw.name}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function restart(){ init(); }
+init();
+</script>
+</body>
+</html>
