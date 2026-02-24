@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abrir Navegador · T3+T4 · Módulo 4 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --blue:#3b82f6;--indigo:#6366f1;--sky:#0ea5e9;
+    --bg:#060b18;--card:#0f1a2e;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(59,130,246,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(99,102,241,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(59,130,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(59,130,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(59,130,246,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--sky);
+    letter-spacing:2px;border:1px solid var(--sky);padding:4px 14px;border-radius:2px;background:rgba(14,165,233,.06);}
+
+  .container{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(59,130,246,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan),var(--blue));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(59,130,246,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:#93c5fd;}
+
+  /* ROUND TABS */
+  .round-tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .rtab{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 18px;
+    border-radius:10px;border:1px solid;cursor:default;transition:all .3s;}
+  .rtab.done   {color:var(--green); border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+  .rtab.active {color:var(--sky);   border-color:var(--sky); background:rgba(14,165,233,.1);box-shadow:0 0 14px rgba(14,165,233,.2);}
+  .rtab.pending{color:var(--muted); border-color:rgba(255,255,255,.08);background:transparent;}
+
+  /* INSTR BAR */
+  .instr-bar{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18);
+    border-radius:12px;padding:11px 18px;margin-bottom:16px;
+    display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.7);}
+  .instr-bar span{font-size:20px;}
+  .instr-bar strong{color:var(--sky);}
+
+  /* SCORE ROW */
+  .score-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--indigo));transition:width .5s ease;width:0%;}
+  .attempt-pill{font-family:'Orbitron',monospace;font-size:10px;padding:4px 14px;border-radius:20px;
+    border:1px solid rgba(255,255,255,.1);color:var(--muted);}
+  .attempt-pill span{color:var(--sky);font-weight:700;}
+
+  /* GAME LAYOUT */
+  .game-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+
+  /* BANK */
+  .bank-section{background:var(--card);border:1.5px solid rgba(59,130,246,.18);border-radius:18px;overflow:hidden;}
+  .section-header{padding:13px 18px;border-bottom:1px solid rgba(59,130,246,.12);
+    font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--sky);
+    display:flex;align-items:center;gap:8px;}
+  .section-header span{font-size:16px;}
+  .bank-grid{padding:12px;display:flex;flex-direction:column;gap:7px;min-height:300px;}
+
+  .step-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+    border-radius:11px;padding:11px 13px;cursor:pointer;
+    display:flex;align-items:center;gap:11px;
+    transition:all .18s ease;user-select:none;}
+  .step-card:hover{border-color:var(--blue);background:rgba(59,130,246,.08);transform:translateX(4px);}
+  .step-card.placed{opacity:.3;border-style:dashed;cursor:default;pointer-events:none;}
+  .step-illus{width:46px;height:38px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+    background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);}
+  .step-text{flex:1;}
+  .step-badge{font-family:'Orbitron',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;margin-bottom:2px;}
+  .step-desc{font-size:12px;line-height:1.4;color:rgba(255,255,255,.8);}
+
+  /* ORDER ZONE */
+  .order-section{background:var(--card);border:1.5px solid rgba(59,130,246,.18);border-radius:18px;overflow:hidden;}
+  .order-slots{padding:12px;display:flex;flex-direction:column;gap:7px;min-height:300px;}
+
+  .slot{border:2px dashed rgba(59,130,246,.2);border-radius:11px;min-height:62px;
+    display:flex;align-items:center;justify-content:center;padding:7px;
+    transition:all .2s ease;position:relative;}
+  .slot.filled{border-style:solid;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.04);}
+  .slot.correct{border-color:var(--green)!important;background:rgba(0,230,118,.08)!important;animation:slotPop .4s ease;}
+  .slot.wrong  {border-color:var(--red)!important;  background:rgba(255,61,61,.08)!important; animation:slotShake .38s ease;}
+  @keyframes slotPop  {0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes slotShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .slot-num{position:absolute;top:5px;left:9px;font-family:'Orbitron',monospace;
+    font-size:8px;color:rgba(59,130,246,.4);letter-spacing:1px;}
+  .slot-hint{font-family:'Orbitron',monospace;font-size:9px;color:rgba(255,255,255,.15);letter-spacing:1px;text-align:center;}
+
+  .placed-card{background:rgba(59,130,246,.08);border:1.5px solid rgba(59,130,246,.25);
+    border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:9px;
+    cursor:pointer;transition:all .15s;width:100%;}
+  .placed-card:hover{background:rgba(255,61,61,.1);border-color:rgba(255,61,61,.3);}
+  .placed-card:hover .placed-remove{opacity:1;}
+  .placed-remove{font-size:13px;color:var(--red);opacity:0;transition:opacity .15s;margin-left:auto;flex-shrink:0;}
+  .placed-icon{font-size:18px;flex-shrink:0;}
+  .placed-text{font-size:11px;line-height:1.35;color:rgba(255,255,255,.75);}
+  .placed-card.confirmed{cursor:default;}
+  .placed-card.confirmed:hover{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25);}
+  .placed-card.confirmed:hover .placed-remove{opacity:0;}
+
+  .check-wrap{padding:13px 18px;border-top:1px solid rgba(59,130,246,.1);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .slots-filled{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .slots-filled span{color:var(--sky);font-weight:700;}
+  .btn-check{padding:9px 24px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:10px;font-family:'Orbitron',monospace;
+    font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;}
+  .btn-check:disabled{opacity:.3;cursor:not-allowed;}
+  .btn-check:not(:disabled):hover{opacity:.85;transform:translateY(-1px);}
+
+  /* RESULT */
+  .result-panel{display:none;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.5);}
+  .result-panel.visible{display:block;}
+  .rp-top{height:4px;background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan));}
+  .rp-body{padding:32px 24px;text-align:center;}
+  .rp-stars{font-size:42px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .rp-title{font-family:'Orbitron',monospace;font-size:17px;font-weight:900;color:var(--sky);margin:8px 0 4px;}
+  .rp-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;}
+  .rp-msg{font-size:14px;line-height:1.7;max-width:520px;margin:0 auto 20px;color:rgba(255,255,255,.8);}
+  .rp-msg strong{color:#93c5fd;}
+  .recap-list{text-align:left;margin-bottom:20px;}
+  .recap-item{display:flex;align-items:center;gap:11px;padding:9px 13px;
+    border-radius:9px;margin-bottom:5px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);}
+  .recap-n{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--sky);width:20px;text-align:center;flex-shrink:0;}
+  .recap-icon{font-size:18px;flex-shrink:0;}
+  .recap-text{font-size:12px;color:rgba(255,255,255,.75);}
+  .btn-next-round{padding:11px 28px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:11px;font-family:'Orbitron',monospace;font-size:11px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 5px 18px rgba(59,130,246,.3);}
+  .btn-next-round:hover{opacity:.88;transform:translateY(-2px);}
+  .btn-restart{padding:11px 28px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.12);border-radius:11px;font-family:'Orbitron',monospace;font-size:11px;
+    cursor:pointer;transition:all .2s;margin-left:10px;}
+  .btn-restart:hover{background:rgba(255,255,255,.12);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:700px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .game-layout{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 4 · T3 + T4</div>
+</header>
+
+<div class="container">
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(59,130,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#3b82f6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#3b82f6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#6366f1"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#3b82f6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🌐 Vamos a poner en orden los pasos para <strong>abrir un navegador</strong> y aprender las partes de su ventana. ¡Hay dos rondas!</p>
+    </div>
+  </div>
+
+  <div class="round-tabs" id="roundTabs">
+    <div class="rtab active" id="rtab-1">🌐 RONDA 1 · ABRIR NAVEGADOR</div>
+    <div class="rtab pending" id="rtab-2">🪟 RONDA 2 · PARTES DEL NAVEGADOR</div>
+  </div>
+
+  <div class="instr-bar">
+    <span>👆</span>
+    <div>Haz clic en los pasos de la izquierda para colocarlos en el orden correcto. Haz clic en un paso ya colocado para quitarlo. Pulsa <strong>VERIFICAR</strong> cuando termines.</div>
+  </div>
+
+  <div class="score-row">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="attempt-pill">Intentos: <span id="attempts">0</span></div>
+  </div>
+
+  <div class="game-layout" id="gameLayout">
+    <div class="bank-section">
+      <div class="section-header"><span>🔀</span> PASOS (en desorden)</div>
+      <div class="bank-grid" id="bankGrid"></div>
+    </div>
+    <div class="order-section">
+      <div class="section-header"><span>✅</span> <span id="orderTitle">Orden correcto</span></div>
+      <div class="order-slots" id="orderSlots"></div>
+      <div class="check-wrap">
+        <div class="slots-filled">Colocados: <span id="filledCount">0</span> / <span id="filledTotal">5</span></div>
+        <button class="btn-check" id="btnCheck" disabled onclick="checkOrder()">VERIFICAR ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="rp-top"></div>
+    <div class="rp-body">
+      <div class="rp-stars" id="rpStars">⭐⭐⭐</div>
+      <div class="rp-title" id="rpTitle">¡ORDEN PERFECTO!</div>
+      <div class="rp-sub"  id="rpSub">RONDA 1 COMPLETADA</div>
+      <div class="rp-msg"  id="rpMsg"></div>
+      <div class="recap-list" id="recapList"></div>
+      <button class="btn-next-round" id="btnNextRound">SIGUIENTE RONDA →</button>
+      <button class="btn-restart" onclick="restart()">🔄 Repetir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROUNDS = [
+  { id:1, label:'ABRIR NAVEGADOR', total:5,
+    orderTitle:'Orden para abrir el navegador',
+    steps:[
+      {id:1,icon:'🖥️',illus:'🖥️',short:'Enciende la computadora',    desc:'<strong>Enciende</strong> la computadora y espera a que cargue el escritorio.'},
+      {id:2,icon:'🔍',illus:'🔍',short:'Busca el ícono del navegador', desc:'<strong>Busca el ícono</strong> del navegador en el escritorio o en la barra de tareas (ej. Chrome 🟡🔵).'},
+      {id:3,icon:'👆👆',illus:'👆',short:'Haz doble clic en el ícono', desc:'<strong>Haz doble clic</strong> sobre el ícono del navegador para abrirlo.'},
+      {id:4,icon:'⏳',illus:'⏳',short:'Espera que cargue',            desc:'<strong>Espera</strong> unos segundos mientras el navegador termina de cargar.'},
+      {id:5,icon:'🌐',illus:'🌐',short:'¡El navegador está abierto!',  desc:'¡Listo! El navegador está <strong>abierto</strong> y muestra la página de inicio. ¡Ya puedes navegar!'},
+    ]},
+  { id:2, label:'PARTES DEL NAVEGADOR', total:6,
+    orderTitle:'Partes de la ventana (de arriba a abajo)',
+    steps:[
+      {id:1,icon:'🔲',illus:'🔲',short:'Barra de título',         desc:'<strong>Barra de título</strong>: muestra el nombre de la página que estás viendo. Está en la parte más alta.'},
+      {id:2,icon:'←→',illus:'←',short:'Botones Atrás / Adelante', desc:'<strong>Botones ← →</strong>: te llevan a la página anterior o siguiente. Son las flechas en la esquina superior izquierda.'},
+      {id:3,icon:'🔄',illus:'🔄',short:'Botón de recargar',       desc:'<strong>Botón 🔄</strong>: recarga la página actual. Úsalo si la página no carga bien o quieres actualizarla.'},
+      {id:4,icon:'🔗',illus:'🔗',short:'Barra de direcciones',    desc:'<strong>Barra de direcciones</strong>: aquí escribes la dirección (URL) de la página que quieres visitar, ej: www.google.com'},
+      {id:5,icon:'📑',illus:'📑',short:'Pestañas',                desc:'<strong>Pestañas</strong>: te permiten abrir varias páginas al mismo tiempo. Haz clic en el "+" para abrir una nueva.'},
+      {id:6,icon:'📄',illus:'📄',short:'Área de contenido',       desc:'<strong>Área de contenido</strong>: la parte grande donde se muestra el contenido de la página web que visitas.'},
+    ]},
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let round=0, placed=[], attempts=0, confirmed=false;
+
+function init(){
+  round=0;attempts=0;
+  document.getElementById('gameLayout').style.display='grid';
+  document.getElementById('resultPanel').classList.remove('visible');
+  startRound(0);
+}
+
+function startRound(r){
+  round=r;confirmed=false;attempts=0;
+  const R=ROUNDS[r];
+  placed=new Array(R.total).fill(null);
+  document.getElementById('attempts').textContent=0;
+  document.getElementById('progFill').style.width='0%';
+  document.getElementById('filledTotal').textContent=R.total;
+  document.getElementById('orderTitle').textContent=R.orderTitle;
+  document.getElementById('uniMsg').innerHTML=
+    r===0?'🌐 <strong>Ronda 1:</strong> Pon en orden los pasos para <strong>abrir un navegador</strong>. ¡Haz clic en cada paso para colocarlo!'
+         :'🪟 <strong>Ronda 2:</strong> Ordena las partes de la ventana del navegador <strong>de arriba a abajo</strong>. ¡Demuestra que las conoces!';
+  [1,2].forEach(n=>{
+    const t=document.getElementById('rtab-'+n);if(!t)return;
+    t.className='rtab '+(n-1<r?'done':n-1===r?'active':'pending');
+  });
+  renderBank();renderSlots();
+}
+
+function renderBank(){
+  const R=ROUNDS[round];
+  const grid=document.getElementById('bankGrid');grid.innerHTML='';
+  shuffle([...R.steps]).forEach(s=>{
+    const isPlaced=placed.some(p=>p&&p.id===s.id);
+    const div=document.createElement('div');
+    div.className='step-card'+(isPlaced?' placed':'');
+    div.id='bank-'+s.id;
+    div.innerHTML=`<div class="step-illus">${s.illus}</div>
+      <div class="step-text"><div class="step-badge">PASO</div>
+      <div class="step-desc">${s.desc}</div></div>`;
+    if(!isPlaced)div.addEventListener('click',()=>placeNext(s));
+    grid.appendChild(div);
+  });
+}
+
+function renderSlots(){
+  const R=ROUNDS[round];
+  const container=document.getElementById('orderSlots');container.innerHTML='';
+  for(let i=0;i<R.total;i++){
+    const slot=document.createElement('div');
+    slot.className='slot'+(placed[i]?' filled':'');slot.id='slot-'+i;
+    slot.innerHTML=`<div class="slot-num">PASO ${i+1}</div>`;
+    if(placed[i]){
+      const s=placed[i];
+      const card=document.createElement('div');
+      card.className='placed-card'+(confirmed?' confirmed':'');
+      card.innerHTML=`<div class="placed-icon">${s.icon}</div>
+        <div class="placed-text">${s.desc}</div>
+        <div class="placed-remove">✕</div>`;
+      if(!confirmed)card.addEventListener('click',()=>removePlaced(i));
+      slot.appendChild(card);
+    } else {
+      slot.innerHTML+=`<div class="slot-hint">HAZ CLIC EN UN PASO</div>`;
+    }
+    container.appendChild(slot);
+  }
+  const filled=placed.filter(Boolean).length;
+  document.getElementById('filledCount').textContent=filled;
+  document.getElementById('btnCheck').disabled=filled<ROUNDS[round].total;
+  document.getElementById('progFill').style.width=(filled/ROUNDS[round].total*50)+'%';
+}
+
+function placeNext(step){
+  if(confirmed)return;
+  const idx=placed.findIndex(p=>!p);if(idx===-1)return;
+  placed[idx]=step;renderBank();renderSlots();
+}
+function removePlaced(idx){
+  if(confirmed)return;
+  placed[idx]=null;
+  const compact=placed.filter(Boolean);
+  placed=new Array(ROUNDS[round].total).fill(null);
+  compact.forEach((s,i)=>placed[i]=s);
+  renderBank();renderSlots();
+}
+
+function checkOrder(){
+  attempts++;confirmed=true;
+  document.getElementById('attempts').textContent=attempts;
+  const R=ROUNDS[round];
+  let allCorrect=true;
+  placed.forEach((s,i)=>{
+    const slot=document.getElementById('slot-'+i);
+    const ok=s&&s.id===(i+1);
+    slot.classList.add(ok?'correct':'wrong');
+    if(!ok)allCorrect=false;
+    setTimeout(()=>slot.classList.remove('correct','wrong'),800);
+  });
+  const correctCount=placed.filter((s,i)=>s&&s.id===(i+1)).length;
+  if(allCorrect){
+    document.getElementById('progFill').style.width='100%';
+    document.getElementById('uniMsg').innerHTML='🎉 ¡<strong>PERFECTO!</strong> ¡Todos los pasos en el orden correcto!';
+    setTimeout(()=>showRoundResult(true,correctCount),700);
+  } else {
+    confirmed=false;
+    document.getElementById('uniMsg').innerHTML='❌ <strong>'+correctCount+' de '+R.total+'</strong> correctos. Los incorrectos se marcan en rojo. ¡Corrígelos!';
+    renderSlots();renderBank();
+  }
+}
+
+function showRoundResult(perfect,correct){
+  document.getElementById('gameLayout').style.display='none';
+  const rp=document.getElementById('resultPanel');rp.classList.add('visible');
+  const R=ROUNDS[round];
+  const stars=attempts===1?'⭐⭐⭐':attempts<=2?'⭐⭐':'⭐';
+  const msg=round===0
+    ?'¡Ya sabes cómo <strong>abrir un navegador</strong>! Busca el ícono, doble clic y espera. ¡Así de simple!'
+    :'¡Ya conoces todas las <strong>partes del navegador</strong>! Barra de título, botones de navegación, barra de direcciones, pestañas y área de contenido.';
+  document.getElementById('rpStars').textContent=stars;
+  document.getElementById('rpTitle').textContent=perfect?'¡ORDEN PERFECTO!':'¡COMPLETADO!';
+  document.getElementById('rpSub').textContent='RONDA '+(round+1)+' COMPLETADA · '+R.label;
+  document.getElementById('rpMsg').innerHTML=msg;
+  document.getElementById('recapList').innerHTML=
+    R.steps.map(s=>`<div class="recap-item">
+      <div class="recap-n">${s.id}</div>
+      <div class="recap-icon">${s.icon}</div>
+      <div class="recap-text">${s.desc}</div>
+    </div>`).join('');
+  const btn=document.getElementById('btnNextRound');
+  if(round<ROUNDS.length-1){
+    btn.textContent='SIGUIENTE RONDA →';btn.style.display='inline-block';
+    btn.onclick=()=>{rp.classList.remove('visible');document.getElementById('gameLayout').style.display='grid';startRound(round+1);};
+  } else {
+    btn.textContent='🏆 ¡ACTIVIDAD COMPLETADA!';btn.style.display='inline-block';
+    btn.onclick=()=>{};
+    document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Actividad completada!</strong> Ya sabes abrir un navegador y conoces todas sus partes. ¡Eres todo un Explorador Digital! 🌐';
+    btn.style.background='linear-gradient(135deg,#059669,#10b981)';
+    setTimeout(bigConf,200);
+  }
+  if(attempts<=2)setTimeout(spawnConf,100);
+}
+
+function restart(){document.getElementById('resultPanel').classList.remove('visible');document.getElementById('gameLayout').style.display='grid';init();}
+
+function spawnConf(){
+  const colors=['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${20+Math.random()*60}vw;top:${10+Math.random()*30}vh;
+      --tx:${(Math.random()-.5)*200}px;--ty:${(Math.random()-.7)*160}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9','#00f5e4'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+init();
+</script>
+</body>
+</html>
