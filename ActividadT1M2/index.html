@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Escritorio · T1 · Módulo 2 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--magenta:#ff2d9b;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--orange:#ff8c00;
+    --purple:#a855f7;--violet:#7c3aed;--lavender:#c4b5fd;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(168,85,247,.06) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(168,85,247,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(168,85,247,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(168,85,247,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--purple),var(--violet));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--purple);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--purple);
+    letter-spacing:2px;border:1px solid var(--purple);padding:4px 14px;border-radius:2px;background:rgba(168,85,247,.06);}
+
+  .container{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(168,85,247,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan),var(--purple));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(168,85,247,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--lavender);}
+
+  /* TARGET + SCORE */
+  .target-section{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .target-box{display:flex;align-items:center;gap:14px;background:var(--card);
+    border:2px solid var(--purple);border-radius:14px;padding:11px 20px;flex:1;min-width:230px;
+    animation:pulsePurple 2.2s ease-in-out infinite;}
+  @keyframes pulsePurple{0%,100%{box-shadow:0 0 18px rgba(168,85,247,.12);}50%{box-shadow:0 0 36px rgba(168,85,247,.3);}}
+  .target-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:2px;}
+  .target-name{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:#fff;}
+  .target-icon{font-size:28px;}
+  .scores{display:flex;gap:10px;flex-wrap:wrap;}
+  .sc{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 14px;text-align:center;min-width:72px;}
+  .sc .v{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;}
+  .sc .l{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+  .sc.ok  .v{color:var(--green);}
+  .sc.err .v{color:var(--red);}
+  .sc.rem .v{color:var(--purple);}
+
+  .prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:18px;overflow:hidden;}
+  .prog-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--lavender));border-radius:3px;transition:width .5s ease;width:0%;}
+
+  /* DESKTOP SCENE */
+  .scene-wrap{position:relative;border:2px solid rgba(168,85,247,.25);border-radius:18px;
+    overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.65);}
+  .scene-label{position:absolute;top:11px;left:15px;
+    font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;
+    color:rgba(168,85,247,.7);z-index:10;
+    background:rgba(6,11,24,.8);padding:3px 10px;border-radius:4px;
+    border:1px solid rgba(168,85,247,.25);}
+  .desktop-svg{width:100%;display:block;}
+
+  /* HOTSPOTS */
+  .hotspot{position:absolute;cursor:pointer;border-radius:8px;
+    border:2.5px dashed rgba(168,85,247,.55);
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(168,85,247,.08);
+    transition:all .2s ease;transform:translate(-50%,-50%);}
+  .hotspot:hover{background:rgba(168,85,247,.22);border-color:var(--purple);
+    border-style:solid;transform:translate(-50%,-50%) scale(1.08);
+    box-shadow:0 0 20px rgba(168,85,247,.4);}
+  .hotspot.ok{border-color:var(--green)!important;border-style:solid!important;
+    background:rgba(0,230,118,.2)!important;box-shadow:0 0 22px rgba(0,230,118,.4)!important;
+    animation:popOk .4s ease;cursor:default;}
+  .hotspot.err{border-color:var(--red)!important;border-style:solid!important;
+    background:rgba(255,61,61,.18)!important;animation:shake .38s ease;}
+  @keyframes popOk{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(1)}}
+  @keyframes shake{0%,100%{transform:translate(-50%,-50%) translateX(0)}25%{transform:translate(-50%,-50%) translateX(-7px)}75%{transform:translate(-50%,-50%) translateX(7px)}}
+  .hotspot.ok::after{content:'✓';font-size:18px;color:var(--green);font-weight:900;text-shadow:0 0 8px rgba(0,230,118,.8);}
+  .hotspot.err::after{content:'✗';font-size:18px;color:var(--red);font-weight:900;}
+  .hotspot:not(.ok):not(.err)::before{content:'';position:absolute;inset:-6px;border-radius:12px;
+    border:2px solid rgba(168,85,247,.2);animation:pulseRing 2s ease-in-out infinite;}
+  @keyframes pulseRing{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:0}}
+
+  .hsbadge{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;
+    color:var(--lavender);background:rgba(6,11,24,.92);padding:3px 8px;
+    border-radius:4px;border:1px solid rgba(168,85,247,.3);
+    white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;
+    position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);z-index:20;}
+  .hotspot:hover .hsbadge,.hotspot.ok .hsbadge{opacity:1;}
+  .hotspot.ok .hsbadge{color:var(--green);border-color:var(--green);}
+
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:90;
+    opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(5px);}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.72);
+    background:#0d1628;border-radius:20px;padding:28px 32px;text-align:center;
+    z-index:100;box-shadow:0 32px 90px rgba(0,0,0,.85);
+    opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    min-width:300px;max-width:88vw;}
+  .modal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+  .modal.success{border:2px solid var(--green);}
+  .modal.error  {border:2px solid var(--red);}
+  .modal.complete{border:2px solid var(--purple);}
+  .modal-icon{font-size:44px;margin-bottom:8px;}
+  .modal-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:6px;}
+  .modal.success  .modal-title{color:var(--green);}
+  .modal.error    .modal-title{color:var(--red);}
+  .modal.complete .modal-title{color:var(--purple);}
+  .modal-msg{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:380px;}
+  .modal-msg strong{color:var(--lavender);}
+  .modal-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+  .mtag{font-family:'Orbitron',monospace;font-size:9px;padding:3px 12px;
+    border-radius:20px;border:1px solid rgba(168,85,247,.4);
+    color:var(--purple);background:rgba(168,85,247,.08);letter-spacing:1px;}
+  .modal-btn{background:linear-gradient(135deg,var(--purple),var(--violet));color:#fff;
+    border:none;border-radius:10px;padding:10px 24px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    cursor:pointer;letter-spacing:1px;transition:opacity .18s;}
+  .modal-btn:hover{opacity:.82;}
+  .modal-btn.restart{background:linear-gradient(135deg,var(--gold),var(--orange));
+    color:#000;margin-top:8px;display:block;width:100%;}
+  .stars{font-size:28px;letter-spacing:4px;margin-bottom:5px;}
+  .final-score{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--purple);margin:5px 0;}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:998;}
+
+  @media(max-width:680px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .hotspot{width:36px!important;height:36px!important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 2 · TEMA 1</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(168,85,247,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#a855f7"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(168,85,247,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#a855f7"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#c4b5fd"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#a855f7"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🖥️ Este es el <strong>Escritorio de Windows</strong> — la pantalla principal de tu computadora. Voy a pedirte que encuentres cada elemento. ¡Haz clic donde te digo!</p>
+    </div>
+  </div>
+
+  <!-- TARGET + SCORE -->
+  <div class="target-section">
+    <div class="target-box">
+      <div class="target-icon" id="tIcon">🔍</div>
+      <div>
+        <div class="target-label">// ENCUENTRA AHORA:</div>
+        <div class="target-name" id="tName">INICIANDO…</div>
+      </div>
+    </div>
+    <div class="scores">
+      <div class="sc ok"><div class="v" id="sOk">0</div><div class="l">CORRECTOS</div></div>
+      <div class="sc err"><div class="v" id="sErr">0</div><div class="l">ERRORES</div></div>
+      <div class="sc rem"><div class="v" id="sRem">6</div><div class="l">RESTANTES</div></div>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="pBar"></div></div>
+
+  <!-- DESKTOP SCENE -->
+  <div class="scene-wrap" id="sceneWrap">
+    <div class="scene-label">// ESCRITORIO DE WINDOWS · EXPLORACIÓN ACTIVA</div>
+
+    <svg class="desktop-svg" viewBox="0 0 1100 660" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wallpaperG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stop-color="#0a1628"/>
+          <stop offset="40%"  stop-color="#1a0a3e"/>
+          <stop offset="100%" stop-color="#0d1f4a"/>
+        </linearGradient>
+        <radialGradient id="glowCenter" cx="50%" cy="45%" r="50%">
+          <stop offset="0%"   stop-color="rgba(168,85,247,.18)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <linearGradient id="taskbarG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="rgba(15,10,35,.97)"/>
+          <stop offset="100%" stop-color="rgba(8,5,20,.99)"/>
+        </linearGradient>
+        <filter id="iconShadow">
+          <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity=".6"/>
+        </filter>
+        <filter id="glowFilter">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- ══ WALLPAPER ══ -->
+      <rect width="1100" height="620" fill="url(#wallpaperG)"/>
+      <rect width="1100" height="620" fill="url(#glowCenter)"/>
+
+      <!-- Nebula shapes -->
+      <ellipse cx="550" cy="280" rx="380" ry="200" fill="rgba(124,58,237,.08)"/>
+      <ellipse cx="200" cy="150" rx="180" ry="120" fill="rgba(168,85,247,.06)"/>
+      <ellipse cx="900" cy="400" rx="200" ry="130" fill="rgba(59,130,246,.05)"/>
+
+      <!-- Stars -->
+      <circle cx="80"  cy="40"  r="1.2" fill="rgba(255,255,255,.5)"/>
+      <circle cx="220" cy="90"  r="1"   fill="rgba(255,255,255,.4)"/>
+      <circle cx="400" cy="30"  r="1.5" fill="rgba(255,255,255,.6)"/>
+      <circle cx="600" cy="60"  r="1"   fill="rgba(255,255,255,.4)"/>
+      <circle cx="780" cy="25"  r="1.2" fill="rgba(255,255,255,.5)"/>
+      <circle cx="950" cy="80"  r="1"   fill="rgba(255,255,255,.4)"/>
+      <circle cx="1050" cy="40" r="1.5" fill="rgba(255,255,255,.55)"/>
+      <circle cx="150" cy="200" r="1"   fill="rgba(255,255,255,.3)"/>
+      <circle cx="700" cy="150" r="1.2" fill="rgba(255,255,255,.45)"/>
+      <circle cx="860" cy="120" r="1"   fill="rgba(255,255,255,.35)"/>
+      <circle cx="300" cy="350" r="1.2" fill="rgba(255,255,255,.3)"/>
+      <circle cx="1000" cy="300" r="1" fill="rgba(255,255,255,.4)"/>
+
+      <!-- Aurora streaks -->
+      <path d="M0,300 Q200,200 400,280 Q600,360 800,240 Q1000,120 1100,200"
+        stroke="rgba(168,85,247,.12)" stroke-width="60" fill="none"/>
+      <path d="M0,350 Q250,250 500,320 Q750,390 1100,280"
+        stroke="rgba(59,130,246,.08)" stroke-width="40" fill="none"/>
+
+      <!-- Mountain silhouette -->
+      <polygon points="0,520 80,380 160,460 240,340 360,500 440,390 520,480 600,360 700,500 800,400 900,520 1000,430 1100,520 1100,620 0,620"
+        fill="rgba(5,5,18,.75)"/>
+      <polygon points="0,540 60,420 140,490 220,380 320,520 400,430 480,510 560,400 640,520 740,440 840,540 940,460 1040,540 1100,510 1100,620 0,620"
+        fill="rgba(8,5,22,.85)"/>
+
+      <!-- Windows logo watermark center -->
+      <g transform="translate(490,210)" opacity=".07">
+        <rect x="0"  y="0"  width="55" height="55" rx="5" fill="#3a7bd5"/>
+        <rect x="65" y="0"  width="55" height="55" rx="5" fill="#d83b01"/>
+        <rect x="0"  y="65" width="55" height="55" rx="5" fill="#107c10"/>
+        <rect x="65" y="65" width="55" height="55" rx="5" fill="#ffb900"/>
+      </g>
+
+      <!-- ══ DESKTOP ICONS (left column) ══ -->
+      <!-- Recycle Bin -->
+      <g filter="url(#iconShadow)">
+        <rect x="26" y="35" width="64" height="64" rx="10" fill="rgba(255,255,255,.06)"/>
+        <!-- Trash can body -->
+        <rect x="40" y="52" width="36" height="30" rx="4" fill="rgba(255,255,255,.15)"/>
+        <rect x="44" y="56" width="6"  height="20" rx="2" fill="rgba(255,255,255,.35)"/>
+        <rect x="54" y="56" width="6"  height="20" rx="2" fill="rgba(255,255,255,.35)"/>
+        <rect x="64" y="56" width="6"  height="20" rx="2" fill="rgba(255,255,255,.35)"/>
+        <rect x="38" y="48" width="40" height="6"  rx="3" fill="rgba(255,255,255,.4)"/>
+        <rect x="46" y="44" width="24" height="6"  rx="3" fill="rgba(255,255,255,.3)"/>
+        <text x="58" y="112" text-anchor="middle" fill="rgba(255,255,255,.75)" font-family="'Exo 2',sans-serif" font-size="9">Papelera</text>
+      </g>
+
+      <!-- This PC -->
+      <g filter="url(#iconShadow)">
+        <rect x="26" y="130" width="64" height="64" rx="10" fill="rgba(255,255,255,.06)"/>
+        <rect x="36" y="140" width="44" height="30" rx="4" fill="rgba(59,130,246,.5)"/>
+        <rect x="38" y="142" width="40" height="26" rx="2" fill="rgba(10,30,80,.6)"/>
+        <rect x="47" y="170" width="22" height="6"  rx="2" fill="rgba(59,130,246,.4)"/>
+        <rect x="42" y="176" width="32" height="4"  rx="2" fill="rgba(59,130,246,.3)"/>
+        <text x="58" y="207" text-anchor="middle" fill="rgba(255,255,255,.75)" font-family="'Exo 2',sans-serif" font-size="9">Esta PC</text>
+      </g>
+
+      <!-- Documents folder -->
+      <g filter="url(#iconShadow)">
+        <rect x="26" y="225" width="64" height="64" rx="10" fill="rgba(255,255,255,.06)"/>
+        <path d="M36,248 Q36,238 46,238 L58,238 L64,244 L80,244 Q80,244 80,248 L80,278 Q80,282 76,282 L40,282 Q36,282 36,278Z" fill="#ffd93d" opacity=".85"/>
+        <rect x="40" y="256" width="26" height="3" rx="1" fill="rgba(0,0,0,.25)"/>
+        <rect x="40" y="263" width="20" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="40" y="270" width="23" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <text x="58" y="302" text-anchor="middle" fill="rgba(255,255,255,.75)" font-family="'Exo 2',sans-serif" font-size="9">Documentos</text>
+      </g>
+
+      <!-- Browser icon -->
+      <g filter="url(#iconShadow)">
+        <rect x="26" y="320" width="64" height="64" rx="10" fill="rgba(255,255,255,.06)"/>
+        <circle cx="58" cy="352" r="22" fill="rgba(30,60,200,.7)"/>
+        <circle cx="58" cy="352" r="22" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+        <!-- Globe lines -->
+        <ellipse cx="58" cy="352" rx="10" ry="22" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+        <line x1="36" y1="352" x2="80" y2="352" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+        <line x1="38" y1="340" x2="78" y2="340" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <line x1="38" y1="364" x2="78" y2="364" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <text x="58" y="397" text-anchor="middle" fill="rgba(255,255,255,.75)" font-family="'Exo 2',sans-serif" font-size="9">Navegador</text>
+      </g>
+
+      <!-- ══ DESKTOP OPEN WINDOW (File Explorer) ══ -->
+      <rect x="180" y="60" width="480" height="320" rx="10" fill="rgba(15,20,40,.94)" filter="url(#iconShadow)"/>
+      <rect x="180" y="60" width="480" height="32"  rx="10" fill="rgba(30,20,60,.98)"/>
+      <rect x="180" y="80" width="480" height="12" fill="rgba(30,20,60,.98)"/>
+      <!-- Window title bar -->
+      <circle cx="200" cy="76" r="6" fill="rgba(255,80,80,.7)"/>
+      <circle cx="218" cy="76" r="6" fill="rgba(255,200,0,.7)"/>
+      <circle cx="236" cy="76" r="6" fill="rgba(0,200,100,.7)"/>
+      <text x="420" y="80" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="11">📁 Explorador de Archivos</text>
+      <!-- Window body -->
+      <rect x="180" y="92"  width="120" height="288" fill="rgba(10,15,30,.8)"/><!-- sidebar -->
+      <rect x="300" y="92"  width="360" height="288" fill="rgba(5,10,22,.9)"/><!-- content -->
+      <!-- Sidebar items -->
+      <text x="195" y="115" fill="rgba(255,255,255,.35)" font-family="'Exo 2',sans-serif" font-size="9">📌 Acceso rápido</text>
+      <text x="195" y="135" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="9">🖥️ Esta PC</text>
+      <text x="195" y="155" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="9">📄 Documentos</text>
+      <text x="195" y="175" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="9">🖼️ Imágenes</text>
+      <text x="195" y="195" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="9">🌐 Red</text>
+      <!-- File grid -->
+      <rect x="314" y="104" width="46" height="46" rx="6" fill="rgba(255,217,61,.1)"/>
+      <text x="337" y="134" text-anchor="middle" font-size="22">📁</text>
+      <text x="337" y="158" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="8">Trabajo</text>
+      <rect x="372" y="104" width="46" height="46" rx="6" fill="rgba(59,130,246,.1)"/>
+      <text x="395" y="134" text-anchor="middle" font-size="22">📁</text>
+      <text x="395" y="158" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="8">Fotos</text>
+      <rect x="430" y="104" width="46" height="46" rx="6" fill="rgba(0,230,118,.1)"/>
+      <text x="453" y="134" text-anchor="middle" font-size="22">📄</text>
+      <text x="453" y="158" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="8">Tarea.docx</text>
+      <rect x="488" y="104" width="46" height="46" rx="6" fill="rgba(255,45,155,.1)"/>
+      <text x="511" y="134" text-anchor="middle" font-size="22">🎵</text>
+      <text x="511" y="158" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="8">Música</text>
+      <rect x="546" y="104" width="46" height="46" rx="6" fill="rgba(168,85,247,.1)"/>
+      <text x="569" y="134" text-anchor="middle" font-size="22">🖼️</text>
+      <text x="569" y="158" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="8">Imagen.png</text>
+      <!-- Address bar -->
+      <rect x="300" y="92"  width="360" height="12" fill="rgba(20,10,40,.8)"/>
+      <rect x="305" y="94"  width="200" height="8"  rx="3" fill="rgba(255,255,255,.06)"/>
+      <text x="308" y="100" fill="rgba(255,255,255,.2)" font-family="monospace" font-size="7"> 📁 C: › Usuarios › Explorador</text>
+
+      <!-- ══ SECOND WINDOW (Browser) ══ -->
+      <rect x="700" y="100" width="360" height="240" rx="10" fill="rgba(10,15,35,.95)" filter="url(#iconShadow)"/>
+      <rect x="700" y="100" width="360" height="30"  rx="10" fill="rgba(25,15,55,.98)"/>
+      <rect x="700" y="118" width="360" height="12" fill="rgba(25,15,55,.98)"/>
+      <circle cx="718" cy="115" r="5" fill="rgba(255,80,80,.6)"/>
+      <circle cx="732" cy="115" r="5" fill="rgba(255,200,0,.6)"/>
+      <circle cx="746" cy="115" r="5" fill="rgba(0,200,100,.6)"/>
+      <!-- Tabs -->
+      <rect x="758" y="108" width="90" height="18" rx="5" fill="rgba(168,85,247,.3)"/>
+      <text x="803" y="120" text-anchor="middle" fill="rgba(255,255,255,.6)" font-family="'Exo 2',sans-serif" font-size="8">🌐 Bienvenido</text>
+      <rect x="852" y="108" width="70" height="18" rx="5" fill="rgba(255,255,255,.05)"/>
+      <text x="887" y="120" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">+ Nueva</text>
+      <!-- URL bar -->
+      <rect x="710" y="132" width="340" height="14" rx="5" fill="rgba(255,255,255,.06)"/>
+      <text x="716" y="142" fill="rgba(255,255,255,.25)" font-family="monospace" font-size="7"> 🔒 www.uniacademy.com</text>
+      <!-- Browser content -->
+      <rect x="700" y="148" width="360" height="192" fill="rgba(5,8,20,.9)"/>
+      <rect x="710" y="158" width="340" height="80" rx="6" fill="rgba(168,85,247,.08)" stroke="rgba(168,85,247,.15)" stroke-width="1"/>
+      <text x="880" y="205" text-anchor="middle" fill="rgba(168,85,247,.6)" font-family="'Orbitron',monospace" font-size="14" font-weight="700">UNI ACADEMY</text>
+      <text x="880" y="222" text-anchor="middle" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="9">Tu primer curso de computación</text>
+      <rect x="720" y="248" width="100" height="4" rx="2" fill="rgba(255,255,255,.08)"/>
+      <rect x="720" y="256" width="140" height="4" rx="2" fill="rgba(255,255,255,.06)"/>
+      <rect x="720" y="264" width="120" height="4" rx="2" fill="rgba(255,255,255,.06)"/>
+
+      <!-- ══ TASKBAR ══ -->
+      <rect x="0" y="620" width="1100" height="40" fill="url(#taskbarG)"/>
+      <rect x="0" y="620" width="1100" height="1" fill="rgba(168,85,247,.2)"/>
+
+      <!-- Start Button -->
+      <rect x="6" y="624" width="44" height="32" rx="6" fill="rgba(168,85,247,.18)"/>
+      <rect x="6" y="624" width="44" height="32" rx="6" stroke="rgba(168,85,247,.35)" stroke-width="1" fill="none"/>
+      <!-- Windows 4-square logo -->
+      <g transform="translate(14,632)">
+        <rect x="0"  y="0"  width="10" height="10" rx="1.5" fill="rgba(255,255,255,.7)"/>
+        <rect x="12" y="0"  width="10" height="10" rx="1.5" fill="rgba(255,255,255,.7)"/>
+        <rect x="0"  y="12" width="10" height="10" rx="1.5" fill="rgba(255,255,255,.7)"/>
+        <rect x="12" y="12" width="10" height="10" rx="1.5" fill="rgba(255,255,255,.7)"/>
+      </g>
+
+      <!-- Search bar -->
+      <rect x="58" y="627" width="220" height="26" rx="13" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+      <text x="74" y="644" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="10">🔍 Buscar en Windows</text>
+
+      <!-- Taskbar pinned apps -->
+      <rect x="290" y="626" width="34" height="28" rx="6" fill="rgba(255,255,255,.06)"/>
+      <text x="307" y="645" text-anchor="middle" font-size="16">📁</text>
+      <rect x="330" y="626" width="34" height="28" rx="6" fill="rgba(168,85,247,.18)"/>
+      <text x="347" y="645" text-anchor="middle" font-size="16">🌐</text>
+      <!-- Active underline -->
+      <rect x="330" y="652" width="34" height="3" rx="1" fill="var(--purple)"/>
+      <rect x="370" y="626" width="34" height="28" rx="6" fill="rgba(255,255,255,.06)"/>
+      <text x="387" y="645" text-anchor="middle" font-size="16">📧</text>
+      <rect x="410" y="626" width="34" height="28" rx="6" fill="rgba(255,255,255,.06)"/>
+      <text x="427" y="645" text-anchor="middle" font-size="16">🎵</text>
+      <rect x="450" y="626" width="34" height="28" rx="6" fill="rgba(255,255,255,.06)"/>
+      <text x="467" y="645" text-anchor="middle" font-size="16">⚙️</text>
+
+      <!-- System tray (right) -->
+      <!-- Network -->
+      <text x="920" y="645" text-anchor="middle" font-size="14" fill="rgba(255,255,255,.6)">🌐</text>
+      <!-- Volume -->
+      <text x="948" y="645" text-anchor="middle" font-size="14" fill="rgba(255,255,255,.6)">🔊</text>
+      <!-- Battery -->
+      <text x="976" y="645" text-anchor="middle" font-size="14" fill="rgba(255,255,255,.6)">🔋</text>
+      <!-- Clock -->
+      <text x="1040" y="636" text-anchor="middle" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="11">10:30</text>
+      <text x="1040" y="649" text-anchor="middle" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="9">lun. 23/02</text>
+
+      <!-- Notification area -->
+      <rect x="1082" y="626" width="14" height="28" rx="3" fill="rgba(255,255,255,.04)"/>
+    </svg>
+
+    <!-- ══ HOTSPOTS ══ -->
+    <!-- Fondo de Pantalla (wallpaper - center area) -->
+    <div class="hotspot" id="hs-wallpaper"
+      style="left:62%;top:50%;width:120px;height:60px;border-radius:12px;"
+      onclick="hit('wallpaper')">
+      <span class="hsbadge">FONDO DE PANTALLA</span>
+    </div>
+    <!-- Íconos del escritorio -->
+    <div class="hotspot" id="hs-iconos"
+      style="left:5.4%;top:38%;width:60px;height:60px;border-radius:10px;"
+      onclick="hit('iconos')">
+      <span class="hsbadge">ÍCONOS</span>
+    </div>
+    <!-- Barra de Tareas -->
+    <div class="hotspot" id="hs-barra"
+      style="left:50%;top:96.5%;width:400px;height:30px;border-radius:8px;"
+      onclick="hit('barra')">
+      <span class="hsbadge">BARRA DE TAREAS</span>
+    </div>
+    <!-- Botón de Inicio -->
+    <div class="hotspot" id="hs-inicio"
+      style="left:2.5%;top:96.5%;width:50px;height:32px;border-radius:8px;"
+      onclick="hit('inicio')">
+      <span class="hsbadge">BOTÓN INICIO</span>
+    </div>
+    <!-- Ventana abierta -->
+    <div class="hotspot" id="hs-ventana"
+      style="left:38%;top:43%;width:120px;height:70px;border-radius:10px;"
+      onclick="hit('ventana')">
+      <span class="hsbadge">VENTANA ABIERTA</span>
+    </div>
+    <!-- Reloj del sistema -->
+    <div class="hotspot" id="hs-reloj"
+      style="left:94.5%;top:96.5%;width:80px;height:32px;border-radius:8px;"
+      onclick="hit('reloj')">
+      <span class="hsbadge">RELOJ DEL SISTEMA</span>
+    </div>
+
+  </div><!-- /scene-wrap -->
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay"></div>
+<div class="modal"   id="modal">
+  <div class="modal-icon"  id="mIcon">✅</div>
+  <div class="modal-title" id="mTitle">¡Correcto!</div>
+  <div class="modal-tags"  id="mTags"></div>
+  <div class="modal-msg"   id="mMsg">Mensaje</div>
+  <button class="modal-btn"         id="mBtn"     onclick="closeModal()">¡SIGUIENTE →</button>
+  <button class="modal-btn restart" id="mRestart" onclick="restart()"   style="display:none">🔄 JUGAR DE NUEVO</button>
+</div>
+
+<script>
+const DATA = [
+  { id:'wallpaper', name:'FONDO DE PANTALLA', icon:'🖼️',
+    desc:'El <strong>Fondo de Pantalla</strong> es la imagen decorativa que aparece detrás de todos los íconos. ¡Puedes personalizarlo con tu foto o imagen favorita!',
+    uni:'¡Correcto! 🖼️ El <strong>Fondo de Pantalla</strong> es la imagen que ves detrás de todo. Es como "decorar" tu escritorio digital.',
+    hint:'Pista: Es la <strong>imagen de fondo</strong> que ves detrás de los íconos y ventanas.' },
+  { id:'iconos', name:'ÍCONOS DEL ESCRITORIO', icon:'🗂️',
+    desc:'Los <strong>Íconos</strong> son pequeños dibujos que representan programas, archivos o carpetas. Con doble clic los abres directamente.',
+    uni:'¡Muy bien! 🗂️ Los <strong>Íconos</strong> son atajos visuales. Cada dibujo representa un programa o archivo — ¡doble clic y se abre!',
+    hint:'Pista: Son los <strong>pequeños dibujos</strong> en el lado izquierdo de la pantalla.' },
+  { id:'barra', name:'BARRA DE TAREAS', icon:'📋',
+    desc:'La <strong>Barra de Tareas</strong> está abajo de la pantalla y muestra los programas abiertos y los que usas frecuentemente. ¡Siempre visible!',
+    uni:'¡Excelente! 📋 La <strong>Barra de Tareas</strong> es la tira oscura de abajo. Muestra todo lo que está abierto y los programas favoritos.',
+    hint:'Pista: Es la <strong>barra oscura horizontal</strong> en la parte inferior de la pantalla.' },
+  { id:'inicio', name:'BOTÓN DE INICIO', icon:'🪟',
+    desc:'El <strong>Botón de Inicio</strong> (logo de Windows) abre el menú principal desde donde puedes buscar y abrir cualquier programa o aplicación.',
+    uni:'¡Perfecto! 🪟 El <strong>Botón de Inicio</strong> es la puerta de entrada a todo en Windows. ¡Desde ahí puedes abrir cualquier programa!',
+    hint:'Pista: Es el <strong>logo de Windows</strong> en el extremo izquierdo de la barra de tareas.' },
+  { id:'ventana', name:'VENTANA ABIERTA', icon:'🗔',
+    desc:'Una <strong>Ventana</strong> es el marco rectangular que aparece cuando abres un programa o archivo. Puedes moverla, cambiar su tamaño y cerrarla con la X.',
+    uni:'¡Ojo de águila! 🗔 Las <strong>Ventanas</strong> son los marcos donde se muestran los programas abiertos. ¡Windows se llama así por ellas!',
+    hint:'Pista: Es el <strong>marco rectangular</strong> del programa que está abierto en el escritorio.' },
+  { id:'reloj', name:'RELOJ DEL SISTEMA', icon:'🕐',
+    desc:'El <strong>Reloj del Sistema</strong> muestra la hora y fecha actual. Siempre está visible en la esquina inferior derecha de la barra de tareas.',
+    uni:'¡Muy bien! 🕐 El <strong>Reloj del Sistema</strong> siempre muestra la hora y la fecha. Está en la esquina inferior derecha — ¡siempre a la vista!',
+    hint:'Pista: Está en la <strong>esquina inferior derecha</strong> de la barra de tareas.' },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let queue=[], cur=null, nOk=0, nErr=0, errThis=0, total=DATA.length;
+
+function init(){
+  queue=shuffle([...DATA]);
+  cur=null;nOk=0;nErr=0;errThis=0;
+  DATA.forEach(c=>{
+    const h=document.getElementById('hs-'+c.id);if(!h)return;
+    h.className='hotspot';h.style.pointerEvents='auto';
+    h.querySelector('.hsbadge').textContent=c.name.split(' ')[0];
+  });
+  upScore();nextQ();
+}
+
+function nextQ(){
+  if(!queue.length){showEnd();return;}
+  cur=queue[0];errThis=0;
+  document.getElementById('tIcon').textContent=cur.icon;
+  document.getElementById('tName').textContent=cur.name;
+  document.getElementById('sRem').textContent=queue.length;
+  document.getElementById('uniMsg').innerHTML=
+    '🔍 ¿Dónde está la <strong>'+cur.name+'</strong>? Haz clic sobre ese elemento en el escritorio. ¡Observa bien!';
+}
+
+function hit(id){
+  if(!cur)return;
+  if(id===cur.id){
+    nOk++;
+    const h=document.getElementById('hs-'+id);
+    h.className='hotspot ok';h.style.pointerEvents='none';
+    h.querySelector('.hsbadge').textContent='✓ '+cur.name.split(' ')[0];
+    queue.shift();upScore();upProg();
+    showModal('success',cur);
+  } else {
+    nErr++;errThis++;upScore();
+    const h=document.getElementById('hs-'+id);
+    h.classList.add('err');
+    setTimeout(()=>h.classList.remove('err'),420);
+    const msg=errThis===1
+      ?'Ese no es el <strong>'+cur.name+'</strong>. ¡Observa bien el escritorio!'
+      :'¡Sigue buscando! '+cur.hint;
+    showModal('error',null,msg);
+  }
+}
+
+function showModal(type,comp,errMsg){
+  const m=document.getElementById('modal'),ov=document.getElementById('overlay');
+  if(type==='success'){
+    document.getElementById('mIcon').textContent='✅';
+    document.getElementById('mTitle').textContent='¡CORRECTO! 🎉';
+    document.getElementById('mTags').innerHTML='<span class="mtag">'+comp.icon+' '+comp.name+'</span>';
+    document.getElementById('mMsg').innerHTML=comp.desc;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent=queue.length?'¡SIGUIENTE →':'¡VER RESULTADO!';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal success show';
+    document.getElementById('uniMsg').innerHTML=comp.uni;
+  } else {
+    document.getElementById('mIcon').textContent='❌';
+    document.getElementById('mTitle').textContent='INTÉNTALO DE NUEVO';
+    document.getElementById('mTags').innerHTML='';
+    document.getElementById('mMsg').innerHTML=errMsg;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent='← VOLVER A INTENTAR';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal error show';
+  }
+  ov.className='overlay show';
+}
+
+function showEnd(){
+  const pct=Math.round((nOk/(nOk+nErr))*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto, Explorador! 🚀 Encontraste todos los elementos del escritorio. ¡Ya conoces Windows como un experto!'
+    :pct>=60
+    ?'¡Muy bien! Ya reconoces los elementos principales. Practica un poco más y los sabrás de memoria.'
+    :'¡Buen intento! Observa con cuidado cada parte del escritorio e inténtalo de nuevo.';
+  document.getElementById('mIcon').innerHTML='<div class="stars">'+stars+'</div>';
+  document.getElementById('mTitle').innerHTML='<span style="color:var(--purple)">¡MÓDULO COMPLETADO!</span>';
+  document.getElementById('mTags').innerHTML='';
+  document.getElementById('mMsg').innerHTML='<div class="final-score">'+nOk+'/'+total+'</div>'+msg
+    +'<br><br><span style="font-size:11px;color:var(--muted)">Precisión: '+pct+'% · Errores: '+nErr+'</span>';
+  document.getElementById('mBtn').style.display='none';
+  document.getElementById('mRestart').style.display='block';
+  document.getElementById('modal').className='modal complete show';
+  document.getElementById('overlay').className='overlay show';
+  document.getElementById('tName').textContent='¡COMPLETADO!';
+  document.getElementById('tIcon').textContent='🏆';
+  document.getElementById('pBar').style.width='100%';
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya conoces todos los elementos del escritorio de Windows. ¡Eres un Explorador Digital! 🚀';
+  if(pct>=60)setTimeout(bigConf,200);
+}
+
+function closeModal(){
+  const m=document.getElementById('modal');m.classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  if(!m.classList.contains('error'))nextQ();
+}
+function restart(){document.getElementById('modal').classList.remove('show');document.getElementById('overlay').classList.remove('show');init();}
+function upScore(){document.getElementById('sOk').textContent=nOk;document.getElementById('sErr').textContent=nErr;document.getElementById('sRem').textContent=queue.length;}
+function upProg(){document.getElementById('pBar').style.width=((total-queue.length)/total*100)+'%';}
+
+document.getElementById('overlay').addEventListener('click',()=>{
+  if(!document.getElementById('modal').classList.contains('error'))closeModal();
+});
+
+function bigConf(){
+  const colors=['#a855f7','#c4b5fd','#ffd93d','#00f5e4','#ff2d9b'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*30}vh;
+        --tx:${(Math.random()-.5)*300}px;--ty:${100+Math.random()*300}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+init();
+</script>
+</body>
+</html>
