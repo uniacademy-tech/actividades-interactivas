@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usando el Ratón · T2 · Módulo 2 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --orange:#ff8c00;--purple:#a855f7;--violet:#7c3aed;--lavender:#c4b5fd;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;user-select:none;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(168,85,247,.06) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(168,85,247,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(168,85,247,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(168,85,247,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--purple),var(--violet));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--purple);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--purple);
+    letter-spacing:2px;border:1px solid var(--purple);padding:4px 14px;border-radius:2px;background:rgba(168,85,247,.06);}
+
+  .container{position:relative;z-index:5;max-width:920px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(168,85,247,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan),var(--purple));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(168,85,247,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--lavender);}
+
+  /* TASK CARD */
+  .task-card{background:var(--card);border:2px solid var(--purple);border-radius:18px;
+    padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:18px;
+    box-shadow:0 0 30px rgba(168,85,247,.18);position:relative;overflow:hidden;}
+  .task-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan));}
+  .task-type-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+    padding:5px 14px;border-radius:20px;border:1.5px solid var(--purple);
+    color:var(--lavender);background:rgba(168,85,247,.12);white-space:nowrap;flex-shrink:0;}
+  .task-icon{font-size:36px;flex-shrink:0;}
+  .task-text-wrap{flex:1;}
+  .task-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:3px;}
+  .task-instruction{font-size:16px;font-weight:600;line-height:1.4;}
+  .task-instruction strong{color:var(--lavender);}
+  .task-num{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);flex-shrink:0;}
+
+  /* SCORE */
+  .score-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;
+    background:linear-gradient(90deg,var(--purple),var(--lavender));
+    transition:width .5s ease;width:0%;}
+  .sc-pill{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    padding:5px 14px;border-radius:20px;border:1px solid;}
+  .sc-pill.ok {color:var(--green); border-color:var(--green); background:rgba(0,230,118,.08);}
+  .sc-pill.err{color:var(--red);   border-color:var(--red);   background:rgba(255,61,61,.08);}
+
+  /* GAME ARENA */
+  .arena{position:relative;background:var(--card);border:1.5px solid rgba(168,85,247,.2);
+    border-radius:20px;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .arena-top{height:4px;background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan));}
+
+  /* MINI DESKTOP inside arena */
+  .mini-desktop{position:relative;background:linear-gradient(135deg,#0a1628 0%,#160a3a 50%,#0d1f4a 100%);
+    height:440px;overflow:hidden;}
+  /* Stars bg */
+  .mini-desktop::before{content:'';position:absolute;inset:0;
+    background-image:radial-gradient(1.5px 1.5px at 10% 15%,rgba(255,255,255,.4) 0%,transparent 100%),
+      radial-gradient(1px 1px at 35% 25%,rgba(255,255,255,.3) 0%,transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 8%,rgba(255,255,255,.5) 0%,transparent 100%),
+      radial-gradient(1px 1px at 80% 18%,rgba(255,255,255,.3) 0%,transparent 100%),
+      radial-gradient(1px 1px at 92% 5%,rgba(255,255,255,.4) 0%,transparent 100%);
+    pointer-events:none;}
+
+  /* Taskbar */
+  .mini-taskbar{position:absolute;bottom:0;left:0;right:0;height:40px;
+    background:rgba(8,5,20,.97);border-top:1px solid rgba(168,85,247,.2);
+    display:flex;align-items:center;padding:0 10px;gap:6px;z-index:5;}
+  .tb-start{width:38px;height:28px;background:rgba(168,85,247,.2);border-radius:6px;
+    border:1px solid rgba(168,85,247,.35);display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .tb-app{width:34px;height:28px;background:rgba(255,255,255,.06);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .tb-clock{margin-left:auto;font-family:'Orbitron',monospace;font-size:10px;
+    color:rgba(255,255,255,.5);padding:0 8px;}
+
+  /* DRAG TARGET ZONE */
+  .drop-zone{position:absolute;border:3px dashed rgba(168,85,247,.35);border-radius:14px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    transition:all .2s ease;background:rgba(168,85,247,.04);}
+  .drop-zone.ready{border-color:var(--green);background:rgba(0,230,118,.08);
+    box-shadow:0 0 20px rgba(0,230,118,.25);}
+  .drop-zone.drop-here{animation:dropPulse 1s ease-in-out infinite;}
+  @keyframes dropPulse{0%,100%{border-color:rgba(168,85,247,.35)}50%{border-color:var(--purple);box-shadow:0 0 20px rgba(168,85,247,.3);}}
+  .drop-zone-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--muted);}
+
+  /* CLICK TARGET */
+  .click-target{position:absolute;border-radius:12px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    transition:all .18s ease;user-select:none;}
+  .click-target .ct-icon{font-size:36px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));}
+  .click-target .ct-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+    color:rgba(255,255,255,.5);text-align:center;}
+  .click-target:hover{transform:scale(1.08);}
+  .click-target.pulse{animation:ctPulse 1s ease-in-out infinite;}
+  @keyframes ctPulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0)}50%{box-shadow:0 0 0 16px rgba(168,85,247,.15)}}
+  .click-target.success{animation:ctSuccess .5s ease forwards;}
+  @keyframes ctSuccess{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(.9);opacity:.5}}
+
+  /* Right-click menu */
+  .ctx-menu{position:absolute;background:rgba(15,12,32,.97);border:1px solid rgba(168,85,247,.3);
+    border-radius:10px;padding:6px 0;min-width:140px;z-index:20;
+    box-shadow:0 12px 40px rgba(0,0,0,.7);display:none;}
+  .ctx-menu.show{display:block;animation:menuPop .18s ease;}
+  @keyframes menuPop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .ctx-item{padding:7px 16px;font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;
+    display:flex;align-items:center;gap:8px;}
+  .ctx-item:hover{background:rgba(168,85,247,.15);color:var(--lavender);}
+  .ctx-divider{height:1px;background:rgba(255,255,255,.07);margin:3px 0;}
+
+  /* DRAGGABLE */
+  .draggable{position:absolute;cursor:grab;z-index:10;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    transition:box-shadow .18s;}
+  .draggable:hover{filter:brightness(1.2);}
+  .draggable.dragging{opacity:.7;cursor:grabbing;z-index:50;}
+  .draggable .d-icon{font-size:40px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.6));}
+  .draggable .d-label{font-family:'Orbitron',monospace;font-size:7px;
+    color:rgba(255,255,255,.6);letter-spacing:1px;text-align:center;}
+
+  /* FEEDBACK FLASH */
+  .feedback-flash{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Orbitron',monospace;font-size:28px;font-weight:900;
+    pointer-events:none;opacity:0;z-index:99;}
+  .feedback-flash.ok {color:var(--green);animation:flashOk .7s ease forwards;}
+  .feedback-flash.err{color:var(--red);  animation:flashOk .7s ease forwards;}
+  @keyframes flashOk{0%{opacity:1;transform:translate(-50%,-60%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-90%) scale(.8)}}
+
+  /* STEP DOTS */
+  .dot-row{display:flex;gap:7px;justify-content:center;margin-bottom:16px;}
+  .dot{width:12px;height:12px;border-radius:50%;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);transition:all .3s;}
+  .dot.ok {background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,230,118,.5);}
+  .dot.err{background:var(--red);  border-color:var(--red);  box-shadow:0 0 8px rgba(255,61,61,.5);}
+  .dot.cur{background:var(--purple);border-color:var(--purple);box-shadow:0 0 10px rgba(168,85,247,.6);transform:scale(1.4);}
+
+  /* RESULTS */
+  .results{display:none;padding:36px 24px;text-align:center;}
+  .results.visible{display:block;}
+  .res-stars{font-size:44px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .res-score{font-family:'Orbitron',monospace;font-size:60px;font-weight:900;
+    background:linear-gradient(135deg,var(--purple),var(--lavender));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+  .res-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:3px;margin-bottom:10px;}
+  .res-msg{font-size:15px;line-height:1.7;max-width:520px;margin:0 auto 20px;}
+  .res-msg strong{color:var(--lavender);}
+
+  .actions-recap{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:10px;margin-bottom:24px;}
+  .rec-card{background:var(--card);border-radius:14px;padding:14px;text-align:center;
+    border:1px solid rgba(168,85,247,.2);}
+  .rec-icon{font-size:28px;margin-bottom:4px;}
+  .rec-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--purple);}
+  .rec-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+  .btn-restart{padding:13px 36px;background:linear-gradient(135deg,var(--purple),var(--violet));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(168,85,247,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  /* Cursor indicator */
+  .cursor-demo{position:absolute;pointer-events:none;z-index:30;transition:none;font-size:22px;
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .mini-desktop{height:320px;}
+    .task-card{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 2 · TEMA 2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(168,85,247,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#a855f7"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(168,85,247,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#a855f7"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#c4b5fd"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#a855f7"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🖱️ Vamos a practicar cómo usar el <strong>ratón</strong>. Sigue mis instrucciones y haz exactamente lo que te digo en cada pantalla. ¡Comencemos!</p>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-row">
+    <div class="prog-track"><div class="prog-fill" id="pFill"></div></div>
+    <div class="sc-pill ok">✓ <span id="sOk">0</span></div>
+    <div class="sc-pill err">✗ <span id="sErr">0</span></div>
+  </div>
+  <div class="dot-row" id="dotRow"></div>
+
+  <!-- TASK CARD -->
+  <div class="task-card" id="taskCard">
+    <div class="task-icon" id="tIcon">🖱️</div>
+    <div class="task-text-wrap">
+      <div class="task-label">// INSTRUCCIÓN DE UNI:</div>
+      <div class="task-instruction" id="tInstr">Preparando…</div>
+    </div>
+    <div>
+      <div class="task-type-badge" id="tBadge">CLIC</div>
+      <div class="task-num" id="tNum">1/6</div>
+    </div>
+  </div>
+
+  <!-- GAME ARENA -->
+  <div class="arena" id="arena">
+    <div class="arena-top"></div>
+    <div class="mini-desktop" id="miniDesktop">
+
+      <!-- Dynamic content injected by JS -->
+
+      <!-- Taskbar -->
+      <div class="mini-taskbar">
+        <div class="tb-start">🪟</div>
+        <div class="tb-app">📁</div>
+        <div class="tb-app">🌐</div>
+        <div class="tb-clock">10:30</div>
+      </div>
+
+      <!-- Feedback flash -->
+      <div class="feedback-flash" id="fFlash">✓</div>
+
+      <!-- Context menu -->
+      <div class="ctx-menu" id="ctxMenu">
+        <div class="ctx-item" onclick="ctxCorrect()">📋 Copiar</div>
+        <div class="ctx-item" onclick="ctxCorrect()">✂️ Cortar</div>
+        <div class="ctx-item" onclick="ctxCorrect()">📌 Pegar</div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" onclick="ctxCorrect()">⚙️ Propiedades</div>
+        <div class="ctx-item" onclick="ctxCorrect()">🔄 Actualizar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="res-stars"  id="resStars">⭐⭐⭐</div>
+    <div class="res-score"  id="resScore">6/6</div>
+    <div class="res-label">ACCIONES COMPLETADAS</div>
+    <div class="res-msg"    id="resMsg">¡Perfecto!</div>
+    <div class="actions-recap" id="recapGrid"></div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;JUGAR DE NUEVO</button>
+  </div>
+
+</div>
+
+<script>
+const TASKS = [
+  { id:'move',   type:'MOVER',        icon:'↕️',
+    badge:'MOVER CURSOR',
+    instr:'¡Mueve el ratón hacia el ícono que brilla! <strong>Pasa el cursor por encima</strong> del folder amarillo.',
+    action:'hover',
+    uni:'¡Bien hecho! ↕️ <strong>Mover el ratón</strong> mueve el cursor en la pantalla. El cursor sigue exactamente a donde muevas tu mano.',
+    desc:'Mover el ratón mueve el cursor en pantalla. ¡Sin levantar el ratón de la mesa!'},
+  { id:'click',  type:'CLIC IZQUIERDO', icon:'👆',
+    badge:'CLIC IZQUIERDO',
+    instr:'¡Haz <strong>clic izquierdo</strong> sobre el ícono de "Esta PC" para seleccionarlo!',
+    action:'click',
+    uni:'¡Perfecto! 👆 El <strong>clic izquierdo</strong> selecciona o elige cosas. ¡Es el clic más usado!',
+    desc:'Un clic izquierdo selecciona íconos, botones y opciones.'},
+  { id:'dblclick',type:'DOBLE CLIC',   icon:'👆👆',
+    badge:'DOBLE CLIC',
+    instr:'¡Haz <strong>doble clic</strong> (dos clics rápidos) sobre la carpeta para abrirla!',
+    action:'dblclick',
+    uni:'¡Excelente! 👆👆 El <strong>doble clic</strong> abre archivos, carpetas y programas. ¡Dos clics rápidos!',
+    desc:'El doble clic abre programas, carpetas y archivos.'},
+  { id:'rclick', type:'CLIC DERECHO',  icon:'🖱️',
+    badge:'CLIC DERECHO',
+    instr:'¡Haz <strong>clic derecho</strong> en el escritorio para ver el menú de opciones!',
+    action:'rclick',
+    uni:'¡Bien! 🖱️ El <strong>clic derecho</strong> abre un menú con opciones extra. ¡Úsalo para ver más posibilidades!',
+    desc:'El clic derecho abre un menú especial con más opciones.'},
+  { id:'drag',   type:'ARRASTRAR',     icon:'✋',
+    badge:'ARRASTRAR',
+    instr:'¡<strong>Arrastra</strong> el ícono desde donde está hasta la zona marcada! Mantén presionado y mueve.',
+    action:'drag',
+    uni:'¡Lo lograste! ✋ <strong>Arrastrar</strong> = mantener clic + mover. Se usa para mover cosas de lugar.',
+    desc:'Arrastra = mantener clic izquierdo y mover el ratón.'},
+  { id:'scroll', type:'SCROLL',        icon:'🔄',
+    badge:'RUEDA / SCROLL',
+    instr:'¡Haz <strong>clic en las flechas</strong> ▲ ▼ de la barra lateral para desplazarte por la página!',
+    action:'scroll',
+    uni:'¡Genial! 🔄 La <strong>rueda del ratón</strong> (o scroll) desplaza la página hacia arriba y abajo sin mover la barra.',
+    desc:'La rueda del ratón desplaza el contenido hacia arriba o abajo.'},
+];
+
+let idx=0, nOk=0, nErr=0, results=[], ctxNeeded=false, dragState={active:false};
+
+function init(){
+  idx=0;nOk=0;nErr=0;results=[];ctxNeeded=false;dragState={active:false};
+  document.getElementById('arena').style.display='block';
+  document.getElementById('taskCard').style.display='flex';
+  document.getElementById('results').classList.remove('visible');
+  buildDots();
+  buildTask(0);
+}
+
+function buildDots(){
+  const r=document.getElementById('dotRow');r.innerHTML='';
+  TASKS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' cur':'');d.id='dot-'+i;r.appendChild(d);
+  });
+}
+
+function upDots(){
+  TASKS.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);if(!d)return;
+    if(i<idx)d.className='dot '+(results[i]?'ok':'err');
+    else if(i===idx)d.className='dot cur';
+    else d.className='dot';
+  });
+}
+
+function upScore(){
+  document.getElementById('sOk').textContent=nOk;
+  document.getElementById('sErr').textContent=nErr;
+  document.getElementById('pFill').style.width=(idx/TASKS.length*100)+'%';
+}
+
+function buildTask(i){
+  if(i>=TASKS.length){showResults();return;}
+  const t=TASKS[i];
+  document.getElementById('tIcon').textContent=t.icon;
+  document.getElementById('tInstr').innerHTML=t.instr;
+  document.getElementById('tBadge').textContent=t.badge;
+  document.getElementById('tNum').textContent=(i+1)+'/'+TASKS.length;
+  document.getElementById('uniMsg').innerHTML='🎯 Tarea '+(i+1)+': '+t.instr;
+  upDots();upScore();
+
+  const d=document.getElementById('miniDesktop');
+  // clear dynamic content (keep taskbar, ctxMenu, fFlash)
+  Array.from(d.querySelectorAll('.click-target,.drop-zone,.draggable,.scroll-demo,#rclickZone'))
+    .forEach(el=>el.remove());
+  // remove any lingering desktop-level rclick listeners
+  if(d._rclickHandler){d.removeEventListener('mousedown',d._rclickHandler);d._rclickHandler=null;}
+  if(d._rclickCtx){d.removeEventListener('contextmenu',d._rclickCtx);d._rclickCtx=null;}
+  document.getElementById('ctxMenu').classList.remove('show');
+  ctxNeeded=false;dragState={active:false};
+
+  if(t.action==='hover')   buildHover(d);
+  if(t.action==='click')   buildClick(d);
+  if(t.action==='dblclick')buildDblClick(d);
+  if(t.action==='rclick')  buildRClick(d);
+  if(t.action==='drag')    buildDrag(d);
+  if(t.action==='scroll')  buildScroll(d);
+}
+
+/* ── HOVER ── */
+function buildHover(d){
+  const el=document.createElement('div');
+  el.className='click-target pulse';
+  el.style.cssText='left:38%;top:32%;width:90px;height:90px;';
+  el.innerHTML='<div class="ct-icon">📁</div><div class="ct-label">DOCUMENTOS</div>';
+  el.addEventListener('mouseenter',()=>succeed());
+  el.addEventListener('touchstart',()=>succeed(),{passive:true});
+  d.appendChild(el);
+}
+/* ── SINGLE CLICK ── */
+function buildClick(d){
+  // decoy
+  const decoy=document.createElement('div');
+  decoy.className='click-target';
+  decoy.style.cssText='left:22%;top:38%;width:80px;height:80px;';
+  decoy.innerHTML='<div class="ct-icon">🗑️</div><div class="ct-label">PAPELERA</div>';
+  decoy.addEventListener('click',()=>fail());
+  decoy.addEventListener('contextmenu',e=>{e.preventDefault();fail();});
+  d.appendChild(decoy);
+  // target
+  const el=document.createElement('div');
+  el.className='click-target pulse';
+  el.style.cssText='left:55%;top:28%;width:85px;height:85px;';
+  el.innerHTML='<div class="ct-icon">🖥️</div><div class="ct-label">ESTA PC</div>';
+  el.addEventListener('click',()=>succeed());
+  el.addEventListener('contextmenu',e=>{e.preventDefault();fail();});
+  d.appendChild(el);
+}
+/* ── DOUBLE CLICK ── */
+function buildDblClick(d){
+  const el=document.createElement('div');
+  el.className='click-target pulse';
+  el.style.cssText='left:42%;top:30%;width:90px;height:90px;';
+  el.innerHTML='<div class="ct-icon">📁</div><div class="ct-label">CARPETA</div>';
+  let clicks=0,timer=null;
+  el.addEventListener('click',()=>{
+    clicks++;
+    if(clicks===1){timer=setTimeout(()=>{clicks=0;fail();},600);}
+    else if(clicks>=2){clearTimeout(timer);clicks=0;succeed();}
+  });
+  d.appendChild(el);
+}
+/* ── RIGHT CLICK ── */
+function buildRClick(d){
+  ctxNeeded=true;
+
+  const zone=document.createElement('div');
+  zone.id='rclickZone';
+  zone.style.cssText=`position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);
+    width:220px;height:140px;border:2.5px dashed rgba(168,85,247,.7);border-radius:18px;
+    background:rgba(168,85,247,.1);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:8px;cursor:context-menu;z-index:15;
+    animation:dropPulse 1.2s ease-in-out infinite;`;
+  zone.innerHTML=`
+    <div style="font-size:36px">🖱️</div>
+    <div style="font-family:'Orbitron',monospace;font-size:10px;color:rgba(196,181,253,.9);
+      letter-spacing:1px;text-align:center;line-height:1.6;">
+      HAZ CLIC DERECHO<br>SOBRE ESTE CUADRO</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);">Botón derecho del ratón</div>`;
+  d.appendChild(zone);
+
+  // Single contextmenu listener on the zone — clean, instant, no duplicates
+  function onCtx(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if(!ctxNeeded) return;
+    const menu=document.getElementById('ctxMenu');
+    const dRect=d.getBoundingClientRect();
+    menu.style.left=Math.max(4,Math.min(e.clientX-dRect.left,dRect.width-160))+'px';
+    menu.style.top=Math.max(4,Math.min(e.clientY-dRect.top,dRect.height-170))+'px';
+    menu.classList.add('show');
+    document.getElementById('uniMsg').innerHTML=
+      '✅ ¡Menú abierto! Ahora haz clic en <strong>⚙️ Propiedades</strong>.';
+  }
+  zone.addEventListener('contextmenu', onCtx);
+  // Store ref for cleanup
+  d._rclickCtx=onCtx;
+  d.addEventListener('contextmenu', onCtx);
+}
+
+function ctxCorrect(){
+  if(!ctxNeeded)return;
+  ctxNeeded=false;
+  document.getElementById('ctxMenu').classList.remove('show');
+  succeed();
+}
+
+/* ── DRAG ── */
+function buildDrag(d){
+  // drop zone
+  const dz=document.createElement('div');
+  dz.className='drop-zone drop-here';
+  dz.style.cssText='right:12%;top:28%;width:130px;height:110px;';
+  dz.innerHTML='<div style="font-size:28px">📥</div><div class="drop-zone-label">SUELTA AQUÍ</div>';
+  dz.id='dropZone';
+  d.appendChild(dz);
+  // draggable
+  const drag=document.createElement('div');
+  drag.className='draggable';
+  drag.style.cssText='left:12%;top:32%;touch-action:none;';
+  drag.innerHTML='<div class="d-icon">📄</div><div class="d-label">TAREA.DOCX</div>';
+  drag.id='draggable';
+  d.appendChild(drag);
+
+  let ox,oy,startX,startY;
+  drag.addEventListener('mousedown',e=>{
+    ox=drag.offsetLeft;oy=drag.offsetTop;
+    startX=e.clientX;startY=e.clientY;
+    drag.classList.add('dragging');
+    drag.style.transition='none';
+    document.addEventListener('mousemove',onDragMove);
+    document.addEventListener('mouseup',onDragUp);
+    e.preventDefault();
+  });
+  drag.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    ox=drag.offsetLeft;oy=drag.offsetTop;
+    startX=t.clientX;startY=t.clientY;
+    drag.classList.add('dragging');
+    drag.style.transition='none';
+    document.addEventListener('touchmove',onDragTMove,{passive:false});
+    document.addEventListener('touchend',onDragTUp);
+    e.preventDefault();
+  },{passive:false});
+
+  function onDragMove(e){moveDrag(e.clientX,e.clientY);}
+  function onDragTMove(e){moveDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();}
+  function moveDrag(cx,cy){
+    drag.style.left=(ox+cx-startX)+'px';
+    drag.style.top=(oy+cy-startY)+'px';
+    const dr=drag.getBoundingClientRect(),dz=document.getElementById('dropZone');
+    if(!dz)return;
+    const zr=dz.getBoundingClientRect();
+    const overlap=!(dr.right<zr.left||dr.left>zr.right||dr.bottom<zr.top||dr.top>zr.bottom);
+    dz.className='drop-zone'+(overlap?' ready':' drop-here');
+  }
+  function onDragUp(e){drop(e.clientX,e.clientY);}
+  function onDragTUp(e){drop(e.changedTouches[0].clientX,e.changedTouches[0].clientY);}
+  function drop(cx,cy){
+    document.removeEventListener('mousemove',onDragMove);
+    document.removeEventListener('mouseup',onDragUp);
+    document.removeEventListener('touchmove',onDragTMove);
+    document.removeEventListener('touchend',onDragTUp);
+    drag.classList.remove('dragging');
+    const dr=drag.getBoundingClientRect();
+    const dz=document.getElementById('dropZone');
+    if(!dz)return;
+    const zr=dz.getBoundingClientRect();
+    const overlap=!(dr.right<zr.left||dr.left>zr.right||dr.bottom<zr.top||dr.top>zr.bottom);
+    if(overlap)succeed();
+    else{fail();drag.style.left=ox+'px';drag.style.top=oy+'px';}
+  }
+}
+
+/* ── SCROLL ── */
+function buildScroll(d){
+  const wrap=document.createElement('div');
+  wrap.className='scroll-demo';
+  wrap.style.cssText='position:absolute;left:25%;top:12%;width:50%;height:68%;background:rgba(10,15,35,.9);border-radius:12px;border:1px solid rgba(168,85,247,.25);overflow:hidden;';
+  // Content
+  const content=document.createElement('div');
+  content.style.cssText='padding:12px 14px;';
+  content.innerHTML='<div style="font-family:\'Orbitron\',monospace;font-size:9px;color:rgba(168,85,247,.7);letter-spacing:2px;margin-bottom:8px;">DOCUMENTO DE TEXTO</div>'
+    +Array.from({length:12},(_,i)=>`<div style="height:6px;background:rgba(255,255,255,${.06+Math.random()*.08});border-radius:3px;margin-bottom:7px;width:${60+Math.random()*38}%"></div>`).join('');
+  wrap.appendChild(content);
+  // Scrollbar
+  const sb=document.createElement('div');
+  sb.style.cssText='position:absolute;right:3px;top:0;bottom:0;width:10px;display:flex;flex-direction:column;align-items:center;padding:2px 0;gap:4px;';
+  const arrowUp=document.createElement('div');
+  arrowUp.innerHTML='▲';
+  arrowUp.style.cssText='font-size:11px;color:rgba(168,85,247,.6);cursor:pointer;padding:3px 4px;border-radius:3px;background:rgba(168,85,247,.12);line-height:1;';
+  const thumb=document.createElement('div');
+  thumb.style.cssText='flex:1;width:6px;background:rgba(168,85,247,.3);border-radius:3px;margin:2px 0;';
+  const arrowDn=document.createElement('div');
+  arrowDn.innerHTML='▼';
+  arrowDn.style.cssText='font-size:11px;color:rgba(168,85,247,.6);cursor:pointer;padding:3px 4px;border-radius:3px;background:rgba(168,85,247,.12);line-height:1;';
+  let scrolled=false;
+  [arrowUp,arrowDn].forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(scrolled)return;scrolled=true;
+      btn.style.background='rgba(0,230,118,.3)';
+      succeed();
+    });
+  });
+  sb.appendChild(arrowUp);sb.appendChild(thumb);sb.appendChild(arrowDn);
+  wrap.appendChild(sb);
+  d.appendChild(wrap);
+}
+
+/* ── SUCCEED / FAIL ── */
+function flash(txt,type){
+  const f=document.getElementById('fFlash');
+  f.textContent=txt;f.className='feedback-flash '+type;
+  void f.offsetWidth;f.className='feedback-flash '+type;
+}
+function succeed(){
+  nOk++;results.push(true);
+  flash('¡CORRECTO! ✓','ok');
+  document.getElementById('uniMsg').innerHTML='🎉 '+TASKS[idx].uni;
+  spawnConf();
+  upScore();
+  setTimeout(()=>{idx++;buildTask(idx);},1100);
+}
+function fail(){
+  nErr++;
+  flash('INTÉNTALO DE NUEVO ✗','err');
+  document.getElementById('uniMsg').innerHTML='💡 No es ahí. Lee bien la instrucción: '+TASKS[idx].instr;
+  upScore();
+}
+
+function showResults(){
+  document.getElementById('arena').style.display='none';
+  document.getElementById('taskCard').style.display='none';
+  const res=document.getElementById('results');res.classList.add('visible');
+  const pct=Math.round((nOk/TASKS.length)*100);
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto, Explorador! 🚀 Dominas todas las acciones del ratón. ¡Ya puedes usar tu computadora como un experto!'
+    :pct>=60
+    ?'¡Muy bien! Ya conoces las principales acciones del ratón. ¡Practica en casa y lo dominarás!'
+    :'¡Sigue practicando! El ratón tiene varios trucos. Repasa cada acción y vuelve a intentarlo.';
+  document.getElementById('resStars').textContent=stars;
+  document.getElementById('resScore').textContent=nOk+'/'+TASKS.length;
+  document.getElementById('resMsg').innerHTML=msg;
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya sabes usar el ratón como todo un Explorador Digital. ¡Genial! 🖱️';
+  document.getElementById('recapGrid').innerHTML=TASKS.map(t=>`
+    <div class="rec-card">
+      <div class="rec-icon">${t.icon}</div>
+      <div class="rec-name">${t.type}</div>
+      <div class="rec-desc">${t.desc}</div>
+    </div>`).join('');
+  if(pct>=60)setTimeout(bigConf,300);
+  document.getElementById('dotRow').querySelectorAll('.dot').forEach((d,i)=>{
+    d.className='dot '+(results[i]?'ok':'err');
+  });
+  document.getElementById('pFill').style.width='100%';
+}
+
+function spawnConf(){
+  const colors=['#a855f7','#c4b5fd','#00e676','#ffd93d','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};
+      left:${30+Math.random()*40}vw;top:${20+Math.random()*20}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.6)*130}px;
+      --r:${Math.random()*360}deg;animation-delay:${Math.random()*.1}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#a855f7','#c4b5fd','#00e676','#ffd93d','#ff2d9b','#00f5e4'];
+  for(let i=0;i<45;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*260}px;--ty:${80+Math.random()*260}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>
