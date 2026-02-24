@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apagando la Computadora · T4 · Módulo 1 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--magenta:#ff2d9b;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--orange:#ff8c00;--blue:#3b82f6;--purple:#a855f7;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 15% 40%,rgba(255,140,0,.055) 0%,transparent 55%),
+               radial-gradient(ellipse at 85% 25%,rgba(255,45,155,.03) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(255,140,0,.015) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,140,0,.015) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(255,140,0,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--orange),var(--gold));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--orange);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--orange);
+    letter-spacing:2px;border:1px solid var(--orange);padding:4px 14px;border-radius:2px;background:rgba(255,140,0,.05);}
+
+  .container{position:relative;z-index:5;max-width:960px;margin:0 auto;padding:24px 20px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(255,140,0,.2);border-radius:16px;padding:15px 20px;
+    margin-bottom:24px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--magenta),var(--orange),var(--gold),var(--magenta));}
+  .uni-svg{width:64px;height:64px;flex-shrink:0;}
+  .speech{background:rgba(255,140,0,.05);border:1px solid rgba(255,140,0,.2);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(255,140,0,.2);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--orange);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* STEP TRACKER */
+  .step-tracker{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px;flex-wrap:wrap;row-gap:8px;}
+  .step-node{display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .step-dot{width:38px;height:38px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;transition:all .4s cubic-bezier(.34,1.4,.64,1);}
+  .step-dot.active{border-color:var(--magenta);background:rgba(255,45,155,.15);
+    box-shadow:0 0 18px rgba(255,45,155,.45);transform:scale(1.2);}
+  .step-dot.done{border-color:var(--green);background:rgba(0,230,118,.15);box-shadow:0 0 12px rgba(0,230,118,.3);}
+  .step-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+    color:var(--muted);text-align:center;max-width:64px;transition:color .3s;}
+  .step-node.active .step-label{color:var(--magenta);}
+  .step-node.done  .step-label{color:var(--green);}
+  .step-line{flex:1;height:2px;min-width:18px;max-width:56px;
+    background:rgba(255,255,255,.08);position:relative;top:-14px;transition:background .5s;}
+  .step-line.done{background:linear-gradient(90deg,var(--green),var(--magenta));}
+
+  /* SCENE CARD */
+  .scene-card{background:var(--card);border:1.5px solid rgba(255,45,155,.18);
+    border-radius:22px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);margin-bottom:24px;position:relative;}
+  .scene-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--magenta),var(--orange),var(--gold));z-index:2;}
+  .scene-num{position:absolute;top:18px;right:20px;
+    font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;z-index:2;}
+
+  .anim-stage{min-height:300px;display:flex;align-items:center;justify-content:center;
+    padding:36px 24px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,transparent 100%);}
+  .anim-stage::before{content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.01) 3px,rgba(255,255,255,.01) 4px);
+    pointer-events:none;}
+
+  .scene{display:none;flex-direction:column;align-items:center;gap:18px;
+    animation:sceneIn .5s cubic-bezier(.34,1.2,.64,1) both;}
+  .scene.active{display:flex;}
+  @keyframes sceneIn{from{transform:translateY(22px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+
+  .scene-illus{width:220px;height:200px;animation:floatScene 3.5s ease-in-out infinite;}
+  @keyframes floatScene{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  .scene-title{font-family:'Orbitron',monospace;font-size:21px;font-weight:900;text-align:center;letter-spacing:1px;}
+  .scene-body{font-size:15px;line-height:1.7;text-align:center;max-width:600px;color:rgba(255,255,255,.82);}
+  .scene-body strong{color:var(--gold);}
+  .scene-body em{color:var(--magenta);font-style:normal;}
+
+  .info-box{background:rgba(255,140,0,.06);border:1px solid rgba(255,140,0,.2);
+    border-radius:12px;padding:12px 20px;max-width:540px;
+    font-size:13px;color:rgba(255,255,255,.72);line-height:1.65;text-align:center;}
+  .info-box strong{color:var(--orange);}
+
+  .warn-box{background:rgba(255,61,61,.06);border:1px solid rgba(255,61,61,.22);
+    border-radius:12px;padding:11px 18px;max-width:520px;
+    font-size:13px;color:rgba(255,200,200,.85);line-height:1.6;text-align:center;}
+  .warn-box strong{color:var(--red);}
+
+  .tip-box{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);
+    border-radius:12px;padding:11px 18px;max-width:520px;
+    font-size:13px;color:rgba(180,255,210,.85);line-height:1.6;text-align:center;}
+  .tip-box strong{color:var(--green);}
+
+  /* Diagram */
+  .diagram{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .diag-node{display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:10px 14px;min-width:78px;transition:all .3s;}
+  .diag-node.active{border-color:var(--magenta);background:rgba(255,45,155,.12);
+    box-shadow:0 0 20px rgba(255,45,155,.25);animation:diagPulse 1.2s ease-in-out infinite;}
+  @keyframes diagPulse{0%,100%{box-shadow:0 0 8px rgba(255,45,155,.2)}50%{box-shadow:0 0 28px rgba(255,45,155,.5)}}
+  .diag-icon{font-size:22px;}
+  .diag-name{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--muted);text-align:center;}
+  .diag-arrow{font-size:18px;color:rgba(255,45,155,.4);}
+
+  /* Shutdown screen mock */
+  .shutdown-screen{background:#000;border:2px solid rgba(255,45,155,.3);border-radius:14px;
+    padding:24px 32px;min-width:260px;text-align:center;position:relative;overflow:hidden;}
+  .shutdown-icon{font-size:52px;margin-bottom:12px;animation:shutdownPulse 2s ease-in-out infinite;}
+  @keyframes shutdownPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.95)}}
+  .shutdown-text{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;
+    color:rgba(255,255,255,.7);margin-bottom:6px;}
+  .shutdown-sub{font-size:11px;color:var(--muted);}
+  .shutdown-dots span{display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--magenta);margin:0 3px;animation:dotBounce .8s ease-in-out infinite;}
+  .shutdown-dots span:nth-child(2){animation-delay:.15s;}
+  .shutdown-dots span:nth-child(3){animation-delay:.3s;}
+  @keyframes dotBounce{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
+
+  /* Start menu mock */
+  .start-menu{background:rgba(5,10,25,.95);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:14px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);}
+  .start-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+    cursor:default;transition:background .2s;}
+  .start-row:hover,.start-row.active{background:rgba(255,255,255,.08);}
+  .start-row.active{background:rgba(255,45,155,.15);border:1px solid rgba(255,45,155,.25);}
+  .start-icon{font-size:18px;}
+  .start-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text);}
+  .start-row.active .start-label{color:var(--magenta);}
+  .start-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 0;}
+
+  /* Controls */
+  .controls{padding:20px 24px;border-top:1px solid rgba(255,255,255,.06);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .ctrl-info{font-size:13px;color:var(--muted);font-style:italic;flex:1;}
+  .ctrl-info strong{color:var(--text);font-style:normal;}
+  .btn-next{padding:12px 30px;background:linear-gradient(135deg,var(--magenta),var(--orange));
+    color:#fff;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(255,45,155,.28);}
+  .btn-next:hover{opacity:.85;transform:translateY(-2px);}
+
+  /* QUIZ */
+  .quiz-wrap{display:none;}
+  .quiz-wrap.visible{display:block;}
+  .quiz-header{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;
+    color:var(--magenta);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .quiz-header::after{content:'';flex:1;height:1px;background:rgba(255,45,155,.2);}
+  .q-card{background:var(--card);border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:22px 24px;margin-bottom:16px;}
+  .q-text{font-size:15px;font-weight:600;margin-bottom:16px;line-height:1.5;}
+  .q-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .q-opt{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+    border-radius:10px;padding:11px 16px;cursor:pointer;font-size:13px;
+    transition:all .18s;text-align:left;color:var(--text);font-family:'Exo 2',sans-serif;
+    display:flex;align-items:center;gap:8px;}
+  .q-opt:hover{border-color:var(--magenta);background:rgba(255,45,155,.08);}
+  .opt-l{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--muted);min-width:16px;}
+  .q-opt:hover .opt-l{color:var(--magenta);}
+  .q-opt.correct{border-color:var(--green)!important;background:rgba(0,230,118,.14)!important;color:var(--green)!important;}
+  .q-opt.correct .opt-l{color:var(--green)!important;}
+  .q-opt.wrong{border-color:var(--red)!important;background:rgba(255,61,61,.14)!important;color:var(--red)!important;}
+  .q-opt.disabled{pointer-events:none;opacity:.5;}
+  .q-opt.correct.disabled{opacity:1;}
+  .q-fb{margin-top:12px;font-size:13px;padding:9px 14px;border-radius:8px;display:none;line-height:1.55;}
+  .q-fb.show{display:block;}
+  .q-fb.ok {background:rgba(0,230,118,.08);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+  .q-fb.err{background:rgba(255,61,61,.08);color:var(--red);  border:1px solid rgba(255,61,61,.2);}
+  .q-fb strong{color:var(--gold);}
+  .btn-quiz-done{padding:12px 32px;background:linear-gradient(135deg,var(--magenta),var(--orange));
+    color:#fff;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(255,45,155,.25);display:none;margin:8px auto 0;}
+  .btn-quiz-done.show{display:block;}
+  .btn-quiz-done:hover{opacity:.85;transform:translateY(-2px);}
+
+  /* FINAL */
+  .final{display:none;flex-direction:column;align-items:center;gap:22px;padding:36px 20px;text-align:center;}
+  .final.visible{display:flex;}
+  .final-stars{font-size:44px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .final-score{font-family:'Orbitron',monospace;font-size:56px;font-weight:900;
+    background:linear-gradient(135deg,var(--magenta),var(--orange));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+  .final-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:3px;}
+  .final-msg{font-size:15px;line-height:1.7;max-width:520px;}
+  .final-msg strong{color:var(--gold);}
+
+  .steps-recap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+    background:var(--card);border-radius:16px;padding:18px 24px;
+    border:1px solid rgba(255,45,155,.15);max-width:720px;width:100%;}
+  .recap-step{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .recap-icon{font-size:28px;}
+  .recap-num{font-family:'Orbitron',monospace;font-size:8px;color:var(--magenta);letter-spacing:1px;}
+  .recap-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;text-align:center;max-width:72px;}
+  .recap-arrow{font-size:16px;color:rgba(255,45,155,.4);}
+
+  .btn-restart{padding:13px 36px;background:linear-gradient(135deg,var(--magenta),var(--orange));
+    color:#fff;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(255,45,155,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  /* Start menu click pulse */
+  @keyframes clickPulse{0%{transform:scale(1)}50%{transform:scale(.92)}100%{transform:scale(1)}}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .scene-illus{width:170px;height:155px;}
+    .scene-title{font-size:17px;}
+    .q-opts{grid-template-columns:1fr;}
+    .step-line{min-width:10px;max-width:28px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 1 · TEMA 4</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(255,45,155,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#ff2d9b" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#ff2d9b" opacity=".8"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".4"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(255,45,155,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#ff2d9b" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#ff2d9b"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff2d9b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! ⭕ Aprender a <strong>apagar correctamente</strong> la computadora es tan importante como encenderla. ¡Hacerlo mal puede dañar tus archivos! Presta atención.</p>
+    </div>
+  </div>
+
+  <!-- STEP TRACKER -->
+  <div class="step-tracker" id="stepTracker"></div>
+
+  <!-- SCENE CARD -->
+  <div class="scene-card" id="sceneCard">
+    <div class="scene-num" id="sceneNum">INTRO</div>
+    <div class="anim-stage">
+
+      <!-- SCENE 0: Intro -->
+      <div class="scene active" id="scene-0">
+        <svg class="scene-illus" viewBox="0 0 220 200" fill="none">
+          <!-- Computer ON -->
+          <rect x="30" y="10" width="130" height="105" rx="8" fill="#1a2440" stroke="rgba(255,45,155,.3)" stroke-width="1.5"/>
+          <rect x="38" y="17" width="114" height="80" rx="5" fill="#040c1e"/>
+          <!-- Desktop active -->
+          <rect x="38" y="17" width="114" height="80" rx="5" fill="rgba(10,35,110,.5)"/>
+          <rect x="38" y="87" width="114" height="10" rx="0" fill="rgba(5,10,30,.9)"/>
+          <!-- Taskbar items -->
+          <rect x="40" y="89" width="18" height="6" rx="2" fill="rgba(255,45,155,.4)"/>
+          <rect x="62" y="89" width="8" height="6" rx="1" fill="rgba(255,255,255,.15)"/>
+          <text x="143" y="95" text-anchor="end" fill="rgba(255,255,255,.4)" font-family="monospace" font-size="5">14:30</text>
+          <!-- Icons on desktop -->
+          <rect x="44" y="22" width="12" height="12" rx="2" fill="rgba(100,150,255,.4)"/>
+          <rect x="44" y="38" width="12" height="12" rx="2" fill="rgba(255,140,0,.4)"/>
+          <rect x="44" y="54" width="12" height="12" rx="2" fill="rgba(0,200,100,.4)"/>
+          <!-- Stand -->
+          <rect x="82" y="115" width="26" height="12" rx="3" fill="#141e35"/>
+          <rect x="72" y="125" width="46" height="5" rx="3" fill="#0d1626"/>
+          <!-- Tower -->
+          <rect x="170" y="30" width="34" height="75" rx="6" fill="#1a2440" stroke="rgba(0,230,118,.3)" stroke-width="1"/>
+          <circle cx="181" cy="47" r="5" fill="rgba(0,230,118,.8)">
+            <animate attributeName="opacity" values="1;.3;1" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Big power OFF symbol -->
+          <circle cx="110" cy="165" r="22" fill="rgba(255,45,155,.1)" stroke="rgba(255,45,155,.4)" stroke-width="2"/>
+          <circle cx="110" cy="165" r="13" fill="none" stroke="rgba(255,45,155,.8)" stroke-width="2.5" stroke-dasharray="60 18"/>
+          <line x1="110" y1="152" x2="110" y2="162" stroke="rgba(255,45,155,.9)" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Pulse rings -->
+          <circle cx="110" cy="165" r="22" fill="none" stroke="rgba(255,45,155,.3)" stroke-width="1.5">
+            <animate attributeName="r" values="22;32;22" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;0;1" dur="2s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+        <div class="scene-title" style="color:var(--magenta)">¿Cómo apago la computadora?</div>
+        <div class="scene-body">Apagar la computadora correctamente protege tus <strong>archivos y programas</strong>. Si apagas jalando el cable o con el botón de golpe, ¡puedes perder tu trabajo o dañar el sistema!<br><br>
+        Presiona <strong>"Siguiente"</strong> y te enseño el camino correcto. ¡Es muy fácil!</div>
+      </div>
+
+      <!-- SCENE 1: Guardar trabajo -->
+      <div class="scene" id="scene-1">
+        <svg class="scene-illus" viewBox="0 0 220 200" fill="none">
+          <!-- Document window -->
+          <rect x="20" y="20" width="180" height="140" rx="10" fill="#1a2440" stroke="rgba(255,140,0,.3)" stroke-width="1.5"/>
+          <!-- Title bar -->
+          <rect x="20" y="20" width="180" height="26" rx="10" fill="#111828"/>
+          <rect x="20" y="34" width="180" height="12" fill="#111828"/>
+          <circle cx="35" cy="33" r="5" fill="rgba(255,80,80,.6)"/>
+          <circle cx="50" cy="33" r="5" fill="rgba(255,200,0,.6)"/>
+          <circle cx="65" cy="33" r="5" fill="rgba(0,200,100,.6)"/>
+          <text x="120" y="37" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="'Orbitron',monospace" font-size="7">DOCUMENTO.DOCX</text>
+          <!-- Document content -->
+          <rect x="30" y="54" width="100" height="5" rx="2" fill="rgba(255,255,255,.2)"/>
+          <rect x="30" y="64" width="148" height="4" rx="2" fill="rgba(255,255,255,.12)"/>
+          <rect x="30" y="73" width="130" height="4" rx="2" fill="rgba(255,255,255,.1)"/>
+          <rect x="30" y="82" width="148" height="4" rx="2" fill="rgba(255,255,255,.12)"/>
+          <rect x="30" y="91" width="110" height="4" rx="2" fill="rgba(255,255,255,.1)"/>
+          <!-- Save dialog box -->
+          <rect x="50" y="108" width="120" height="44" rx="8" fill="#0d1626" stroke="rgba(255,217,61,.4)" stroke-width="1.5"/>
+          <rect x="50" y="108" width="120" height="14" rx="8" fill="rgba(255,217,61,.1)"/>
+          <rect x="50" y="116" width="120" height="6" fill="rgba(255,217,61,.1)"/>
+          <text x="110" y="119" text-anchor="middle" fill="rgba(255,217,61,.8)" font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">¿GUARDAR?</text>
+          <!-- Buttons -->
+          <rect x="60" y="128" width="42" height="14" rx="4" fill="rgba(0,230,118,.8)"/>
+          <text x="81" y="138" text-anchor="middle" fill="#000" font-family="'Orbitron',monospace" font-size="7" font-weight="700">GUARDAR</text>
+          <rect x="110" y="128" width="42" height="14" rx="4" fill="rgba(255,255,255,.1)"/>
+          <text x="131" y="138" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Orbitron',monospace" font-size="7">CANCELAR</text>
+          <!-- Cursor pointing at save -->
+          <path d="M80,154 L74,126" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <polygon points="74,122 70,130 78,130" fill="var(--gold)"/>
+        </svg>
+        <div class="scene-title" style="color:var(--orange)">Paso 1: Guarda tu trabajo</div>
+        <div class="scene-body">Antes de apagar, <strong>guarda todos los documentos y archivos</strong> que tengas abiertos. Usa el menú <em>Archivo → Guardar</em> o el atajo de teclado <em>Ctrl + S</em>.</div>
+        <div class="diagram">
+          <div class="diag-node active"><div class="diag-icon">💾</div><div class="diag-name">GUARDAR</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">❌</div><div class="diag-name">CERRAR TODO</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">🔴</div><div class="diag-name">APAGAR</div></div>
+        </div>
+        <div class="warn-box">⚠️ <strong>¡Importante!</strong> Si apagas sin guardar, perderás todo el trabajo que hiciste. ¡No lo olvides!</div>
+      </div>
+
+      <!-- SCENE 2: Cerrar programas -->
+      <div class="scene" id="scene-2">
+        <svg class="scene-illus" viewBox="0 0 220 200" fill="none">
+          <!-- Multiple windows closing -->
+          <!-- Window 3 (back) -->
+          <rect x="50" y="40" width="130" height="90" rx="8" fill="#141e35" opacity=".5"/>
+          <!-- Window 2 (middle) -->
+          <rect x="35" y="30" width="130" height="90" rx="8" fill="#1a2440" opacity=".75"/>
+          <rect x="35" y="30" width="130" height="20" rx="8" fill="#111828" opacity=".9"/>
+          <rect x="35" y="40" width="130" height="10" fill="#111828" opacity=".9"/>
+          <circle cx="48" cy="40" r="4" fill="rgba(255,80,80,.5)"/>
+          <circle cx="60" cy="40" r="4" fill="rgba(255,200,0,.4)"/>
+          <circle cx="72" cy="40" r="4" fill="rgba(0,200,100,.4)"/>
+          <!-- Window 1 (front, being closed with X) -->
+          <rect x="20" y="20" width="140" height="100" rx="8" fill="#1e2d4f" stroke="rgba(255,45,155,.3)" stroke-width="1.5"/>
+          <rect x="20" y="20" width="140" height="24" rx="8" fill="#141e35"/>
+          <rect x="20" y="32" width="140" height="12" fill="#141e35"/>
+          <text x="95" y="36" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Orbitron',monospace" font-size="7">NAVEGADOR</text>
+          <!-- Big X close button highlighted -->
+          <rect x="148" y="22" width="8" height="8" rx="2" fill="rgba(255,61,61,.7)"/>
+          <line x1="150" y1="24" x2="154" y2="28" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="154" y1="24" x2="150" y2="28" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Glow on X -->
+          <rect x="145" y="19" width="14" height="14" rx="4" fill="none" stroke="rgba(255,61,61,.5)" stroke-width="1">
+            <animate attributeName="opacity" values="1;.3;1" dur="1.2s" repeatCount="indefinite"/>
+          </rect>
+          <!-- Arrow to X -->
+          <path d="M130,60 Q145,45 147,32" stroke="var(--gold)" stroke-width="2" stroke-dasharray="3,3" stroke-linecap="round"/>
+          <polygon points="143,29 149,27 151,34" fill="var(--gold)"/>
+          <!-- Desktop peeking below -->
+          <rect x="20" y="128" width="180" height="50" rx="5" fill="rgba(10,25,80,.4)"/>
+          <rect x="20" y="168" width="180" height="10" rx="0" fill="rgba(5,10,30,.8)"/>
+          <text x="110" y="158" text-anchor="middle" fill="rgba(255,255,255,.15)" font-family="'Orbitron',monospace" font-size="8">ESCRITORIO</text>
+        </svg>
+        <div class="scene-title" style="color:var(--orange)">Paso 2: Cierra los programas</div>
+        <div class="scene-body">Después de guardar, <strong>cierra todos los programas</strong> que tengas abiertos: el navegador, documentos, música, juegos… Presiona la <em>X</em> de cada ventana.</div>
+        <div class="diagram">
+          <div class="diag-node"><div class="diag-icon">💾</div><div class="diag-name">GUARDADO ✓</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node active"><div class="diag-icon">❌</div><div class="diag-name">CERRAR TODO</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">🔴</div><div class="diag-name">APAGAR</div></div>
+        </div>
+        <div class="info-box"><strong>¿Sabías?</strong> Cerrar los programas antes de apagar ayuda a que Windows guarde correctamente todos los datos. ¡Así tu computadora dura más!</div>
+      </div>
+
+      <!-- SCENE 3: Menú Inicio → Apagar -->
+      <div class="scene" id="scene-3">
+        <!-- Start menu -->
+        <div class="start-menu" style="min-width:200px;">
+          <div class="start-row"><span class="start-icon">👤</span><span class="start-label">TU NOMBRE</span></div>
+          <div class="start-divider"></div>
+          <div class="start-row"><span class="start-icon">📄</span><span class="start-label">DOCUMENTOS</span></div>
+          <div class="start-row"><span class="start-icon">🖼️</span><span class="start-label">IMÁGENES</span></div>
+          <div class="start-row"><span class="start-icon">⚙️</span><span class="start-label">CONFIGURACIÓN</span></div>
+          <div class="start-divider"></div>
+          <div class="start-row active" id="shutdownRow">
+            <span class="start-icon">⭕</span>
+            <span class="start-label" style="color:var(--magenta)">APAGAR →</span>
+          </div>
+        </div>
+        <div class="scene-title" style="color:var(--magenta);margin-top:8px;">Paso 3: Menú Inicio → Apagar</div>
+        <div class="scene-body">Haz clic en el botón <em>Inicio</em> (el logo de Windows abajo a la izquierda), luego busca la opción <strong>"Apagar"</strong> o el ícono de encendido <em>⭕</em>. ¡Nunca uses el botón físico directamente!</div>
+        <div class="diagram">
+          <div class="diag-node"><div class="diag-icon">💾</div><div class="diag-name">GUARDADO ✓</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">❌</div><div class="diag-name">CERRADO ✓</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node active"><div class="diag-icon">🔴</div><div class="diag-name">APAGAR</div></div>
+        </div>
+        <div class="warn-box">⚠️ <strong>¡Nunca jales el cable!</strong> Desconectar la electricidad sin apagar correctamente puede corromper el sistema operativo.</div>
+      </div>
+
+      <!-- SCENE 4: Proceso de apagado -->
+      <div class="scene" id="scene-4">
+        <div class="shutdown-screen">
+          <div class="shutdown-icon">⭕</div>
+          <div class="shutdown-text">CERRANDO SESIÓN</div>
+          <div class="shutdown-sub" style="margin-bottom:10px;">Guardando configuración del usuario...</div>
+          <div class="shutdown-text">APAGANDO</div>
+          <div class="shutdown-sub">No desconectes la computadora</div>
+          <div class="shutdown-dots" style="margin-top:10px;">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="scene-title" style="color:var(--magenta);margin-top:8px;">Paso 4: Espera que se apague</div>
+        <div class="scene-body">La computadora mostrará una pantalla de apagado mientras cierra todos los procesos. <strong>¡No presiones nada!</strong> Espera hasta que la pantalla se ponga completamente negra.</div>
+        <div class="tip-box">✅ <strong>Señal de apagado completo:</strong> La pantalla se pone negra, el ventilador se detiene y las luces LED de la CPU se apagan. ¡Entonces sí está apagada!</div>
+      </div>
+
+      <!-- SCENE 5: Apagada correctamente -->
+      <div class="scene" id="scene-5">
+        <svg class="scene-illus" viewBox="0 0 220 200" fill="none">
+          <!-- Computer OFF — dark, peaceful -->
+          <rect x="30" y="10" width="130" height="100" rx="8" fill="#0e1628" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+          <rect x="38" y="17" width="114" height="76" rx="5" fill="#040810"/>
+          <!-- Screen completely black -->
+          <rect x="38" y="17" width="114" height="76" rx="5" fill="#020508"/>
+          <!-- Tiny reflection -->
+          <rect x="38" y="17" width="114" height="18" rx="5" fill="rgba(255,255,255,.01)"/>
+          <!-- Stand -->
+          <rect x="82" y="110" width="26" height="12" rx="3" fill="#0e1628"/>
+          <rect x="72" y="120" width="46" height="5" rx="3" fill="#090e1a"/>
+          <!-- Tower -->
+          <rect x="170" y="30" width="34" height="75" rx="6" fill="#0e1628" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+          <!-- LED off -->
+          <circle cx="181" cy="47" r="5" fill="#080c14"/>
+          <circle cx="181" cy="47" r="3" fill="rgba(255,255,255,.04)"/>
+          <!-- Moon / sleep symbol -->
+          <text x="110" y="62" text-anchor="middle" font-size="28">🌙</text>
+          <!-- Power OFF symbol badge -->
+          <circle cx="110" cy="158" r="22" fill="rgba(0,230,118,.12)" stroke="rgba(0,230,118,.35)" stroke-width="2"/>
+          <path d="M102,158 L109,165 L120,152" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <!-- Green glow -->
+          <circle cx="110" cy="158" r="28" fill="rgba(0,230,118,.06)">
+            <animate attributeName="r" values="22;30;22" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".8;0;.8" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Keyboard dim -->
+          <rect x="32" y="136" width="100" height="22" rx="5" fill="#0d1526"/>
+          <rect x="142" y="136" width="20" height="26" rx="7" fill="#0d1526"/>
+          <!-- ZZZ sleep -->
+          <text x="170" y="90" fill="rgba(255,255,255,.15)" font-size="10">z</text>
+          <text x="176" y="80" fill="rgba(255,255,255,.1)" font-size="13">z</text>
+          <text x="183" y="68" fill="rgba(255,255,255,.08)" font-size="16">z</text>
+        </svg>
+        <div class="scene-title" style="color:var(--green)">¡Apagada correctamente! 🎉</div>
+        <div class="scene-body">La computadora está <strong>completamente apagada</strong> y tus archivos están seguros. Recuerda siempre el orden correcto:<br><br>
+        <em>Guarda trabajo</em> → <em>Cierra programas</em> → <em>Inicio → Apagar</em> → <em>Espera</em> → <em>¡Listo!</em></div>
+        <div class="tip-box">🏆 <strong>¡Excelente!</strong> Ya sabes encender y apagar la computadora correctamente. ¡Ahora pon a prueba tus conocimientos en el quiz!</div>
+      </div>
+
+    </div><!-- /anim-stage -->
+    <div class="controls">
+      <div class="ctrl-info" id="ctrlInfo">Presiona <strong>Siguiente</strong> para comenzar.</div>
+      <button class="btn-next" id="btnNext" onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div><!-- /scene-card -->
+
+  <!-- MINI-QUIZ -->
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-header">// MINI-QUIZ · ¿APRENDISTE A APAGAR LA COMPUTADORA?</div>
+    <div id="quizContainer"></div>
+    <div style="text-align:center">
+      <button class="btn-quiz-done" id="btnQuizDone" onclick="showFinal()">VER MI RESULTADO →</button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final" id="final">
+    <div class="final-stars" id="finalStars">⭐⭐⭐</div>
+    <div class="final-score" id="finalScore">3/3</div>
+    <div class="final-label">RESPUESTAS CORRECTAS</div>
+    <div class="final-msg"   id="finalMsg">¡Perfecto!</div>
+    <div class="steps-recap">
+      <div class="recap-step"><div class="recap-icon">💾</div><div class="recap-num">PASO 1</div><div class="recap-name">GUARDA TRABAJO</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">❌</div><div class="recap-num">PASO 2</div><div class="recap-name">CIERRA PROGRAMAS</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">🪟</div><div class="recap-num">PASO 3</div><div class="recap-name">INICIO → APAGAR</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">⏳</div><div class="recap-num">PASO 4</div><div class="recap-name">ESPERA APAGADO</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">🌙</div><div class="recap-num">PASO 5</div><div class="recap-name">¡APAGADA!</div></div>
+    </div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;VOLVER A VER LOS PASOS</button>
+  </div>
+
+</div>
+
+<script>
+const STEPS = [
+  { label:'INTRO',   icon:'⭕', msg:'¡Apagar mal la computadora puede dañar tus archivos! Aprende el orden correcto — es fácil y muy importante.' },
+  { label:'GUARDAR', icon:'💾', msg:'¡Paso 1! <strong>Guarda tu trabajo antes de todo</strong>. Usa Ctrl+S o el menú Archivo → Guardar. ¡No pierdas ni un segundo de tu esfuerzo!' },
+  { label:'CERRAR',  icon:'❌', msg:'¡Paso 2! <strong>Cierra todos los programas</strong> que tengas abiertos. Presiona la X de cada ventana. ¡Despídete de ellos por hoy!' },
+  { label:'INICIO',  icon:'🪟', msg:'¡Paso 3! Haz clic en el botón de <strong>Inicio de Windows</strong> y busca la opción "Apagar". ¡Nunca uses el botón físico directamente!' },
+  { label:'ESPERA',  icon:'⏳', msg:'¡Paso 4! <strong>Espera pacientemente</strong>. La computadora necesita cerrar todos sus procesos. ¡No desconectes nada todavía!' },
+  { label:'¡LISTA!', icon:'🌙', msg:'✅ <strong>¡Perfecto!</strong> La computadora está apagada de forma segura. Tus archivos están protegidos. ¡Eres un experto!' },
+];
+
+const QUIZ = [
+  { q:'¿Cuál es el PRIMER paso antes de apagar la computadora?',
+    opts:['Presionar el botón de la CPU','Jalar el cable de electricidad','Guardar todo tu trabajo abierto','Apagar el monitor primero'],
+    correct:2,
+    fb:'✅ ¡Correcto! Siempre debes <strong>guardar tu trabajo</strong> primero. Si apagas sin guardar, perderás todo lo que hiciste.' },
+  { q:'¿Cómo se apaga correctamente una computadora con Windows?',
+    opts:['Jalando el cable de la pared','Con el botón Inicio → Apagar','Presionando el botón de la CPU 5 veces','Desconectando el monitor primero'],
+    correct:1,
+    fb:'✅ ¡Exacto! La forma correcta es <strong>Botón Inicio → Apagar</strong>. Así Windows cierra todo de forma segura antes de cortar la electricidad.' },
+  { q:'La pantalla se pone negra al apagar. ¿Qué significa eso?',
+    opts:['La computadora se dañó','Debes presionar el botón de encendido','La computadora está apagándose correctamente','Hay un error en Windows'],
+    correct:2,
+    fb:'✅ ¡Muy bien! La <strong>pantalla negra</strong> significa que la computadora está cerrando correctamente todos sus procesos. ¡Es completamente normal!' },
+];
+
+let step=0, quizAnswers=[], quizOk=0;
+
+function init(){
+  step=0; quizAnswers=[]; quizOk=0;
+  document.getElementById('sceneCard').style.display='block';
+  document.getElementById('quizWrap').classList.remove('visible');
+  document.getElementById('final').classList.remove('visible');
+  buildTracker();
+  showStep(0);
+  buildQuiz();
+}
+
+function buildTracker(){
+  const t=document.getElementById('stepTracker');t.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    if(i>0){const l=document.createElement('div');l.className='step-line';l.id='line-'+(i-1);t.appendChild(l);}
+    const n=document.createElement('div');n.className='step-node'+(i===0?' active':'');n.id='node-'+i;
+    n.innerHTML=`<div class="step-dot${i===0?' active':''}" id="dot-${i}">${s.icon}</div>
+      <div class="step-label">${s.label}</div>`;
+    t.appendChild(n);
+  });
+}
+
+function showStep(i){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('scene-'+i).classList.add('active');
+  STEPS.forEach((_,j)=>{
+    const node=document.getElementById('node-'+j);
+    const dot=document.getElementById('dot-'+j);
+    node.className='step-node'+(j===i?' active':j<i?' done':'');
+    dot.className='step-dot'+(j===i?' active':j<i?' done':'');
+    if(j>0){const l=document.getElementById('line-'+(j-1));if(l)l.className='step-line'+(j<=i?' done':'');}
+  });
+  document.getElementById('sceneNum').textContent=i===0?'INTRO':'PASO '+i+' / '+(STEPS.length-1);
+  const info=document.getElementById('ctrlInfo');
+  const btn=document.getElementById('btnNext');
+  if(i===0){info.innerHTML='Presiona <strong>Siguiente</strong> para comenzar.';btn.textContent='¡COMENZAR! →';}
+  else if(i<STEPS.length-1){info.innerHTML='Paso <strong>'+i+'</strong> de <strong>'+(STEPS.length-1)+'</strong>';btn.textContent='SIGUIENTE PASO →';}
+  else{info.innerHTML='¡Has completado todos los pasos!';btn.textContent='¡IR AL QUIZ! 🧠';}
+  document.getElementById('uniMsg').innerHTML=STEPS[i].msg;
+}
+
+function nextStep(){
+  if(step<STEPS.length-1){step++;showStep(step);}
+  else{
+    document.getElementById('sceneCard').style.display='none';
+    document.getElementById('quizWrap').classList.add('visible');
+    document.getElementById('uniMsg').innerHTML='🧠 ¡Perfecto! <strong>3 preguntas rápidas</strong> para comprobar que aprendiste a apagar correctamente. ¡Tú puedes!';
+    window.scrollTo({top:document.getElementById('quizWrap').offsetTop-20,behavior:'smooth'});
+  }
+}
+
+function buildQuiz(){
+  const c=document.getElementById('quizContainer');c.innerHTML='';
+  QUIZ.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className='q-card';
+    card.innerHTML=`<div class="q-text"><span style="color:var(--magenta);font-family:'Orbitron',monospace;font-size:11px">PREGUNTA ${qi+1}</span><br>${q.q}</div>
+      <div class="q-opts">${q.opts.map((o,oi)=>`<button class="q-opt" id="qo-${qi}-${oi}" onclick="ansQ(${qi},${oi})"><span class="opt-l">${['A','B','C','D'][oi]}</span><span>${o}</span></button>`).join('')}</div>
+      <div class="q-fb" id="qf-${qi}"></div>`;
+    c.appendChild(card);
+  });
+}
+
+function ansQ(qi,oi){
+  if(quizAnswers[qi]!==undefined)return;
+  quizAnswers[qi]=oi;
+  const q=QUIZ[qi];
+  const ok=oi===q.correct;
+  if(ok)quizOk++;
+  document.querySelectorAll(`[id^="qo-${qi}-"]`).forEach(b=>b.classList.add('disabled'));
+  document.getElementById(`qo-${qi}-${oi}`).classList.add(ok?'correct':'wrong');
+  if(!ok)document.getElementById(`qo-${qi}-${q.correct}`).classList.add('correct');
+  const fb=document.getElementById('qf-'+qi);
+  fb.className='q-fb show '+(ok?'ok':'err');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+q.fb;
+  document.getElementById('uniMsg').innerHTML=ok?'¡Correcto! 🎉 '+q.fb:'¡Casi! 🤔 '+q.fb;
+  if(quizAnswers.filter(a=>a!==undefined).length===QUIZ.length)
+    document.getElementById('btnQuizDone').classList.add('show');
+}
+
+function showFinal(){
+  document.getElementById('quizWrap').classList.remove('visible');
+  const fin=document.getElementById('final');fin.classList.add('visible');
+  const pct=Math.round((quizOk/QUIZ.length)*100);
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto, Explorador! 🚀 Sabes exactamente cómo <strong>apagar la computadora</strong> de forma segura. ¡Tus archivos siempre estarán protegidos!'
+    :pct>=60
+    ?'¡Muy bien! Recuerda: <strong>Guardar → Cerrar programas → Inicio → Apagar → Esperar</strong>. ¡Ya casi lo tienes!'
+    :'¡Sigue practicando! El orden correcto protege tus archivos. Repasa los pasos y vuelve a intentarlo.';
+  document.getElementById('finalStars').textContent=stars;
+  document.getElementById('finalScore').textContent=quizOk+'/'+QUIZ.length;
+  document.getElementById('finalMsg').innerHTML=msg;
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Módulo 1 casi completado!</strong> Ya sabes encender y apagar la computadora correctamente. ¡Preparate para el Quiz Final! 🏆';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(pct>=60)setTimeout(bigConf,300);
+}
+
+function bigConf(){
+  const colors=['#00e676','#ffd93d','#ff8c00','#ff2d9b','#00f5e4'];
+  for(let i=0;i<45;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*260}px;--ty:${80+Math.random()*260}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+
+function restart(){init();window.scrollTo({top:0,behavior:'smooth'});}
+init();
+</script>
+</body>
+</html>
