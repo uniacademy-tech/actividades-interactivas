@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué es Internet? · T1+T2 · Módulo 4 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --blue:#3b82f6;--indigo:#6366f1;--violet:#8b5cf6;--sky:#0ea5e9;
+    --bg:#060b18;--card:#0f1a2e;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(59,130,246,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(99,102,241,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(59,130,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(59,130,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(59,130,246,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--sky);
+    letter-spacing:2px;border:1px solid var(--sky);padding:4px 14px;border-radius:2px;background:rgba(14,165,233,.06);}
+
+  .container{position:relative;z-index:5;max-width:860px;margin:0 auto;padding:24px 18px 60px;}
+
+  /* UNI */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(59,130,246,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan),var(--blue));}
+  .uni-svg{width:62px;height:62px;flex-shrink:0;}
+  .speech{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(59,130,246,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.55;}
+  .speech strong{color:#93c5fd;}
+
+  /* PROGRESS */
+  .prog-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--indigo));transition:width .55s ease;width:0%;}
+  .prog-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);white-space:nowrap;}
+  .prog-label span{color:var(--sky);}
+
+  /* DOT ROW */
+  .dot-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+  .dot{width:11px;height:11px;border-radius:50%;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);transition:all .3s;}
+  .dot.done{background:var(--green);border-color:var(--green);}
+  .dot.cur {background:var(--blue); border-color:var(--blue); transform:scale(1.4);box-shadow:0 0 10px rgba(59,130,246,.6);}
+
+  /* STORY CARD */
+  .story-card{background:var(--card);border:1.5px solid rgba(59,130,246,.2);
+    border-radius:22px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);}
+  .story-topbar{height:4px;background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan));}
+
+  /* SCENE */
+  .scene-wrap{position:relative;min-height:340px;overflow:hidden;}
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:28px 24px;text-align:center;
+    opacity:0;transform:translateX(40px);transition:all .45s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+  .scene.active{opacity:1;transform:none;pointer-events:all;position:relative;}
+  .scene.exit{opacity:0;transform:translateX(-40px);}
+
+  .scene-icon{font-size:64px;margin-bottom:14px;filter:drop-shadow(0 6px 18px rgba(59,130,246,.4));}
+  .scene-title{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;
+    color:var(--sky);letter-spacing:2px;margin-bottom:10px;}
+  .scene-text{font-size:16px;line-height:1.75;max-width:620px;color:rgba(255,255,255,.88);}
+  .scene-text strong{color:#93c5fd;}
+  .scene-text em{color:var(--gold);font-style:normal;font-weight:600;}
+
+  /* ILLUSTRATION CONTAINERS */
+  .illus-wrap{width:100%;max-width:700px;margin:18px auto 0;}
+
+  /* Network analogy illustration */
+  .network-illus{position:relative;height:180px;}
+  .network-illus svg{width:100%;height:100%;}
+
+  /* Browsers grid */
+  .browsers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:560px;margin:18px auto 0;}
+  .browser-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(59,130,246,.2);
+    border-radius:14px;padding:16px 10px;text-align:center;
+    animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .browser-icon-wrap{width:52px;height:52px;border-radius:14px;margin:0 auto 8px;
+    display:flex;align-items:center;justify-content:center;font-size:30px;}
+  .browser-name{font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);letter-spacing:1px;margin-bottom:3px;}
+  .browser-desc{font-size:10px;color:var(--muted);line-height:1.3;}
+
+  /* Steps visual */
+  .steps-flow{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .step-bubble{background:rgba(59,130,246,.12);border:1.5px solid rgba(59,130,246,.3);
+    border-radius:12px;padding:10px 14px;text-align:center;min-width:100px;max-width:130px;}
+  .step-bubble .sb-icon{font-size:24px;margin-bottom:4px;}
+  .step-bubble .sb-text{font-size:11px;color:rgba(255,255,255,.75);line-height:1.3;}
+  .step-arrow{font-size:20px;color:rgba(59,130,246,.5);}
+
+  /* URL bar illustration */
+  .url-illus{background:rgba(255,255,255,.05);border:1px solid rgba(59,130,246,.25);
+    border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;
+    max-width:480px;margin:14px auto 0;}
+  .url-lock{font-size:16px;}
+  .url-text{font-family:monospace;font-size:14px;color:#93c5fd;flex:1;}
+  .url-cursor{display:inline-block;width:2px;height:16px;background:#93c5fd;
+    animation:blink .7s ease-in-out infinite;vertical-align:middle;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* CONTROLS */
+  .story-controls{padding:18px 24px;border-top:1px solid rgba(59,130,246,.1);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .ctrl-dots{display:flex;gap:5px;align-items:center;}
+  .ctrl-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
+  .ctrl-dot.done{background:var(--blue);}
+  .ctrl-btns{display:flex;gap:10px;}
+  .btn-prev{padding:9px 20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+    color:rgba(255,255,255,.6);border-radius:10px;font-family:'Orbitron',monospace;font-size:11px;
+    cursor:pointer;transition:all .18s;}
+  .btn-prev:hover{background:rgba(255,255,255,.12);}
+  .btn-prev:disabled{opacity:.3;cursor:not-allowed;}
+  .btn-next{padding:9px 24px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:10px;font-family:'Orbitron',monospace;font-size:11px;
+    font-weight:700;letter-spacing:1px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(59,130,246,.3);}
+  .btn-next:hover{opacity:.85;transform:translateY(-1px);}
+
+  /* COMPLETE PANEL */
+  .complete-panel{display:none;padding:40px 28px;text-align:center;}
+  .complete-panel.visible{display:block;}
+  .cp-stars{font-size:44px;letter-spacing:6px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .cp-title{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+    background:linear-gradient(135deg,var(--blue),var(--sky));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+  .cp-sub{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;}
+  .cp-msg{font-size:15px;line-height:1.7;max-width:520px;margin:0 auto 24px;color:rgba(255,255,255,.8);}
+  .cp-msg strong{color:#93c5fd;}
+  .key-concepts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:24px;}
+  .kc-card{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);
+    border-radius:12px;padding:14px 10px;text-align:center;}
+  .kc-icon{font-size:28px;margin-bottom:5px;}
+  .kc-name{font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);letter-spacing:1px;margin-bottom:3px;}
+  .kc-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 32px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(59,130,246,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .browsers-grid{grid-template-columns:repeat(2,1fr);}
+    .steps-flow{gap:5px;}
+    .step-bubble{min-width:80px;padding:8px 10px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 4 · TEMA 1 + 2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(59,130,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#3b82f6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#3b82f6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#6366f1"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#3b82f6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🌐 Hoy aprenderemos qué es <strong>Internet</strong> y qué es un <strong>Navegador Web</strong>. ¡Pulsa el botón para comenzar la historia!</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-row">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label">Escena <span id="sceneNum">1</span> de <span id="sceneTotal">7</span></div>
+  </div>
+  <div class="dot-row" id="dotRow"></div>
+
+  <!-- STORY CARD -->
+  <div class="story-card" id="storyCard">
+    <div class="story-topbar"></div>
+
+    <!-- SCENES container -->
+    <div class="scene-wrap" id="sceneWrap">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- COMPLETE PANEL -->
+    <div class="complete-panel" id="completePanel">
+      <div class="cp-stars">⭐⭐⭐</div>
+      <div class="cp-title">¡TEMA COMPLETADO!</div>
+      <div class="cp-sub">MÓDULO 4 · T1 + T2 · INTERNET Y NAVEGADORES</div>
+      <div class="cp-msg">¡Excelente, Explorador! 🚀 Ya sabes qué es <strong>Internet</strong>, cómo funciona y qué es un <strong>Navegador Web</strong>. ¡Estás listo para navegar!</div>
+      <div class="key-concepts">
+        <div class="kc-card"><div class="kc-icon">🌐</div><div class="kc-name">INTERNET</div><div class="kc-desc">Red mundial que conecta millones de computadoras</div></div>
+        <div class="kc-card"><div class="kc-icon">🛣️</div><div class="kc-name">ANALOGÍA</div><div class="kc-desc">Como una red de carreteras digitales por todo el mundo</div></div>
+        <div class="kc-card"><div class="kc-icon">🪟</div><div class="kc-name">NAVEGADOR</div><div class="kc-desc">El programa que usamos para "ver" internet</div></div>
+        <div class="kc-card"><div class="kc-icon">🔗</div><div class="kc-name">DIRECCIÓN WEB</div><div class="kc-desc">La dirección de cada página en internet (ej: google.com)</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;VER DE NUEVO</button>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="story-controls" id="storyControls">
+      <div class="ctrl-dots" id="ctrlDots"></div>
+      <div class="ctrl-btns">
+        <button class="btn-prev" id="btnPrev" onclick="prev()" disabled>← ANTERIOR</button>
+        <button class="btn-next" id="btnNext" onclick="next()">SIGUIENTE →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SCENES = [
+  // ── ESCENA 1: ¿Qué es Internet? ──
+  { uni:'🌐 ¡Bienvenido al <strong>Módulo 4</strong>! Hoy aprenderás sobre <strong>Internet</strong>. ¡Es una de las herramientas más poderosas del mundo!',
+    html:`
+      <div class="scene-icon">🌐</div>
+      <div class="scene-title">// TEMA 1 · ¿QUÉ ES INTERNET?</div>
+      <div class="scene-text">
+        <strong>Internet</strong> es como una <em>red gigante</em> que conecta millones de computadoras en todo el mundo.<br><br>
+        Gracias a Internet podemos buscar información, ver videos, hablar con personas lejanas y mucho más — ¡todo desde nuestra computadora!
+      </div>` },
+
+  // ── ESCENA 2: Analogía de carreteras ──
+  { uni:'🛣️ Imagina Internet como una <strong>red de carreteras</strong>. ¡Cada computadora es una ciudad conectada con las demás!',
+    html:`
+      <div class="scene-title">// LA ANALOGÍA DE LAS CARRETERAS</div>
+      <div class="scene-text" style="margin-bottom:16px;">
+        Piensa en Internet como una <strong>red de carreteras digitales</strong>:
+      </div>
+      <div class="illus-wrap">
+        <svg viewBox="0 0 700 190" style="width:100%;max-width:680px;">
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3Z" fill="rgba(59,130,246,.7)"/>
+            </marker>
+          </defs>
+          <!-- Roads -->
+          <line x1="120" y1="95" x2="280" y2="95" stroke="rgba(59,130,246,.5)" stroke-width="2.5" stroke-dasharray="8,4" marker-end="url(#arr)"/>
+          <line x1="420" y1="95" x2="580" y2="95" stroke="rgba(59,130,246,.5)" stroke-width="2.5" stroke-dasharray="8,4" marker-end="url(#arr)"/>
+          <line x1="350" y1="40" x2="350" y2="160" stroke="rgba(99,102,241,.5)" stroke-width="2.5" stroke-dasharray="8,4"/>
+          <line x1="120" y1="95" x2="280" y2="40"  stroke="rgba(14,165,233,.35)" stroke-width="1.5" stroke-dasharray="6,5"/>
+          <line x1="420" y1="40" x2="580" y2="95"  stroke="rgba(14,165,233,.35)" stroke-width="1.5" stroke-dasharray="6,5"/>
+          <!-- City nodes -->
+          <circle cx="80"  cy="95" r="34" fill="rgba(59,130,246,.15)" stroke="rgba(59,130,246,.5)" stroke-width="1.5"/>
+          <text x="80"  y="88"  text-anchor="middle" font-size="22">🏙️</text>
+          <text x="80"  y="108" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Mi PC</text>
+          <circle cx="350" cy="95" r="38" fill="rgba(99,102,241,.15)" stroke="rgba(99,102,241,.5)" stroke-width="1.5"/>
+          <text x="350" y="88"  text-anchor="middle" font-size="26">🌐</text>
+          <text x="350" y="112" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">INTERNET</text>
+          <circle cx="620" cy="95" r="34" fill="rgba(14,165,233,.15)" stroke="rgba(14,165,233,.5)" stroke-width="1.5"/>
+          <text x="620" y="88"  text-anchor="middle" font-size="22">🏛️</text>
+          <text x="620" y="108" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Página web</text>
+          <circle cx="230" cy="35" r="28" fill="rgba(59,130,246,.1)" stroke="rgba(59,130,246,.3)" stroke-width="1"/>
+          <text x="230" y="29"  text-anchor="middle" font-size="18">📱</text>
+          <text x="230" y="48"  text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">Celular</text>
+          <circle cx="470" cy="35" r="28" fill="rgba(14,165,233,.1)" stroke="rgba(14,165,233,.3)" stroke-width="1"/>
+          <text x="470" y="29"  text-anchor="middle" font-size="18">💻</text>
+          <text x="470" y="48"  text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">Laptop</text>
+          <!-- Data packets -->
+          <circle cx="200" cy="95" r="5" fill="rgba(59,130,246,.8)"/>
+          <circle cx="490" cy="95" r="5" fill="rgba(14,165,233,.8)"/>
+          <text x="350" y="175" text-anchor="middle" fill="rgba(255,255,255,.35)" font-family="'Exo 2',sans-serif" font-size="10">Las "carreteras digitales" llevan información entre dispositivos</text>
+        </svg>
+      </div>` },
+
+  // ── ESCENA 3: ¿Qué vemos en internet? ──
+  { uni:'📚 Internet es como una <strong>biblioteca gigante</strong>. Tiene información sobre cualquier tema que puedas imaginar.',
+    html:`
+      <div class="scene-icon">📚</div>
+      <div class="scene-title">// ¿QUÉ HAY EN INTERNET?</div>
+      <div class="scene-text" style="margin-bottom:16px;">Internet nos permite hacer <strong>muchas cosas</strong> desde nuestra computadora:</div>
+      <div class="steps-flow">
+        <div class="step-bubble"><div class="sb-icon">🔍</div><div class="sb-text">Buscar información</div></div>
+        <div class="step-arrow">→</div>
+        <div class="step-bubble"><div class="sb-icon">🎬</div><div class="sb-text">Ver videos</div></div>
+        <div class="step-arrow">→</div>
+        <div class="step-bubble"><div class="sb-icon">📧</div><div class="sb-text">Enviar correos</div></div>
+        <div class="step-arrow">→</div>
+        <div class="step-bubble"><div class="sb-icon">💬</div><div class="sb-text">Hablar con personas</div></div>
+        <div class="step-arrow">→</div>
+        <div class="step-bubble"><div class="sb-icon">🛒</div><div class="sb-text">Comprar cosas</div></div>
+      </div>
+      <div class="scene-text" style="margin-top:18px;font-size:14px;">
+        ¡Todo esto desde la comodidad de tu hogar, gracias a <strong>Internet</strong>!
+      </div>` },
+
+  // ── ESCENA 4: ¿Qué es un Navegador? ──
+  { uni:'🪟 Para "ver" Internet necesitamos un programa especial llamado <strong>Navegador Web</strong>. ¡Es como la ventana que nos permite ver todo!',
+    html:`
+      <div class="scene-icon">🪟</div>
+      <div class="scene-title">// TEMA 2 · ¿QUÉ ES UN NAVEGADOR WEB?</div>
+      <div class="scene-text">
+        Un <strong>Navegador Web</strong> es un programa que instalamos en nuestra computadora para poder <em>ver y usar Internet</em>.<br><br>
+        Sin un navegador, no podríamos visitar páginas web. ¡Es como necesitar un auto para usar las carreteras!
+      </div>
+      <div style="display:flex;align-items:center;gap:18px;margin-top:20px;flex-wrap:wrap;justify-content:center;">
+        <div style="text-align:center;font-size:32px;">🛣️</div>
+        <div style="font-size:24px;color:rgba(59,130,246,.5);">→</div>
+        <div style="font-size:32px;">🚗</div>
+        <div style="font-size:24px;color:rgba(59,130,246,.5);">→</div>
+        <div style="font-size:32px;">🌐</div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:8px;">
+        Internet = carreteras &nbsp;·&nbsp; Navegador = tu auto &nbsp;·&nbsp; Páginas web = destinos
+      </div>` },
+
+  // ── ESCENA 5: Los navegadores más populares ──
+  { uni:'¡Hay varios navegadores! Los más usados son <strong>Chrome, Edge, Firefox y Safari</strong>. Todos sirven para lo mismo, ¡pero cada uno tiene su estilo!',
+    html:`
+      <div class="scene-title">// LOS NAVEGADORES MÁS POPULARES</div>
+      <div class="scene-text" style="margin-bottom:4px;">Estos son los <strong>4 navegadores</strong> más usados en el mundo:</div>
+      <div class="browsers-grid" style="margin-top:14px;">
+        <div class="browser-card" style="animation-delay:.05s">
+          <div class="browser-icon-wrap" style="background:rgba(66,133,244,.15);">
+            <svg viewBox="0 0 48 48" width="38" height="38">
+              <circle cx="24" cy="24" r="20" fill="#4285f4"/>
+              <circle cx="24" cy="24" r="8"  fill="white"/>
+              <path d="M24,4 A20,20 0 0,1 41.3,14 L30.2,14 A8,8 0 0,0 24,16Z" fill="#ea4335"/>
+              <path d="M41.3,14 A20,20 0 0,1 41.3,34 L32.6,28 A8,8 0 0,0 31.6,19Z" fill="#fbbc05"/>
+              <path d="M41.3,34 A20,20 0 0,1 6.7,34 L17.8,28 A8,8 0 0,0 24,32Z" fill="#34a853"/>
+              <path d="M6.7,34 A20,20 0 0,1 6.7,14 L17.8,19 A8,8 0 0,0 16.4,28Z" fill="#4285f4"/>
+              <circle cx="24" cy="24" r="7" fill="white"/>
+              <circle cx="24" cy="24" r="5" fill="#4285f4"/>
+            </svg>
+          </div>
+          <div class="browser-name">CHROME</div>
+          <div class="browser-desc">Google. El más popular del mundo</div>
+        </div>
+        <div class="browser-card" style="animation-delay:.15s">
+          <div class="browser-icon-wrap" style="background:rgba(0,120,212,.15);">
+            <svg viewBox="0 0 48 48" width="38" height="38">
+              <defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0078d4"/><stop offset="100%" stop-color="#50e6ff"/>
+              </linearGradient></defs>
+              <ellipse cx="24" cy="28" rx="20" ry="16" fill="url(#eg)"/>
+              <path d="M8,20 Q16,8 28,10 Q38,12 40,22 Q32,16 22,18 Q14,20 8,28Z" fill="#34c5f3"/>
+              <path d="M40,22 Q42,30 36,36 Q28,42 18,38 Q26,34 30,28 Q34,22 28,18Z" fill="#0078d4" opacity=".7"/>
+            </svg>
+          </div>
+          <div class="browser-name">EDGE</div>
+          <div class="browser-desc">Microsoft. Viene con Windows</div>
+        </div>
+        <div class="browser-card" style="animation-delay:.25s">
+          <div class="browser-icon-wrap" style="background:rgba(255,100,0,.12);">
+            <svg viewBox="0 0 48 48" width="38" height="38">
+              <circle cx="24" cy="24" r="18" fill="#ff9500"/>
+              <circle cx="24" cy="24" r="10" fill="#ff6600"/>
+              <circle cx="24" cy="24" r="5"  fill="#fff"/>
+              <path d="M24,6 Q38,14 38,24 Q38,36 24,42 Q18,38 20,30 Q22,24 24,24Z" fill="#ff4500" opacity=".7"/>
+              <circle cx="24" cy="24" r="4" fill="#fff"/>
+              <circle cx="24" cy="24" r="2" fill="#ff6600"/>
+            </svg>
+          </div>
+          <div class="browser-name">FIREFOX</div>
+          <div class="browser-desc">Mozilla. Rápido y privado</div>
+        </div>
+        <div class="browser-card" style="animation-delay:.35s">
+          <div class="browser-icon-wrap" style="background:rgba(0,122,255,.12);">
+            <svg viewBox="0 0 48 48" width="38" height="38">
+              <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1a9bfc"/><stop offset="100%" stop-color="#5ac8fa"/>
+              </linearGradient></defs>
+              <circle cx="24" cy="24" r="20" fill="url(#sg)"/>
+              <circle cx="24" cy="24" r="8"  fill="white"/>
+              <path d="M24,4 L44,24 L24,44 L4,24Z" fill="none" stroke="white" stroke-width="1.5" opacity=".3"/>
+              <circle cx="24" cy="24" r="5" fill="#1a9bfc"/>
+            </svg>
+          </div>
+          <div class="browser-name">SAFARI</div>
+          <div class="browser-desc">Apple. Para Mac e iPhone</div>
+        </div>
+      </div>` },
+
+  // ── ESCENA 6: La barra de direcciones ──
+  { uni:'🔗 Cada página web tiene su propia <strong>dirección</strong>, como las calles tienen nombre. ¡Esa dirección la escribimos en la barra del navegador!',
+    html:`
+      <div class="scene-icon">🔗</div>
+      <div class="scene-title">// ¿QUÉ ES UNA DIRECCIÓN WEB?</div>
+      <div class="scene-text" style="margin-bottom:14px;">
+        Cada página web tiene una <strong>dirección única</strong> llamada URL.<br>
+        La escribimos en la <em>barra de direcciones</em> del navegador para ir directo a ella:
+      </div>
+      <div class="url-illus">
+        <span class="url-lock">🔒</span>
+        <span class="url-text">www.google.com<span class="url-cursor"></span></span>
+        <span style="font-size:18px;cursor:pointer;">→</span>
+      </div>
+      <div style="display:flex;gap:20px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <div style="text-align:center;padding:10px 14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;">
+          <div style="font-size:20px;">🌍</div>
+          <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);">www.google.com</div>
+          <div style="font-size:10px;color:var(--muted);">Buscador</div>
+        </div>
+        <div style="text-align:center;padding:10px 14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;">
+          <div style="font-size:20px;">📺</div>
+          <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);">www.youtube.com</div>
+          <div style="font-size:10px;color:var(--muted);">Videos</div>
+        </div>
+        <div style="text-align:center;padding:10px 14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;">
+          <div style="font-size:20px;">📰</div>
+          <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--sky);">www.wikipedia.org</div>
+          <div style="font-size:10px;color:var(--muted);">Enciclopedia</div>
+        </div>
+      </div>` },
+
+  // ── ESCENA 7: Resumen ──
+  { uni:'🎉 ¡Excelente! Ya sabes qué es <strong>Internet</strong> y qué es un <strong>Navegador</strong>. ¡En el siguiente tema aprenderás a usarlos!',
+    html:`
+      <div class="scene-icon">🚀</div>
+      <div class="scene-title">// ¡RESUMEN!</div>
+      <div class="scene-text" style="margin-bottom:18px;">Repasemos lo que aprendiste hoy:</div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:520px;width:100%;">
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px 16px;">
+          <span style="font-size:26px;">🌐</span>
+          <div><div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:1px;">INTERNET</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);">Red mundial que conecta millones de computadoras</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:12px;padding:12px 16px;">
+          <span style="font-size:26px;">🛣️</span>
+          <div><div style="font-family:'Orbitron',monospace;font-size:9px;color:#a5b4fc;letter-spacing:1px;">ANALOGÍA</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);">Como carreteras: tú usas el auto (navegador) para llegar a destinos (páginas web)</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.2);border-radius:12px;padding:12px 16px;">
+          <span style="font-size:26px;">🪟</span>
+          <div><div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:1px;">NAVEGADOR</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);">Chrome, Edge, Firefox, Safari — programas para ver Internet</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px 16px;">
+          <span style="font-size:26px;">🔗</span>
+          <div><div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:1px;">DIRECCIÓN WEB (URL)</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);">La "dirección de calle" de cada página: www.google.com</div></div>
+        </div>
+      </div>` },
+];
+
+const TOTAL = SCENES.length;
+let idx = 0;
+
+function init(){
+  idx=0;
+  document.getElementById('completePanel').classList.remove('visible');
+  document.getElementById('storyControls').style.display='flex';
+  document.getElementById('sceneWrap').style.display='block';
+  document.getElementById('sceneTotal').textContent=TOTAL;
+  buildDots();buildCtrlDots();renderScene(0);
+}
+
+function buildDots(){
+  const r=document.getElementById('dotRow');r.innerHTML='';
+  SCENES.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' cur':'');d.id='dot-'+i;r.appendChild(d);
+  });
+}
+function buildCtrlDots(){
+  const r=document.getElementById('ctrlDots');r.innerHTML='';
+  SCENES.forEach((_,i)=>{
+    const d=document.createElement('div');d.className='ctrl-dot';d.id='cdot-'+i;r.appendChild(d);
+  });
+}
+
+function renderScene(i){
+  const s=SCENES[i];
+  const wrap=document.getElementById('sceneWrap');
+
+  // Animate out old
+  const old=wrap.querySelector('.active');
+  if(old){old.classList.add('exit');setTimeout(()=>old.remove(),300);}
+
+  // Create new
+  setTimeout(()=>{
+    const div=document.createElement('div');
+    div.className='scene active';
+    div.innerHTML=s.html;
+    wrap.appendChild(div);
+  },old?150:0);
+
+  // Update UI
+  document.getElementById('uniMsg').innerHTML=s.uni;
+  document.getElementById('sceneNum').textContent=i+1;
+  document.getElementById('progFill').style.width=((i+1)/TOTAL*100)+'%';
+  document.getElementById('btnPrev').disabled=i===0;
+  document.getElementById('btnNext').textContent=i===TOTAL-1?'¡COMPLETADO! 🎉':'SIGUIENTE →';
+
+  // Dots
+  for(let j=0;j<TOTAL;j++){
+    const d=document.getElementById('dot-'+j);
+    if(d)d.className='dot'+(j<i?'done':j===i?'cur':'');
+    const cd=document.getElementById('cdot-'+j);
+    if(cd)cd.className='ctrl-dot'+(j<=i?'done':'');
+  }
+}
+
+function next(){
+  if(idx<TOTAL-1){idx++;renderScene(idx);}
+  else{showComplete();}
+}
+function prev(){if(idx>0){idx--;renderScene(idx);}}
+
+function showComplete(){
+  document.getElementById('sceneWrap').style.display='none';
+  document.getElementById('storyControls').style.display='none';
+  document.getElementById('completePanel').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Tema completado!</strong> Ya conoces <strong>Internet</strong> y los <strong>Navegadores Web</strong>. ¡Sigamos aprendiendo, Explorador! 🚀';
+  document.getElementById('progFill').style.width='100%';
+  for(let j=0;j<TOTAL;j++){
+    const d=document.getElementById('dot-'+j);if(d)d.className='dot done';
+    const cd=document.getElementById('cdot-'+j);if(cd)cd.className='ctrl-dot done';
+  }
+  setTimeout(bigConf,200);
+}
+
+function restart(){
+  document.getElementById('completePanel').classList.remove('visible');
+  document.getElementById('storyControls').style.display='flex';
+  document.getElementById('sceneWrap').style.display='block';
+  idx=0;renderScene(0);
+}
+
+function bigConf(){
+  const colors=['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9','#00f5e4'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+init();
+</script>
+</body>
+</html>
