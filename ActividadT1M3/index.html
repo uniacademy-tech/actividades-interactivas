@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archivos y Carpetas · T1 · Módulo 3 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --orange:#ff8c00;--teal:#14b8a6;--emerald:#10b981;--lime:#84cc16;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(20,184,166,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(16,185,129,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(20,184,166,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(20,184,166,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(20,184,166,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--emerald));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--teal);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--teal);
+    letter-spacing:2px;border:1px solid var(--teal);padding:4px 14px;border-radius:2px;background:rgba(20,184,166,.06);}
+
+  .container{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(20,184,166,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--teal),var(--emerald),var(--cyan),var(--teal));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(20,184,166,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--emerald);}
+
+  /* TARGET + SCORE */
+  .target-section{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .target-box{display:flex;align-items:center;gap:14px;background:var(--card);
+    border:2px solid var(--teal);border-radius:14px;padding:11px 20px;flex:1;min-width:230px;
+    animation:tealPulse 2.2s ease-in-out infinite;}
+  @keyframes tealPulse{0%,100%{box-shadow:0 0 18px rgba(20,184,166,.12)}50%{box-shadow:0 0 36px rgba(20,184,166,.32)}}
+  .target-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:2px;}
+  .target-name{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:#fff;}
+  .target-icon{font-size:28px;}
+  .scores{display:flex;gap:10px;flex-wrap:wrap;}
+  .sc{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 14px;text-align:center;min-width:72px;}
+  .sc .v{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;}
+  .sc .l{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+  .sc.ok .v{color:var(--green);}
+  .sc.err .v{color:var(--red);}
+  .sc.rem .v{color:var(--teal);}
+
+  .prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:18px;overflow:hidden;}
+  .prog-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--emerald));border-radius:3px;transition:width .5s ease;width:0%;}
+
+  /* SCENE */
+  .scene-wrap{position:relative;border:2px solid rgba(20,184,166,.25);border-radius:18px;
+    overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.65);}
+  .scene-label{position:absolute;top:11px;left:15px;z-index:10;
+    font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:rgba(20,184,166,.8);
+    background:rgba(6,11,24,.85);padding:3px 10px;border-radius:4px;border:1px solid rgba(20,184,166,.25);}
+
+  /* FILE EXPLORER SVG */
+  .explorer-svg{width:100%;display:block;}
+
+  /* HOTSPOTS */
+  .hotspot{position:absolute;cursor:pointer;
+    border:2.5px dashed rgba(20,184,166,.55);border-radius:10px;
+    background:rgba(20,184,166,.07);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s ease;transform:translate(-50%,-50%);}
+  .hotspot:hover{background:rgba(20,184,166,.22);border-color:var(--teal);
+    border-style:solid;transform:translate(-50%,-50%) scale(1.08);
+    box-shadow:0 0 20px rgba(20,184,166,.4);}
+  .hotspot.ok{border-color:var(--green)!important;border-style:solid!important;
+    background:rgba(0,230,118,.2)!important;box-shadow:0 0 22px rgba(0,230,118,.4)!important;
+    cursor:default;animation:popOk .4s ease;}
+  .hotspot.err{border-color:var(--red)!important;border-style:solid!important;
+    background:rgba(255,61,61,.18)!important;animation:shake .38s ease;}
+  @keyframes popOk{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.25)}100%{transform:translate(-50%,-50%) scale(1)}}
+  @keyframes shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 7px),-50%)}75%{transform:translate(calc(-50% + 7px),-50%)}}
+  .hotspot.ok::after{content:'✓';font-size:20px;color:var(--green);font-weight:900;}
+  .hotspot.err::after{content:'✗';font-size:20px;color:var(--red);font-weight:900;}
+  .hotspot:not(.ok):not(.err)::before{content:'';position:absolute;inset:-6px;border-radius:14px;
+    border:2px solid rgba(20,184,166,.2);animation:pulseRing 2s ease-in-out infinite;}
+  @keyframes pulseRing{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:0}}
+  .hsbadge{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;
+    color:var(--teal);background:rgba(6,11,24,.92);padding:3px 8px;
+    border-radius:4px;border:1px solid rgba(20,184,166,.3);
+    white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;
+    position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);z-index:20;}
+  .hotspot:hover .hsbadge,.hotspot.ok .hsbadge{opacity:1;}
+  .hotspot.ok .hsbadge{color:var(--green);border-color:var(--green);}
+
+  /* LEGEND */
+  .legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+    padding:14px 20px;background:rgba(20,184,166,.04);border-top:1px solid rgba(20,184,166,.1);}
+  .leg-item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.6);}
+  .leg-dot{width:14px;height:14px;border-radius:3px;border:1.5px dashed;}
+
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:90;
+    opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(5px);}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.72);
+    background:#0d1628;border-radius:20px;padding:28px 32px;text-align:center;z-index:100;
+    box-shadow:0 32px 90px rgba(0,0,0,.85);opacity:0;pointer-events:none;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);min-width:300px;max-width:88vw;}
+  .modal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+  .modal.success{border:2px solid var(--green);}
+  .modal.error  {border:2px solid var(--red);}
+  .modal.complete{border:2px solid var(--teal);}
+  .modal-icon{font-size:44px;margin-bottom:8px;}
+  .modal-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:6px;}
+  .modal.success  .modal-title{color:var(--green);}
+  .modal.error    .modal-title{color:var(--red);}
+  .modal.complete .modal-title{color:var(--teal);}
+  .modal-type{display:inline-block;font-family:'Orbitron',monospace;font-size:9px;
+    padding:3px 14px;border-radius:20px;border:1px solid;letter-spacing:1px;margin-bottom:10px;}
+  .modal-type.folder{color:var(--gold);border-color:rgba(255,217,61,.4);background:rgba(255,217,61,.08);}
+  .modal-type.file  {color:var(--teal);border-color:rgba(20,184,166,.4);background:rgba(20,184,166,.08);}
+  .modal-msg{font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:16px;max-width:380px;}
+  .modal-msg strong{color:var(--emerald);}
+  .modal-btn{background:linear-gradient(135deg,var(--teal),var(--emerald));color:#fff;
+    border:none;border-radius:10px;padding:10px 24px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    cursor:pointer;letter-spacing:1px;transition:opacity .18s;}
+  .modal-btn:hover{opacity:.82;}
+  .modal-btn.restart{background:linear-gradient(135deg,var(--gold),var(--orange));
+    color:#000;margin-top:8px;display:block;width:100%;}
+  .stars{font-size:28px;letter-spacing:4px;margin-bottom:5px;}
+  .final-score{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--teal);margin:5px 0;}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:680px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 3 · TEMA 1</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(20,184,166,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#14b8a6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(20,184,166,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#14b8a6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#10b981"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#14b8a6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📁 Vamos a aprender qué son los <strong>Archivos</strong> y las <strong>Carpetas</strong>. ¡Observa el explorador y haz clic en lo que te pido!</p>
+    </div>
+  </div>
+
+  <!-- TARGET + SCORE -->
+  <div class="target-section">
+    <div class="target-box">
+      <div class="target-icon" id="tIcon">🔍</div>
+      <div>
+        <div class="target-label">// ENCUENTRA Y HAZ CLIC EN:</div>
+        <div class="target-name" id="tName">INICIANDO…</div>
+      </div>
+    </div>
+    <div class="scores">
+      <div class="sc ok" ><div class="v" id="sOk">0</div><div class="l">CORRECTOS</div></div>
+      <div class="sc err"><div class="v" id="sErr">0</div><div class="l">ERRORES</div></div>
+      <div class="sc rem"><div class="v" id="sRem">8</div><div class="l">RESTANTES</div></div>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="pBar"></div></div>
+
+  <!-- FILE EXPLORER SCENE -->
+  <div class="scene-wrap" id="sceneWrap">
+    <div class="scene-label">// EXPLORADOR DE ARCHIVOS · BIBLIOTECA DIGITAL</div>
+
+    <svg class="explorer-svg" viewBox="0 0 1100 620" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1628"/>
+          <stop offset="100%" stop-color="#060e1e"/>
+        </linearGradient>
+        <linearGradient id="sidebarG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#0d1830"/>
+          <stop offset="100%" stop-color="#0a1425"/>
+        </linearGradient>
+        <filter id="shadow">
+          <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity=".5"/>
+        </filter>
+      </defs>
+
+      <!-- Background -->
+      <rect width="1100" height="620" fill="url(#bgG)"/>
+
+      <!-- ══ WINDOW FRAME ══ -->
+      <rect x="10" y="10" width="1080" height="600" rx="12" fill="#0f1a2e" filter="url(#shadow)"/>
+      <!-- Title bar -->
+      <rect x="10" y="10" width="1080" height="36" rx="12" fill="#0d1525"/>
+      <rect x="10" y="34" width="1080" height="12" fill="#0d1525"/>
+      <!-- Window buttons -->
+      <circle cx="32" cy="28" r="7" fill="rgba(255,80,80,.7)"/>
+      <circle cx="52" cy="28" r="7" fill="rgba(255,200,0,.6)"/>
+      <circle cx="72" cy="28" r="7" fill="rgba(0,200,100,.6)"/>
+      <!-- Title -->
+      <text x="550" y="33" text-anchor="middle" fill="rgba(255,255,255,.5)"
+        font-family="'Exo 2',sans-serif" font-size="12">📁 Explorador de Archivos — Mi Biblioteca Digital</text>
+
+      <!-- Address bar -->
+      <rect x="10" y="46" width="1080" height="28" fill="#0b1422"/>
+      <rect x="90" y="52" width="500" height="16" rx="6" fill="rgba(255,255,255,.05)" stroke="rgba(20,184,166,.2)" stroke-width="1"/>
+      <text x="98" y="64" fill="rgba(255,255,255,.3)" font-family="monospace" font-size="9"> 📁 Esta PC › Documentos › Mi Biblioteca</text>
+      <!-- Nav buttons -->
+      <rect x="16" y="52" width="24" height="16" rx="4" fill="rgba(255,255,255,.06)"/>
+      <text x="28" y="63" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="10">←</text>
+      <rect x="44" y="52" width="24" height="16" rx="4" fill="rgba(255,255,255,.06)"/>
+      <text x="56" y="63" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="10">→</text>
+      <rect x="72" y="52" width="16" height="16" rx="4" fill="rgba(255,255,255,.06)"/>
+      <text x="80" y="63" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="10">↑</text>
+
+      <!-- ══ SIDEBAR ══ -->
+      <rect x="10" y="74" width="180" height="536" fill="url(#sidebarG)"/>
+      <rect x="190" y="74" width="1" height="536" fill="rgba(20,184,166,.12)"/>
+
+      <!-- Sidebar items -->
+      <text x="22" y="98" fill="rgba(20,184,166,.7)" font-family="'Orbitron',monospace" font-size="8" letter-spacing="1">ACCESO RÁPIDO</text>
+      <rect x="16" y="104" width="168" height="22" rx="5" fill="rgba(20,184,166,.12)"/>
+      <text x="26" y="119" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="11">🖥️ Esta PC</text>
+      <text x="26" y="140" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="11">📄 Documentos</text>
+      <text x="26" y="160" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="11">🖼️ Imágenes</text>
+      <text x="26" y="180" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="11">🎵 Música</text>
+      <text x="26" y="200" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="11">🎬 Videos</text>
+      <text x="26" y="220" fill="rgba(255,255,255,.45)" font-family="'Exo 2',sans-serif" font-size="11">⬇️ Descargas</text>
+
+      <text x="22" y="248" fill="rgba(20,184,166,.7)" font-family="'Orbitron',monospace" font-size="8" letter-spacing="1">ESTE EQUIPO</text>
+      <text x="26" y="268" fill="rgba(255,255,255,.35)" font-family="'Exo 2',sans-serif" font-size="11">💾 Disco Local (C:)</text>
+      <text x="26" y="288" fill="rgba(255,255,255,.35)" font-family="'Exo 2',sans-serif" font-size="11">💿 DVD (D:)</text>
+
+      <!-- Sidebar storage bar -->
+      <text x="22" y="570" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="9">Espacio usado: 45 GB de 256 GB</text>
+      <rect x="16" y="575" width="168" height="6" rx="3" fill="rgba(255,255,255,.08)"/>
+      <rect x="16" y="575" width="75"  height="6" rx="3" fill="rgba(20,184,166,.6)"/>
+
+      <!-- ══ MAIN CONTENT AREA ══ -->
+      <rect x="191" y="74" width="899" height="536" fill="#080f1e"/>
+
+      <!-- Toolbar -->
+      <rect x="191" y="74" width="899" height="30" fill="#0c1728"/>
+      <rect x="200" y="80" width="60" height="18" rx="4" fill="rgba(20,184,166,.15)" stroke="rgba(20,184,166,.3)" stroke-width="1"/>
+      <text x="230" y="92" text-anchor="middle" fill="rgba(20,184,166,.8)" font-family="'Orbitron',monospace" font-size="7">+ NUEVO</text>
+      <text x="290" y="92" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="10">✂️ Cortar</text>
+      <text x="330" y="92" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="10">📋 Copiar</text>
+      <text x="375" y="92" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="10">📌 Pegar</text>
+      <text x="415" y="92" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="10">🗑️ Eliminar</text>
+      <text x="1050" y="92" text-anchor="end" fill="rgba(255,255,255,.2)" font-family="'Exo 2',sans-serif" font-size="10">⊞ Vista</text>
+
+      <!-- Section label -->
+      <text x="210" y="122" fill="rgba(20,184,166,.6)" font-family="'Orbitron',monospace" font-size="8" letter-spacing="2">CARPETAS (4)</text>
+
+      <!-- ══ FOLDERS ROW ══ -->
+      <!-- Folder 1: Mis Fotos de Familia -->
+      <g id="folder1">
+        <rect x="205" y="130" width="110" height="95" rx="8" fill="rgba(255,217,61,.05)" stroke="rgba(255,217,61,.15)" stroke-width="1"/>
+        <!-- Folder shape -->
+        <path d="M220,150 Q220,143 227,143 L249,143 L255,149 L285,149 Q285,149 285,153 L285,178 Q285,182 281,182 L224,182 Q220,182 220,178Z"
+          fill="rgba(255,185,0,.75)"/>
+        <rect x="220" y="153" width="65" height="28" rx="3" fill="rgba(255,200,0,.55)"/>
+        <!-- Folder tab -->
+        <rect x="222" y="155" width="20" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="222" y="161" width="26" height="3" rx="1" fill="rgba(0,0,0,.18)"/>
+        <rect x="222" y="167" width="18" height="3" rx="1" fill="rgba(0,0,0,.15)"/>
+        <text x="260" y="206" text-anchor="middle" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="9">Fotos</text>
+        <text x="260" y="218" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">de Familia</text>
+      </g>
+
+      <!-- Folder 2: Tareas del Colegio -->
+      <g id="folder2">
+        <rect x="325" y="130" width="110" height="95" rx="8" fill="rgba(59,130,246,.05)" stroke="rgba(59,130,246,.15)" stroke-width="1"/>
+        <path d="M340,150 Q340,143 347,143 L369,143 L375,149 L405,149 Q405,149 405,153 L405,178 Q405,182 401,182 L344,182 Q340,182 340,178Z"
+          fill="rgba(59,130,246,.75)"/>
+        <rect x="340" y="153" width="65" height="28" rx="3" fill="rgba(59,130,246,.55)"/>
+        <rect x="342" y="155" width="20" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="342" y="161" width="26" height="3" rx="1" fill="rgba(0,0,0,.18)"/>
+        <rect x="342" y="167" width="18" height="3" rx="1" fill="rgba(0,0,0,.15)"/>
+        <text x="380" y="206" text-anchor="middle" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="9">Tareas del</text>
+        <text x="380" y="218" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">Colegio</text>
+      </g>
+
+      <!-- Folder 3: Mis Documentos -->
+      <g id="folder3">
+        <rect x="445" y="130" width="110" height="95" rx="8" fill="rgba(168,85,247,.05)" stroke="rgba(168,85,247,.15)" stroke-width="1"/>
+        <path d="M460,150 Q460,143 467,143 L489,143 L495,149 L525,149 Q525,149 525,153 L525,178 Q525,182 521,182 L464,182 Q460,182 460,178Z"
+          fill="rgba(168,85,247,.75)"/>
+        <rect x="460" y="153" width="65" height="28" rx="3" fill="rgba(168,85,247,.55)"/>
+        <rect x="462" y="155" width="20" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="462" y="161" width="26" height="3" rx="1" fill="rgba(0,0,0,.18)"/>
+        <rect x="462" y="167" width="18" height="3" rx="1" fill="rgba(0,0,0,.15)"/>
+        <text x="500" y="206" text-anchor="middle" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="9">Mis</text>
+        <text x="500" y="218" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">Documentos</text>
+      </g>
+
+      <!-- Folder 4: Música -->
+      <g id="folder4">
+        <rect x="565" y="130" width="110" height="95" rx="8" fill="rgba(255,45,155,.05)" stroke="rgba(255,45,155,.15)" stroke-width="1"/>
+        <path d="M580,150 Q580,143 587,143 L609,143 L615,149 L645,149 Q645,149 645,153 L645,178 Q645,182 641,182 L584,182 Q580,182 580,178Z"
+          fill="rgba(255,45,155,.7)"/>
+        <rect x="580" y="153" width="65" height="28" rx="3" fill="rgba(255,45,155,.5)"/>
+        <rect x="582" y="155" width="20" height="3" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="582" y="161" width="26" height="3" rx="1" fill="rgba(0,0,0,.18)"/>
+        <rect x="582" y="167" width="18" height="3" rx="1" fill="rgba(0,0,0,.15)"/>
+        <text x="620" y="206" text-anchor="middle" fill="rgba(255,255,255,.7)" font-family="'Exo 2',sans-serif" font-size="9">Música</text>
+        <text x="620" y="218" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="'Exo 2',sans-serif" font-size="8">Favorita</text>
+      </g>
+
+      <!-- Files section label -->
+      <text x="210" y="248" fill="rgba(20,184,166,.6)" font-family="'Orbitron',monospace" font-size="8" letter-spacing="2">ARCHIVOS (8)</text>
+
+      <!-- ══ FILES ROW 1 ══ -->
+      <!-- Word file -->
+      <g id="file-word">
+        <rect x="205" y="256" width="100" height="110" rx="8" fill="rgba(59,130,246,.05)" stroke="rgba(59,130,246,.12)" stroke-width="1"/>
+        <rect x="222" y="268" width="66" height="80" rx="4" fill="rgba(15,35,90,.8)"/>
+        <rect x="222" y="268" width="66" height="80" rx="4" fill="rgba(30,80,200,.12)"/>
+        <path d="M271,268 L288,285 L271,285Z" fill="rgba(59,130,246,.3)"/>
+        <text x="255" y="295" text-anchor="middle" fill="rgba(59,130,246,.9)" font-family="'Orbitron',monospace" font-size="11" font-weight="700">W</text>
+        <rect x="228" y="308" width="30" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+        <rect x="228" y="314" width="50" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <rect x="228" y="320" width="40" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <rect x="228" y="326" width="45" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <text x="255" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Tarea1.docx</text>
+        <text x="255" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo Word</text>
+      </g>
+
+      <!-- Image file -->
+      <g id="file-image">
+        <rect x="315" y="256" width="100" height="110" rx="8" fill="rgba(0,230,118,.05)" stroke="rgba(0,230,118,.12)" stroke-width="1"/>
+        <rect x="330" y="268" width="68" height="80" rx="4" fill="rgba(10,40,30,.8)"/>
+        <!-- Mini landscape -->
+        <rect x="330" y="268" width="68" height="80" rx="4" fill="rgba(10,60,40,.6)"/>
+        <ellipse cx="364" cy="295" rx="24" ry="18" fill="rgba(59,130,246,.3)"/>
+        <polygon points="338,320 355,295 372,310 385,290 398,320" fill="rgba(0,180,80,.35)"/>
+        <circle cx="382" cy="278" r="8" fill="rgba(255,200,0,.5)"/>
+        <path d="M271,268 L288,285 L271,285Z" fill="rgba(0,230,118,.3)" transform="translate(50,0)"/>
+        <text x="365" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Foto_vacaciones.jpg</text>
+        <text x="365" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Imagen JPG</text>
+      </g>
+
+      <!-- PDF file -->
+      <g id="file-pdf">
+        <rect x="425" y="256" width="100" height="110" rx="8" fill="rgba(255,61,61,.05)" stroke="rgba(255,61,61,.12)" stroke-width="1"/>
+        <rect x="440" y="268" width="66" height="80" rx="4" fill="rgba(60,10,10,.8)"/>
+        <rect x="440" y="268" width="66" height="80" rx="4" fill="rgba(200,30,30,.1)"/>
+        <path d="M489,268 L506,285 L489,285Z" fill="rgba(255,61,61,.3)"/>
+        <text x="473" y="303" text-anchor="middle" fill="rgba(255,61,61,.9)" font-family="'Orbitron',monospace" font-size="10" font-weight="700">PDF</text>
+        <rect x="446" y="308" width="30" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+        <rect x="446" y="314" width="50" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <rect x="446" y="320" width="40" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <text x="473" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Manual.pdf</text>
+        <text x="473" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo PDF</text>
+      </g>
+
+      <!-- Music file -->
+      <g id="file-music">
+        <rect x="535" y="256" width="100" height="110" rx="8" fill="rgba(255,140,0,.05)" stroke="rgba(255,140,0,.12)" stroke-width="1"/>
+        <rect x="550" y="268" width="66" height="80" rx="4" fill="rgba(40,20,5,.8)"/>
+        <rect x="550" y="268" width="66" height="80" rx="4" fill="rgba(255,140,0,.1)"/>
+        <path d="M599,268 L616,285 L599,285Z" fill="rgba(255,140,0,.3)"/>
+        <text x="583" y="300" text-anchor="middle" font-size="22">🎵</text>
+        <rect x="556" y="314" width="30" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+        <rect x="556" y="320" width="50" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <text x="583" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Cancion.mp3</text>
+        <text x="583" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo de Audio</text>
+      </g>
+
+      <!-- Excel file -->
+      <g id="file-excel">
+        <rect x="645" y="256" width="100" height="110" rx="8" fill="rgba(0,200,80,.05)" stroke="rgba(0,200,80,.12)" stroke-width="1"/>
+        <rect x="660" y="268" width="66" height="80" rx="4" fill="rgba(5,30,15,.8)"/>
+        <path d="M709,268 L726,285 L709,285Z" fill="rgba(0,200,80,.3)"/>
+        <text x="693" y="300" text-anchor="middle" fill="rgba(0,200,80,.9)" font-family="'Orbitron',monospace" font-size="11" font-weight="700">X</text>
+        <!-- Grid lines -->
+        <line x1="660" y1="308" x2="726" y2="308" stroke="rgba(0,200,80,.2)" stroke-width="1"/>
+        <line x1="660" y1="316" x2="726" y2="316" stroke="rgba(0,200,80,.15)" stroke-width="1"/>
+        <line x1="682" y1="300" x2="682" y2="348" stroke="rgba(0,200,80,.15)" stroke-width="1"/>
+        <line x1="704" y1="300" x2="704" y2="348" stroke="rgba(0,200,80,.15)" stroke-width="1"/>
+        <text x="693" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Gastos.xlsx</text>
+        <text x="693" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo Excel</text>
+      </g>
+
+      <!-- Video file -->
+      <g id="file-video">
+        <rect x="755" y="256" width="100" height="110" rx="8" fill="rgba(168,85,247,.05)" stroke="rgba(168,85,247,.12)" stroke-width="1"/>
+        <rect x="770" y="268" width="66" height="80" rx="4" fill="rgba(20,5,40,.8)"/>
+        <path d="M819,268 L836,285 L819,285Z" fill="rgba(168,85,247,.3)"/>
+        <text x="803" y="300" text-anchor="middle" font-size="22">🎬</text>
+        <rect x="776" y="314" width="50" height="3" rx="1" fill="rgba(255,255,255,.12)"/>
+        <rect x="776" y="320" width="35" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <text x="803" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Clase.mp4</text>
+        <text x="803" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo de Video</text>
+      </g>
+
+      <!-- Text/TXT file -->
+      <g id="file-txt">
+        <rect x="865" y="256" width="100" height="110" rx="8" fill="rgba(20,184,166,.05)" stroke="rgba(20,184,166,.12)" stroke-width="1"/>
+        <rect x="880" y="268" width="66" height="80" rx="4" fill="rgba(5,25,25,.8)"/>
+        <path d="M929,268 L946,285 L929,285Z" fill="rgba(20,184,166,.3)"/>
+        <text x="913" y="298" text-anchor="middle" fill="rgba(20,184,166,.9)" font-family="'Orbitron',monospace" font-size="9" font-weight="700">TXT</text>
+        <rect x="886" y="308" width="50" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+        <rect x="886" y="314" width="40" height="3" rx="1" fill="rgba(255,255,255,.12)"/>
+        <rect x="886" y="320" width="45" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <rect x="886" y="326" width="30" height="3" rx="1" fill="rgba(255,255,255,.1)"/>
+        <text x="913" y="354" text-anchor="middle" fill="rgba(255,255,255,.65)" font-family="'Exo 2',sans-serif" font-size="9">Notas.txt</text>
+        <text x="913" y="365" text-anchor="middle" fill="rgba(255,255,255,.3)" font-family="'Exo 2',sans-serif" font-size="8">Archivo de Texto</text>
+      </g>
+
+      <!-- ══ ANALOGY PANEL (bottom) ══ -->
+      <rect x="191" y="400" width="899" height="210" fill="rgba(20,184,166,.03)" stroke="rgba(20,184,166,.08)" stroke-width="1"/>
+      <text x="210" y="425" fill="rgba(20,184,166,.6)" font-family="'Orbitron',monospace" font-size="8" letter-spacing="2">ANALOGÍA: COMO EN UNA BIBLIOTECA REAL</text>
+
+      <!-- Bookshelf illustration -->
+      <!-- Shelf base -->
+      <rect x="210" y="430" width="870" height="8" rx="3" fill="rgba(139,90,43,.4)"/>
+      <!-- Books (folders) on shelf -->
+      <rect x="215" y="390" width="28" height="42" rx="3" fill="rgba(255,217,61,.6)"/>
+      <rect x="215" y="390" width="4"  height="42" rx="1" fill="rgba(255,217,61,.9)"/>
+      <text x="231" y="416" text-anchor="middle" fill="rgba(0,0,0,.5)" font-family="'Exo 2',sans-serif" font-size="7" transform="rotate(-90,231,416)">FOTOS</text>
+      <rect x="248" y="393" width="24" height="39" rx="3" fill="rgba(59,130,246,.6)"/>
+      <rect x="248" y="393" width="4"  height="39" rx="1" fill="rgba(59,130,246,.9)"/>
+      <rect x="277" y="396" width="20" height="36" rx="3" fill="rgba(168,85,247,.6)"/>
+      <rect x="277" y="396" width="4"  height="36" rx="1" fill="rgba(168,85,247,.9)"/>
+      <rect x="302" y="392" width="26" height="40" rx="3" fill="rgba(255,45,155,.6)"/>
+      <rect x="302" y="392" width="4"  height="40" rx="1" fill="rgba(255,45,155,.9)"/>
+      <!-- Papers (files) sticking out of books -->
+      <rect x="220" y="387" width="5" height="8" rx="1" fill="rgba(255,255,255,.5)"/>
+      <rect x="226" y="385" width="5" height="10" rx="1" fill="rgba(255,255,255,.4)"/>
+      <rect x="252" y="389" width="5" height="8" rx="1" fill="rgba(255,255,255,.5)"/>
+      <!-- Labels -->
+      <text x="340" y="415" fill="rgba(255,255,255,.55)" font-family="'Exo 2',sans-serif" font-size="12">📚 Las <tspan fill="rgba(255,217,61,.9)" font-weight="700">CARPETAS</tspan> son como libros o archivadores:</tspan></text>
+      <text x="340" y="432" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="11">agrupan y organizan varios archivos juntos para que no se pierdan.</text>
+
+      <!-- Divider -->
+      <line x1="210" y1="445" x2="1080" y2="445" stroke="rgba(20,184,166,.1)" stroke-width="1"/>
+
+      <!-- Papers (files) illustration -->
+      <rect x="215" y="458" width="40" height="52" rx="3" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+      <rect x="218" y="462" width="28" height="3" rx="1" fill="rgba(255,255,255,.25)"/>
+      <rect x="218" y="468" width="32" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+      <rect x="218" y="474" width="24" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+      <rect x="218" y="480" width="30" height="3" rx="1" fill="rgba(255,255,255,.15)"/>
+      <text x="261" y="475" fill="rgba(255,255,255,.55)" font-family="'Exo 2',sans-serif" font-size="12">📄 Los <tspan fill="rgba(20,184,166,.9)" font-weight="700">ARCHIVOS</tspan> son como hojas de papel:</tspan>
+      <text x="261" y="492" fill="rgba(255,255,255,.4)" font-family="'Exo 2',sans-serif" font-size="11">guardan información: textos, fotos, música, videos, etc.</text>
+
+      <!-- Status bar -->
+      <rect x="10" y="598" width="1080" height="12" rx="0" fill="#080e1c"/>
+      <text x="200" y="607" fill="rgba(255,255,255,.25)" font-family="'Exo 2',sans-serif" font-size="8">8 archivos, 4 carpetas · 2.4 GB</text>
+      <text x="1080" y="607" text-anchor="end" fill="rgba(20,184,166,.4)" font-family="'Orbitron',monospace" font-size="7">UNI ACADEMY · MÓDULO 3</text>
+    </svg>
+
+    <!-- ══ HOTSPOTS ══ -->
+    <!-- Carpeta (cualquier carpeta) -->
+    <div class="hotspot" id="hs-carpeta"
+      style="left:28%;top:29%;width:100px;height:75px;" onclick="hit('carpeta')">
+      <span class="hsbadge">CARPETA</span>
+    </div>
+    <!-- Archivo de texto/Word -->
+    <div class="hotspot" id="hs-archivo-texto"
+      style="left:23%;top:60%;width:90px;height:95px;" onclick="hit('archivo-texto')">
+      <span class="hsbadge">ARCHIVO</span>
+    </div>
+    <!-- Archivo de imagen -->
+    <div class="hotspot" id="hs-archivo-imagen"
+      style="left:33%;top:60%;width:90px;height:95px;" onclick="hit('archivo-imagen')">
+      <span class="hsbadge">IMAGEN</span>
+    </div>
+    <!-- Archivo PDF -->
+    <div class="hotspot" id="hs-archivo-pdf"
+      style="left:43%;top:60%;width:90px;height:95px;" onclick="hit('archivo-pdf')">
+      <span class="hsbadge">PDF</span>
+    </div>
+    <!-- Carpeta de Tareas (identificar carpeta azul) -->
+    <div class="hotspot" id="hs-carpeta2"
+      style="left:38%;top:29%;width:100px;height:75px;" onclick="hit('carpeta2')">
+      <span class="hsbadge">CARPETA</span>
+    </div>
+    <!-- Archivo de música -->
+    <div class="hotspot" id="hs-archivo-musica"
+      style="left:52.5%;top:60%;width:90px;height:95px;" onclick="hit('archivo-musica')">
+      <span class="hsbadge">MÚSICA</span>
+    </div>
+    <!-- Carpeta de Documentos -->
+    <div class="hotspot" id="hs-carpeta3"
+      style="left:48%;top:29%;width:100px;height:75px;" onclick="hit('carpeta3')">
+      <span class="hsbadge">CARPETA</span>
+    </div>
+    <!-- Archivo de video -->
+    <div class="hotspot" id="hs-archivo-video"
+      style="left:72.5%;top:60%;width:90px;height:95px;" onclick="hit('archivo-video')">
+      <span class="hsbadge">VIDEO</span>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="leg-item">
+        <div class="leg-dot" style="background:rgba(255,217,61,.15);border-color:rgba(255,217,61,.5)"></div>
+        <span>Carpeta — agrupa archivos</span>
+      </div>
+      <div class="leg-item">
+        <div class="leg-dot" style="background:rgba(20,184,166,.15);border-color:rgba(20,184,166,.5)"></div>
+        <span>Archivo — guarda información</span>
+      </div>
+      <div class="leg-item">🔍 Haz clic en lo que te pide UNI</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay"></div>
+<div class="modal"   id="modal">
+  <div class="modal-icon"  id="mIcon">✅</div>
+  <div class="modal-title" id="mTitle">¡Correcto!</div>
+  <div class="modal-type"  id="mType"></div>
+  <div class="modal-msg"   id="mMsg"></div>
+  <button class="modal-btn"         id="mBtn"     onclick="closeModal()">SIGUIENTE →</button>
+  <button class="modal-btn restart" id="mRestart" onclick="restart()"   style="display:none">🔄 JUGAR DE NUEVO</button>
+</div>
+
+<script>
+const DATA = [
+  { id:'carpeta', name:'UNA CARPETA', icon:'📁', type:'folder', typeLabel:'CARPETA',
+    desc:'¡Encontraste una <strong>Carpeta</strong>! Las carpetas son contenedores que agrupan varios archivos juntos. Son como los archivadores o carpetas de papel de la vida real. ¡Tienen un nombre y un color!',
+    uni:'¡Correcto! 📁 Las <strong>Carpetas</strong> son como archivadores digitales. Adentro puedes meter todos tus archivos organizados.' },
+  { id:'archivo-texto', name:'UN ARCHIVO DE TEXTO (WORD)', icon:'📄', type:'file', typeLabel:'ARCHIVO',
+    desc:'¡Encontraste un <strong>Archivo de Word</strong>! Es un documento de texto donde puedes escribir cartas, tareas o redacciones. Termina en <strong>.docx</strong>.',
+    uni:'¡Muy bien! 📄 Los archivos <strong>.docx</strong> son documentos de texto hechos con Microsoft Word. ¡Perfectos para escribir tareas!' },
+  { id:'archivo-imagen', name:'UN ARCHIVO DE IMAGEN (JPG)', icon:'🖼️', type:'file', typeLabel:'ARCHIVO',
+    desc:'¡Encontraste un <strong>Archivo de Imagen</strong>! Las fotos y dibujos se guardan como archivos de imagen. El formato <strong>.jpg</strong> es el más común para fotos.',
+    uni:'¡Excelente! 🖼️ Las fotos se guardan como archivos de imagen. Los más comunes son <strong>.jpg</strong> y <strong>.png</strong>.' },
+  { id:'archivo-pdf', name:'UN ARCHIVO PDF', icon:'📋', type:'file', typeLabel:'ARCHIVO',
+    desc:'¡Encontraste un <strong>Archivo PDF</strong>! Los PDFs son documentos que se ven igual en cualquier computadora. Se usan para manuales, libros y formularios.',
+    uni:'¡Genial! 📋 Los archivos <strong>PDF</strong> son como documentos "congelados" — siempre se ven igual sin importar la computadora.' },
+  { id:'carpeta2', name:'OTRA CARPETA', icon:'📁', type:'folder', typeLabel:'CARPETA',
+    desc:'¡Otra <strong>Carpeta</strong>! Esta es azul y guarda las tareas del colegio. Puedes tener carpetas de muchos colores y con diferentes nombres para organizar mejor.',
+    uni:'¡Perfecto! 📁 Cada carpeta puede tener su propio nombre y color. Así organizas mejor toda tu información.' },
+  { id:'archivo-musica', name:'UN ARCHIVO DE MÚSICA (MP3)', icon:'🎵', type:'file', typeLabel:'ARCHIVO',
+    desc:'¡Encontraste un <strong>Archivo de Música</strong>! Las canciones y sonidos se guardan como archivos de audio. El formato <strong>.mp3</strong> es el más popular.',
+    uni:'¡Brillante! 🎵 Los archivos de música como <strong>.mp3</strong> guardan canciones y sonidos en tu computadora.' },
+  { id:'carpeta3', name:'UNA CARPETA DE DOCUMENTOS', icon:'📁', type:'folder', typeLabel:'CARPETA',
+    desc:'¡Otra <strong>Carpeta</strong>! Las carpetas pueden estar dentro de otras carpetas para crear una organización más detallada. ¡Es como poner archivadores dentro de un cajón!',
+    uni:'¡Ojo de águila! 📁 Las carpetas pueden estar unas dentro de otras. Así puedes organizar hasta el más pequeño detalle.' },
+  { id:'archivo-video', name:'UN ARCHIVO DE VIDEO (MP4)', icon:'🎬', type:'file', typeLabel:'ARCHIVO',
+    desc:'¡Encontraste un <strong>Archivo de Video</strong>! Los videos se guardan como archivos de video. El formato <strong>.mp4</strong> es el más usado hoy en día.',
+    uni:'¡Increíble! 🎬 Los archivos de video como <strong>.mp4</strong> guardan películas, clases y videos en tu computadora.' },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let queue=[], cur=null, nOk=0, nErr=0, total=DATA.length;
+
+function init(){
+  queue=shuffle([...DATA]);
+  cur=null;nOk=0;nErr=0;
+  DATA.forEach(c=>{
+    const h=document.getElementById('hs-'+c.id);if(!h)return;
+    h.className='hotspot';h.style.pointerEvents='auto';
+  });
+  upScore();nextQ();
+}
+
+function nextQ(){
+  if(!queue.length){showEnd();return;}
+  cur=queue[0];
+  document.getElementById('tIcon').textContent=cur.icon;
+  document.getElementById('tName').textContent=cur.name;
+  document.getElementById('sRem').textContent=queue.length;
+  document.getElementById('uniMsg').innerHTML=
+    '🔍 ¿Dónde está <strong>'+cur.name+'</strong>? Haz clic sobre ese elemento en el explorador. ¡Observa bien!';
+}
+
+function hit(id){
+  if(!cur)return;
+  if(id===cur.id){
+    nOk++;
+    const h=document.getElementById('hs-'+id);
+    h.className='hotspot ok';h.style.pointerEvents='none';
+    queue.shift();upScore();upProg();
+    showModal('success',cur);
+  } else {
+    nErr++;upScore();
+    const h=document.getElementById('hs-'+id);
+    h.classList.add('err');
+    setTimeout(()=>h.classList.remove('err'),420);
+    // Get what was clicked
+    const clicked=DATA.find(d=>d.id===id);
+    const msg=clicked
+      ? 'Ese es '+('aeiouAEIOU'.includes(clicked.typeLabel[0])?'un ':'una ')+clicked.typeLabel+', pero buscamos <strong>'+cur.name+'</strong>. ¡Sigue buscando!'
+      : 'Ese no es el elemento correcto. Busca <strong>'+cur.name+'</strong>.';
+    showModal('error',null,msg);
+  }
+}
+
+function showModal(type,comp,errMsg){
+  const m=document.getElementById('modal'),ov=document.getElementById('overlay');
+  if(type==='success'){
+    document.getElementById('mIcon').textContent='✅';
+    document.getElementById('mTitle').textContent='¡CORRECTO! 🎉';
+    const typeEl=document.getElementById('mType');
+    typeEl.textContent=comp.typeLabel;
+    typeEl.className='modal-type '+comp.type;
+    document.getElementById('mMsg').innerHTML=comp.desc;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent=queue.length?'¡SIGUIENTE →':'¡VER RESULTADO!';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal success show';
+    document.getElementById('uniMsg').innerHTML=comp.uni;
+    spawnConf();
+  } else {
+    document.getElementById('mIcon').textContent='❌';
+    document.getElementById('mTitle').textContent='¡CASI! INTÉNTALO DE NUEVO';
+    document.getElementById('mType').textContent='';
+    document.getElementById('mMsg').innerHTML=errMsg;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent='← SEGUIR BUSCANDO';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal error show';
+  }
+  ov.className='overlay show';
+}
+
+function showEnd(){
+  const pct=Math.round((nOk/(nOk+nErr))*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto, Explorador! 🚀 Ya distingues archivos y carpetas como un experto. ¡Tu biblioteca digital está organizada!'
+    :pct>=60
+    ?'¡Muy bien! Ya reconoces la diferencia entre archivos y carpetas. Practica un poco más.'
+    :'¡Buen intento! Recuerda: las <strong>carpetas</strong> agrupan, los <strong>archivos</strong> guardan información.';
+  document.getElementById('mIcon').innerHTML='<div class="stars">'+stars+'</div>';
+  document.getElementById('mTitle').innerHTML='<span style="color:var(--teal)">¡ACTIVIDAD COMPLETADA!</span>';
+  document.getElementById('mType').textContent='';
+  document.getElementById('mMsg').innerHTML='<div class="final-score">'+nOk+'/'+total+'</div>'+msg
+    +'<br><br><span style="font-size:11px;color:var(--muted)">Precisión: '+pct+'% · Errores: '+nErr+'</span>';
+  document.getElementById('mBtn').style.display='none';
+  document.getElementById('mRestart').style.display='block';
+  document.getElementById('modal').className='modal complete show';
+  document.getElementById('overlay').className='overlay show';
+  document.getElementById('tName').textContent='¡COMPLETADO!';
+  document.getElementById('tIcon').textContent='🏆';
+  document.getElementById('pBar').style.width='100%';
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya sabes distinguir <strong>Archivos</strong> y <strong>Carpetas</strong>. ¡Eres un Explorador Digital organizado! 📁';
+  if(pct>=60)setTimeout(bigConf,200);
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  if(!document.getElementById('modal').classList.contains('error'))nextQ();
+}
+function restart(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  init();
+}
+function upScore(){document.getElementById('sOk').textContent=nOk;document.getElementById('sErr').textContent=nErr;document.getElementById('sRem').textContent=queue.length;}
+function upProg(){document.getElementById('pBar').style.width=((total-queue.length)/total*100)+'%';}
+document.getElementById('overlay').addEventListener('click',()=>{
+  if(document.getElementById('modal').classList.contains('error'))return;
+  closeModal();
+});
+
+function spawnConf(){
+  const colors=['#14b8a6','#10b981','#00e676','#ffd93d','#00f5e4'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};
+      left:${20+Math.random()*60}vw;top:${10+Math.random()*30}vh;
+      --tx:${(Math.random()-.5)*200}px;--ty:${(Math.random()-.7)*150}px;
+      --r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#14b8a6','#10b981','#00e676','#ffd93d','#a855f7','#00f5e4'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+init();
+</script>
+</body>
+</html>
