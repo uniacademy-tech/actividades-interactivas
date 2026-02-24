@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Viaje de un Clic · Tema 4 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4; --magenta:#ff2d9b; --gold:#ffd93d;
+    --green:#00e676; --red:#ff3d3d; --purple:#a855f7; --blue:#3b82f6;
+    --bg:#060b18; --surface:#0d1628; --card:#111d35; --text:#e8f4ff; --muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;
+    min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse at 15% 40%,rgba(0,245,228,.06) 0%,transparent 50%),
+      radial-gradient(ellipse at 85% 20%,rgba(255,45,155,.05) 0%,transparent 50%),
+      radial-gradient(ellipse at 50% 90%,rgba(59,130,246,.04) 0%,transparent 50%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(0,245,228,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,228,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(0,245,228,.12);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),#0055ff);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--magenta);
+    letter-spacing:2px;border:1px solid var(--magenta);padding:4px 14px;border-radius:2px;}
+
+  /* CONTAINER */
+  .container{position:relative;z-index:5;max-width:960px;margin:0 auto;padding:24px 20px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(0,245,228,.18);border-radius:16px;padding:15px 20px;
+    margin-bottom:24px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--purple),var(--cyan));}
+  .uni-svg{width:64px;height:64px;flex-shrink:0;}
+  .speech{background:rgba(0,245,228,.05);border:1px solid rgba(0,245,228,.18);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(0,245,228,.18);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.6;}
+  .speech strong{color:var(--gold);}
+
+  /* STEP TRACKER */
+  .step-tracker{display:flex;align-items:center;justify-content:center;
+    gap:0;margin-bottom:28px;flex-wrap:wrap;row-gap:8px;}
+  .step-node{display:flex;flex-direction:column;align-items:center;gap:5px;
+    position:relative;z-index:1;}
+  .step-dot{width:36px;height:36px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;transition:all .4s cubic-bezier(.34,1.4,.64,1);}
+  .step-dot.active{border-color:var(--gold);background:rgba(255,217,61,.15);
+    box-shadow:0 0 18px rgba(255,217,61,.4);transform:scale(1.2);}
+  .step-dot.done{border-color:var(--green);background:rgba(0,230,118,.15);
+    box-shadow:0 0 12px rgba(0,230,118,.25);}
+  .step-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+    color:var(--muted);text-align:center;max-width:60px;transition:color .3s;}
+  .step-node.active .step-label{color:var(--gold);}
+  .step-node.done  .step-label{color:var(--green);}
+  .step-line{flex:1;height:2px;min-width:20px;max-width:60px;
+    background:rgba(255,255,255,.08);position:relative;top:-14px;
+    transition:background .5s;}
+  .step-line.done{background:linear-gradient(90deg,var(--green),var(--cyan));}
+
+  /* ══ SCENE CARD ══ */
+  .scene-card{background:var(--card);border:1.5px solid rgba(0,245,228,.15);
+    border-radius:22px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+    margin-bottom:24px;position:relative;}
+  .scene-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--gold));
+    z-index:2;}
+
+  /* Scene number badge */
+  .scene-num{position:absolute;top:18px;right:20px;
+    font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);
+    letter-spacing:2px;z-index:2;}
+
+  /* ── ANIMATION STAGE ── */
+  .anim-stage{
+    min-height:280px;display:flex;align-items:center;justify-content:center;
+    padding:36px 24px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,transparent 100%);}
+
+  /* Each step scene */
+  .scene{display:none;flex-direction:column;align-items:center;gap:18px;
+    animation:sceneIn .5s cubic-bezier(.34,1.2,.64,1) both;}
+  .scene.active{display:flex;}
+  @keyframes sceneIn{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+
+  /* Big emoji with glow */
+  .scene-icon{font-size:80px;line-height:1;position:relative;
+    animation:floatIcon 3s ease-in-out infinite;}
+  @keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  .scene-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;
+    text-align:center;letter-spacing:1px;}
+  .scene-body{font-size:15px;line-height:1.7;text-align:center;
+    max-width:600px;color:rgba(255,255,255,.8);}
+  .scene-body strong{color:var(--gold);}
+  .scene-body em{color:var(--cyan);font-style:normal;}
+
+  /* Component pill */
+  .comp-pill{display:inline-flex;align-items:center;gap:6px;
+    border:1px solid;border-radius:20px;padding:4px 14px;
+    font-family:'Orbitron',monospace;font-size:10px;font-weight:700;
+    letter-spacing:1px;}
+  .pill-cyan  {color:var(--cyan);  border-color:rgba(0,245,228,.4); background:rgba(0,245,228,.08);}
+  .pill-gold  {color:var(--gold);  border-color:rgba(255,217,61,.4);background:rgba(255,217,61,.08);}
+  .pill-green {color:var(--green); border-color:rgba(0,230,118,.4); background:rgba(0,230,118,.08);}
+  .pill-purple{color:var(--purple);border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.08);}
+  .pill-magenta{color:var(--magenta);border-color:rgba(255,45,155,.4);background:rgba(255,45,155,.08);}
+
+  /* Flow arrows (step 0 special) */
+  .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+  .flow-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .flow-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;padding:8px 14px;font-size:11px;font-family:'Orbitron',monospace;
+    letter-spacing:1px;text-align:center;}
+  .flow-arrow{font-size:20px;color:rgba(0,245,228,.5);}
+
+  /* Scene diagram (steps 1-5) */
+  .diagram{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin-top:4px;}
+  .diag-node{display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:10px 16px;min-width:80px;
+    transition:all .3s;}
+  .diag-node.highlight{border-color:var(--cyan);background:rgba(0,245,228,.1);
+    box-shadow:0 0 20px rgba(0,245,228,.2);}
+  .diag-node.pulse{animation:diagPulse 1.2s ease-in-out infinite;}
+  @keyframes diagPulse{0%,100%{box-shadow:0 0 8px rgba(0,245,228,.2)}
+    50%{box-shadow:0 0 28px rgba(0,245,228,.5)}}
+  .diag-icon{font-size:24px;}
+  .diag-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    color:var(--muted);text-align:center;}
+  .diag-arrow{font-size:18px;color:rgba(0,245,228,.4);}
+
+  /* Scene info box */
+  .info-box{background:rgba(0,245,228,.05);border:1px solid rgba(0,245,228,.18);
+    border-radius:12px;padding:12px 20px;max-width:560px;
+    font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;text-align:center;}
+  .info-box strong{color:var(--cyan);}
+
+  /* Scanline effect for screen scene */
+  .screen-mock{background:#040a14;border:2px solid rgba(0,245,228,.3);
+    border-radius:12px;padding:16px 22px;text-align:center;
+    position:relative;overflow:hidden;min-width:200px;}
+  .screen-mock::after{content:'';position:absolute;top:0;left:0;right:0;
+    height:2px;background:rgba(0,245,228,.15);
+    animation:scanline 2s linear infinite;}
+  @keyframes scanline{from{top:0}to{top:100%}}
+  .screen-text{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);
+    letter-spacing:1px;}
+  .screen-bars{display:flex;gap:4px;justify-content:center;margin-top:8px;}
+  .screen-bar{width:6px;border-radius:3px;background:var(--cyan);opacity:.7;}
+
+  /* ── BOTTOM CONTROLS ── */
+  .controls{padding:20px 24px;border-top:1px solid rgba(255,255,255,.06);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .ctrl-info{font-size:13px;color:var(--muted);font-style:italic;flex:1;}
+  .ctrl-info strong{color:var(--text);font-style:normal;}
+
+  .btn-next{padding:12px 32px;
+    background:linear-gradient(135deg,var(--cyan),#0055ff);
+    color:#000;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;
+    transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(0,245,228,.25);}
+  .btn-next:hover{opacity:.85;transform:translateY(-2px);}
+  .btn-next:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+  /* ══ MINI-QUIZ ══ */
+  .quiz-wrap{display:none;}
+  .quiz-wrap.visible{display:block;}
+  .quiz-header{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;
+    color:var(--gold);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .quiz-header::after{content:'';flex:1;height:1px;background:rgba(255,217,61,.2);}
+
+  .q-card{background:var(--card);border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:22px 24px;margin-bottom:16px;
+    transition:border-color .2s;}
+  .q-text{font-size:15px;font-weight:600;margin-bottom:16px;line-height:1.5;}
+  .q-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .q-opt{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+    border-radius:10px;padding:11px 16px;cursor:pointer;font-size:13px;
+    transition:all .18s;text-align:left;color:var(--text);
+    font-family:'Exo 2',sans-serif;}
+  .q-opt:hover{border-color:var(--cyan);background:rgba(0,245,228,.07);}
+  .q-opt.correct{border-color:var(--green)!important;background:rgba(0,230,118,.15)!important;
+    color:var(--green)!important;}
+  .q-opt.wrong{border-color:var(--red)!important;background:rgba(255,61,61,.15)!important;
+    color:var(--red)!important;}
+  .q-opt.disabled{pointer-events:none;}
+  .q-feedback{margin-top:12px;font-size:13px;padding:8px 14px;border-radius:8px;
+    display:none;line-height:1.5;}
+  .q-feedback.show{display:block;}
+  .q-feedback.ok {background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+  .q-feedback.err{background:rgba(255,61,61,.1); color:var(--red);  border:1px solid rgba(255,61,61,.2);}
+
+  /* ══ FINAL RESULTS ══ */
+  .final{display:none;flex-direction:column;align-items:center;gap:20px;
+    padding:40px 20px;text-align:center;}
+  .final.visible{display:flex;}
+  .final-stars{font-size:44px;letter-spacing:6px;
+    animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .final-score{font-family:'Orbitron',monospace;font-size:56px;font-weight:900;
+    background:linear-gradient(135deg,var(--cyan),var(--gold));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .final-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:3px;}
+  .final-msg{font-size:15px;line-height:1.7;max-width:520px;}
+  .final-msg strong{color:var(--gold);}
+
+  /* Flow recap */
+  .flow-recap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    justify-content:center;background:var(--card);border-radius:16px;
+    padding:18px 24px;border:1px solid rgba(0,245,228,.12);max-width:700px;width:100%;}
+  .recap-step{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .recap-icon{font-size:28px;}
+  .recap-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--muted);
+    letter-spacing:1px;text-align:center;max-width:70px;}
+  .recap-arrow{font-size:16px;color:rgba(0,245,228,.4);}
+
+  .btn-restart{padding:14px 40px;
+    background:linear-gradient(135deg,var(--gold),#ff8c00);
+    color:#000;border:none;border-radius:14px;
+    font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 8px 24px rgba(255,217,61,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .scene-icon{font-size:56px;}
+    .scene-title{font-size:17px;}
+    .q-options{grid-template-columns:1fr;}
+    .step-line{min-width:10px;max-width:30px;}
+    .flow-row,.diagram{gap:6px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">EXPLORADOR DIGITAL</div></div>
+  </div>
+  <div class="header-module">MÓDULO INICIAL · TEMA 4</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(0,245,228,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".4"/>
+      <circle cx="40" cy="57" r="5" fill="#00e676"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(0,245,228,.2)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".5"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#00f5e4"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff2d9b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🎬 ¿Alguna vez te preguntaste <strong>qué pasa dentro de tu computadora</strong> cuando haces clic en una app? ¡Hoy te lo voy a mostrar paso a paso! ¡Prepárate!</p>
+    </div>
+  </div>
+
+  <!-- STEP TRACKER -->
+  <div class="step-tracker" id="stepTracker"></div>
+
+  <!-- ══ SCENE CARD ══ -->
+  <div class="scene-card" id="sceneCard">
+    <div class="scene-num" id="sceneNum">PASO 0 / 5</div>
+
+    <div class="anim-stage" id="animStage">
+
+      <!-- SCENE 0: Intro / trigger -->
+      <div class="scene active" id="scene-0">
+        <div class="scene-icon">🎬</div>
+        <div class="scene-title" style="color:var(--cyan)">El Viaje de un Clic</div>
+        <div class="scene-body">
+          Imagina que quieres escuchar música. Haces clic en <strong>Spotify</strong>.<br>
+          Ese simple clic desencadena un <em>viaje increíble</em> dentro de tu computadora.<br><br>
+          Presiona <strong>"Siguiente"</strong> para descubrir qué pasa. 🚀
+        </div>
+        <div class="flow-row">
+          <div class="flow-item"><div class="flow-box" style="border-color:rgba(0,245,228,.2);color:var(--cyan)">👆 Clic</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-box" style="color:var(--muted)">📨 Software</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-box" style="color:var(--muted)">🧠 CPU</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-box" style="color:var(--muted)">💾 RAM</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><div class="flow-box" style="color:var(--muted)">🖥️ Pantalla</div></div>
+        </div>
+      </div>
+
+      <!-- SCENE 1: User clicks -->
+      <div class="scene" id="scene-1">
+        <div class="scene-icon">👆</div>
+        <div class="scene-title" style="color:var(--gold)">Paso 1: Tú haces clic</div>
+        <div class="scene-body">
+          Todo comienza contigo. Al hacer clic en el ícono de Spotify,
+          el <strong>ratón (hardware)</strong> detecta la acción y envía una
+          <em>señal eléctrica</em> a la computadora.<br><br>
+          Sin el hardware de entrada, ¡ninguna instrucción llegaría!
+        </div>
+        <div class="diagram">
+          <div class="diag-node highlight pulse"><div class="diag-icon">🖱️</div><div class="diag-name">RATÓN</div></div>
+          <div class="diag-arrow">⚡→</div>
+          <div class="diag-node"><div class="diag-icon">💻</div><div class="diag-name">COMPUTADORA</div></div>
+        </div>
+        <div class="info-box">
+          <strong>Hardware de entrada</strong> = dispositivos que reciben tus acciones.<br>
+          El ratón, teclado y pantalla táctil son ejemplos.
+        </div>
+      </div>
+
+      <!-- SCENE 2: Software receives -->
+      <div class="scene" id="scene-2">
+        <div class="scene-icon">📨</div>
+        <div class="scene-title" style="color:var(--magenta)">Paso 2: El Software recibe la orden</div>
+        <div class="scene-body">
+          El <strong>Sistema Operativo</strong> (Windows, macOS) recibe la señal del clic
+          y entiende que quieres abrir <em>Spotify</em>.<br><br>
+          Es como un jefe de oficina que recibe una solicitud y sabe a quién enviársela.
+        </div>
+        <div class="diagram">
+          <div class="diag-node"><div class="diag-icon">🖱️</div><div class="diag-name">RATÓN</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node highlight pulse"><div class="diag-icon">🪟</div><div class="diag-name">S. OPERATIVO</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">🧠</div><div class="diag-name">CPU</div></div>
+        </div>
+        <div class="info-box">
+          <strong>Sistema Operativo</strong> = el software que coordina todo.<br>
+          Es el intermediario entre tú y el hardware.
+        </div>
+      </div>
+
+      <!-- SCENE 3: CPU processes -->
+      <div class="scene" id="scene-3">
+        <div class="scene-icon">🧠</div>
+        <div class="scene-title" style="color:var(--purple)">Paso 3: El CPU procesa</div>
+        <div class="scene-body">
+          El <strong>CPU (Procesador)</strong> es el cerebro de la computadora.
+          Recibe las instrucciones del sistema operativo y las ejecuta
+          a <em>miles de millones de operaciones por segundo</em>.<br><br>
+          Le dice a cada componente qué hacer y cuándo.
+        </div>
+        <div class="diagram">
+          <div class="diag-node"><div class="diag-icon">🪟</div><div class="diag-name">S. OPERATIVO</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node highlight pulse" style="border-color:var(--purple);box-shadow:0 0 20px rgba(168,85,247,.3)">
+            <div class="diag-icon">🧠</div><div class="diag-name">CPU</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">💾</div><div class="diag-name">RAM</div></div>
+        </div>
+        <div class="info-box">
+          <strong>CPU</strong> = Central Processing Unit (Unidad Central de Procesamiento).<br>
+          Cuanto más rápido es, más rápido abre tus programas.
+        </div>
+      </div>
+
+      <!-- SCENE 4: RAM loads data -->
+      <div class="scene" id="scene-4">
+        <div class="scene-icon">💾</div>
+        <div class="scene-title" style="color:var(--green)">Paso 4: La RAM carga los datos</div>
+        <div class="scene-body">
+          El CPU le pide a la <strong>RAM (Memoria)</strong> que cargue
+          los archivos de Spotify para tenerlos disponibles <em>al instante</em>.<br><br>
+          La RAM es como un escritorio: cuanto más grande, más cosas puedes
+          tener abiertas al mismo tiempo sin que se ponga lenta.
+        </div>
+        <div class="diagram">
+          <div class="diag-node"><div class="diag-icon">🧠</div><div class="diag-name">CPU</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node highlight pulse" style="border-color:var(--green);box-shadow:0 0 20px rgba(0,230,118,.3)">
+            <div class="diag-icon">💾</div><div class="diag-name">RAM</div></div>
+          <div class="diag-arrow">→</div>
+          <div class="diag-node"><div class="diag-icon">🎵</div><div class="diag-name">DATOS APP</div></div>
+        </div>
+        <div class="info-box">
+          <strong>RAM</strong> = Random Access Memory (Memoria de Acceso Rápido).<br>
+          Más RAM = más apps abiertas sin lentitud.
+        </div>
+      </div>
+
+      <!-- SCENE 5: Result on screen -->
+      <div class="scene" id="scene-5">
+        <div class="scene-icon">🖥️</div>
+        <div class="scene-title" style="color:var(--cyan)">Paso 5: ¡Resultado en pantalla!</div>
+        <div class="scene-body">
+          Finalmente, el CPU le envía la imagen procesada a la
+          <strong>tarjeta gráfica</strong>, que la dibuja en el
+          <em>monitor</em>. ¡Spotify aparece en menos de un segundo!<br><br>
+          Todo ese viaje ocurre <strong>cada vez que haces clic</strong>. 🤯
+        </div>
+        <div class="screen-mock">
+          <div class="screen-text">🎵 SPOTIFY</div>
+          <div class="screen-text" style="font-size:10px;margin-top:4px;color:var(--muted)">Cargando tu música…</div>
+          <div class="screen-bars" id="screenBars">
+            <div class="screen-bar" style="height:20px;animation:barAnim 1s .0s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:30px;animation:barAnim 1s .1s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:15px;animation:barAnim 1s .2s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:25px;animation:barAnim 1s .3s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:35px;animation:barAnim 1s .4s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:20px;animation:barAnim 1s .5s ease-in-out infinite alternate"></div>
+            <div class="screen-bar" style="height:28px;animation:barAnim 1s .6s ease-in-out infinite alternate"></div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>Hardware de salida</strong> = monitor, bocinas, impresora.<br>
+          Son los que te muestran el resultado del proceso.
+        </div>
+      </div>
+
+    </div><!-- /anim-stage -->
+
+    <div class="controls">
+      <div class="ctrl-info" id="ctrlInfo">Haz clic en <strong>Siguiente</strong> para comenzar el viaje.</div>
+      <button class="btn-next" id="btnNext" onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div><!-- /scene-card -->
+
+  <!-- ══ MINI-QUIZ ══ -->
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-header">// MINI-QUIZ · COMPRUEBA LO QUE APRENDISTE</div>
+    <div id="quizContainer"></div>
+    <div style="text-align:center;margin-top:8px">
+      <button class="btn-next" id="btnQuizDone" onclick="showFinal()" style="display:none">
+        VER MI RESULTADO →
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ FINAL ══ -->
+  <div class="final" id="final">
+    <div class="final-stars" id="finalStars">⭐⭐⭐</div>
+    <div class="final-score" id="finalScore">3/3</div>
+    <div class="final-label">RESPUESTAS CORRECTAS</div>
+    <div class="final-msg"  id="finalMsg">¡Perfecto!</div>
+
+    <!-- Flow recap -->
+    <div class="flow-recap">
+      <div class="recap-step"><div class="recap-icon">👆</div><div class="recap-name">TU CLIC</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">🪟</div><div class="recap-name">S. OPERATIVO</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">🧠</div><div class="recap-name">CPU</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">💾</div><div class="recap-name">RAM</div></div>
+      <div class="recap-arrow">→</div>
+      <div class="recap-step"><div class="recap-icon">🖥️</div><div class="recap-name">PANTALLA</div></div>
+    </div>
+
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;VOLVER A VER EL VIAJE</button>
+  </div>
+
+</div><!-- /container -->
+
+<style>
+@keyframes barAnim{from{transform:scaleY(.4);opacity:.5}to{transform:scaleY(1);opacity:1}}
+</style>
+
+<script>
+// ── STEPS DATA ──
+const STEPS = [
+  { label:'INTRO',    icon:'🎬', msg:'¡Prepárate, Explorador! Vamos a descubrir el viaje de un clic. ¡Es increíble lo que pasa en milisegundos!' },
+  { label:'CLIC',     icon:'👆', msg:'¡Paso 1! El <strong>ratón</strong> es el hardware de entrada que inicia todo. Sin él, ninguna orden llegaría a la computadora.' },
+  { label:'SOFTWARE', icon:'📨', msg:'¡Paso 2! El <strong>Sistema Operativo</strong> es el software que recibe la orden y sabe cómo distribuirla. ¡Es el coordinador!' },
+  { label:'CPU',      icon:'🧠', msg:'¡Paso 3! El <strong>CPU</strong> es el cerebro — procesa millones de instrucciones por segundo. ¡Sin él nada funcionaría!' },
+  { label:'RAM',      icon:'💾', msg:'¡Paso 4! La <strong>RAM</strong> carga los datos rápidamente. Es la memoria de trabajo — cuanta más tienes, ¡más rápida va tu PC!' },
+  { label:'PANTALLA', icon:'🖥️', msg:'¡Paso 5! El <strong>monitor</strong> muestra el resultado. Todo ese viaje ocurrió en menos de un segundo. ¡Tu computadora es increíble!' },
+];
+
+const QUIZ = [
+  {
+    q: '¿Cuál es el primer componente que recibe tu clic?',
+    opts: ['🧠 El CPU', '🖱️ El Ratón (Hardware de entrada)', '💾 La RAM', '🪟 El Sistema Operativo'],
+    correct: 1,
+    fb: '¡Correcto! El <strong>ratón</strong> es el hardware de entrada que captura tu acción y la convierte en señal eléctrica.',
+    fbWrong: 'La respuesta correcta es el <strong>ratón</strong> — es el hardware de entrada que detecta tu clic primero.'
+  },
+  {
+    q: '¿Qué hace el Sistema Operativo en el proceso?',
+    opts: ['Muestra la imagen en pantalla', 'Almacena datos permanentemente', 'Coordina y envía las instrucciones al CPU', 'Conecta a internet'],
+    correct: 2,
+    fb: '¡Exacto! El <strong>Sistema Operativo</strong> actúa como coordinador — recibe la orden y la dirige al CPU.',
+    fbWrong: 'El <strong>Sistema Operativo</strong> coordina y envía instrucciones al CPU. ¡Es el jefe de la operación!'
+  },
+  {
+    q: '¿Para qué sirve la RAM en este proceso?',
+    opts: ['Dibuja los píxeles en pantalla', 'Carga los datos de la app para acceso rápido', 'Recibe el clic del ratón', 'Guarda archivos para siempre'],
+    correct: 1,
+    fb: '¡Perfecto! La <strong>RAM</strong> carga los datos de la aplicación temporalmente para que el CPU pueda usarlos rápido.',
+    fbWrong: 'La <strong>RAM</strong> carga los datos temporalmente para acceso rápido. Es la memoria de trabajo de la computadora.'
+  },
+];
+
+let currentStep = 0;
+let quizAnswers = new Array(QUIZ.length).fill(null);
+let quizCorrect = 0;
+
+function init(){
+  currentStep = 0;
+  quizAnswers = new Array(QUIZ.length).fill(null);
+  quizCorrect = 0;
+  document.getElementById('quizWrap').classList.remove('visible');
+  document.getElementById('final').classList.remove('visible');
+  document.getElementById('sceneCard').style.display='block';
+  buildTracker();
+  showStep(0);
+  buildQuiz();
+}
+
+function buildTracker(){
+  const t = document.getElementById('stepTracker');
+  t.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    if(i>0){
+      const line = document.createElement('div');
+      line.className='step-line';
+      line.id='line-'+(i-1);
+      t.appendChild(line);
+    }
+    const node = document.createElement('div');
+    node.className='step-node'+(i===0?' active':'');
+    node.id='node-'+i;
+    node.innerHTML=`<div class="step-dot${i===0?' active':''}" id="dot-${i}">${s.icon}</div>
+      <div class="step-label">${s.label}</div>`;
+    t.appendChild(node);
+  });
+}
+
+function showStep(idx){
+  // Hide all scenes
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('scene-'+idx).classList.add('active');
+
+  // Update tracker
+  STEPS.forEach((_,i)=>{
+    const node = document.getElementById('node-'+i);
+    const dot  = document.getElementById('dot-'+i);
+    node.className='step-node'+(i===idx?' active':i<idx?' done':'');
+    dot.className ='step-dot' +(i===idx?' active':i<idx?' done':'');
+    if(i>0){
+      const line = document.getElementById('line-'+(i-1));
+      if(line) line.className='step-line'+(i<=idx?' done':'');
+    }
+  });
+
+  // Scene num
+  document.getElementById('sceneNum').textContent =
+    idx===0 ? 'INTRO' : `PASO ${idx} / ${STEPS.length-1}`;
+
+  // Controls
+  const info = document.getElementById('ctrlInfo');
+  const btn  = document.getElementById('btnNext');
+  if(idx===0){
+    info.innerHTML='Haz clic en <strong>Siguiente</strong> para comenzar el viaje.';
+    btn.textContent='¡COMENZAR EL VIAJE! →';
+  } else if(idx < STEPS.length-1){
+    info.innerHTML=`Paso <strong>${idx}</strong> de <strong>${STEPS.length-1}</strong> — ¡Sigue explorando!`;
+    btn.textContent='SIGUIENTE PASO →';
+  } else {
+    info.innerHTML='¡Has visto todo el viaje! Ahora pon a prueba lo que aprendiste.';
+    btn.textContent='¡IR AL QUIZ! 🧠';
+  }
+
+  // UNI message
+  document.getElementById('uniMsg').innerHTML = STEPS[idx].msg;
+}
+
+function nextStep(){
+  if(currentStep < STEPS.length-1){
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    // Go to quiz
+    document.getElementById('sceneCard').style.display='none';
+    document.getElementById('quizWrap').classList.add('visible');
+    document.getElementById('uniMsg').innerHTML =
+      '🧠 ¡Excelente, Explorador! Ahora vamos a comprobar que entendiste el viaje. <strong>Responde las 3 preguntas</strong> sobre lo que acabas de ver. ¡Tú puedes!';
+    window.scrollTo({top: document.getElementById('quizWrap').offsetTop - 20, behavior:'smooth'});
+  }
+}
+
+function buildQuiz(){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML='';
+  QUIZ.forEach((q,qi)=>{
+    const card = document.createElement('div');
+    card.className='q-card';
+    card.id='qcard-'+qi;
+    let optsHtml = q.opts.map((o,oi)=>
+      `<button class="q-opt" id="qopt-${qi}-${oi}" onclick="answerQ(${qi},${oi})">${o}</button>`
+    ).join('');
+    card.innerHTML=`
+      <div class="q-text"><span style="color:var(--gold);font-family:'Orbitron',monospace;font-size:11px">PREGUNTA ${qi+1}</span><br>${q.q}</div>
+      <div class="q-options">${optsHtml}</div>
+      <div class="q-feedback" id="qfb-${qi}"></div>`;
+    c.appendChild(card);
+  });
+}
+
+function answerQ(qi, oi){
+  if(quizAnswers[qi]!==null) return;
+  quizAnswers[qi]=oi;
+  const q = QUIZ[qi];
+  const correct = oi===q.correct;
+  if(correct) quizCorrect++;
+
+  // Style options
+  document.querySelectorAll(`[id^="qopt-${qi}-"]`).forEach(btn=>btn.classList.add('disabled'));
+  document.getElementById(`qopt-${qi}-${oi}`).classList.add(correct?'correct':'wrong');
+  if(!correct)
+    document.getElementById(`qopt-${qi}-${q.correct}`).classList.add('correct');
+
+  // Feedback
+  const fb = document.getElementById('qfb-'+qi);
+  fb.className='q-feedback show '+(correct?'ok':'err');
+  fb.innerHTML=(correct?'✅ '+q.fb:'❌ '+q.fbWrong);
+
+  // UNI
+  document.getElementById('uniMsg').innerHTML = correct
+    ? '¡Correcto! 🎉 '+q.fb
+    : '¡Casi! 🤔 '+q.fbWrong;
+
+  // Check if all answered
+  if(quizAnswers.every(a=>a!==null))
+    document.getElementById('btnQuizDone').style.display='inline-block';
+}
+
+function showFinal(){
+  document.getElementById('quizWrap').classList.remove('visible');
+  const final = document.getElementById('final');
+  final.classList.add('visible');
+
+  const pct = Math.round((quizCorrect/QUIZ.length)*100);
+  const stars = pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg = pct>=90
+    ? '¡Perfecto, Explorador! 🚀 Entiendes <strong>exactamente</strong> cómo viaja un clic por la computadora. ¡Eres un genio digital!'
+    : pct>=60
+    ? '¡Muy bien! Ya tienes el concepto. Recuerda el flujo: <strong>Clic → S.O. → CPU → RAM → Pantalla</strong>.'
+    : '¡Buen intento! Vuelve a ver el viaje y recuerda el orden: <strong>Clic → S.O. → CPU → RAM → Pantalla</strong>.';
+
+  document.getElementById('finalStars').textContent = stars;
+  document.getElementById('finalScore').textContent = quizCorrect+'/'+QUIZ.length;
+  document.getElementById('finalMsg').innerHTML = msg;
+  document.getElementById('uniMsg').innerHTML =
+    stars+' <strong>¡Actividad completada!</strong> Respondiste '+quizCorrect+' de '+QUIZ.length+' correctas. ¡El viaje de un clic ya no tiene secretos para ti! 🚀';
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restart(){ init(); window.scrollTo({top:0,behavior:'smooth'}); }
+init();
+</script>
+</body>
+</html>
