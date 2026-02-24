@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usando el Teclado · T3 · Módulo 2 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --orange:#ff8c00;--purple:#a855f7;--violet:#7c3aed;--lavender:#c4b5fd;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(168,85,247,.06) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(168,85,247,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(168,85,247,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(168,85,247,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--purple),var(--violet));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--purple);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--purple);
+    letter-spacing:2px;border:1px solid var(--purple);padding:4px 14px;border-radius:2px;background:rgba(168,85,247,.06);}
+
+  .container{position:relative;z-index:5;max-width:1060px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(168,85,247,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan),var(--purple));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(168,85,247,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--lavender);}
+
+  /* TARGET */
+  .target-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .target-box{display:flex;align-items:center;gap:16px;background:var(--card);
+    border:2px solid var(--purple);border-radius:14px;padding:13px 22px;flex:1;min-width:240px;
+    box-shadow:0 0 30px rgba(168,85,247,.15);animation:tPulse 2s ease-in-out infinite;}
+  @keyframes tPulse{0%,100%{box-shadow:0 0 18px rgba(168,85,247,.12)}50%{box-shadow:0 0 36px rgba(168,85,247,.3)}}
+  .t-icon{font-size:32px;flex-shrink:0;}
+  .t-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:2px;}
+  .t-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#fff;}
+  .t-hint{font-size:12px;color:var(--muted);margin-top:1px;}
+  .scores{display:flex;gap:10px;}
+  .sc{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 14px;text-align:center;min-width:70px;}
+  .sc .v{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;}
+  .sc .l{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+  .sc.ok .v{color:var(--green);}
+  .sc.err .v{color:var(--red);}
+  .sc.rem .v{color:var(--purple);}
+
+  .prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:16px;overflow:hidden;}
+  .prog-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--lavender));border-radius:3px;transition:width .5s ease;width:0%;}
+
+  /* DOT TRACKER */
+  .dot-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+  .dot{width:11px;height:11px;border-radius:50%;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);transition:all .3s;}
+  .dot.ok {background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,230,118,.5);}
+  .dot.err{background:var(--red);  border-color:var(--red);  box-shadow:0 0 8px rgba(255,61,61,.5);}
+  .dot.cur{background:var(--purple);border-color:var(--purple);box-shadow:0 0 10px rgba(168,85,247,.6);transform:scale(1.4);}
+
+  /* ══ KEYBOARD ══ */
+  .kbd-wrap{background:var(--card);border:1.5px solid rgba(168,85,247,.2);border-radius:20px;
+    overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.6);}
+  .kbd-header{height:4px;background:linear-gradient(90deg,var(--purple),var(--lavender),var(--cyan));}
+  .kbd-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--purple);
+    padding:10px 16px 6px;border-bottom:1px solid rgba(168,85,247,.1);}
+  .kbd-body{padding:16px 14px 20px;overflow-x:auto;}
+
+  /* Key rows */
+  .key-row{display:flex;gap:4px;margin-bottom:4px;align-items:flex-end;}
+  .key{position:relative;border-radius:6px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#1a2845;border:1px solid rgba(255,255,255,.1);
+    transition:all .15s ease;font-family:'Orbitron',monospace;
+    min-height:42px;user-select:none;}
+  .key:hover{background:#1e3060;border-color:rgba(168,85,247,.4);transform:translateY(-2px);}
+  .key .kl{font-size:9px;font-weight:700;color:rgba(255,255,255,.65);line-height:1.1;text-align:center;padding:4px 5px;}
+  .key .kl2{font-size:7px;color:rgba(168,85,247,.6);margin-bottom:1px;}
+  .key.wide{min-width:60px;} .key.wider{min-width:80px;} .key.widest{min-width:100px;}
+  .key.space{flex:1;min-width:200px;}
+  .key.fn{min-width:36px;}
+  .key.num{min-width:38px;}
+
+  /* States */
+  .key.target{border:2px solid var(--purple) !important;background:rgba(168,85,247,.2) !important;
+    animation:keyPulse 1s ease-in-out infinite;}
+  @keyframes keyPulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0)}50%{box-shadow:0 0 0 10px rgba(168,85,247,.15)}}
+  .key.correct-hit{border:2px solid var(--green) !important;background:rgba(0,230,118,.22) !important;
+    animation:keyPop .4s ease forwards !important;}
+  @keyframes keyPop{0%{transform:translateY(-2px) scale(1)}40%{transform:translateY(-6px) scale(1.15)}100%{transform:translateY(0) scale(1)}}
+  .key.wrong-hit{border:2px solid var(--red) !important;background:rgba(255,61,61,.2) !important;
+    animation:keyShake .38s ease !important;}
+  @keyframes keyShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* ══ RESULTS ══ */
+  .results{display:none;padding:32px 20px;text-align:center;}
+  .results.visible{display:block;}
+  .res-stars{font-size:44px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .res-score{font-family:'Orbitron',monospace;font-size:60px;font-weight:900;
+    background:linear-gradient(135deg,var(--purple),var(--lavender));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+  .res-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:3px;margin-bottom:10px;}
+  .res-msg{font-size:15px;line-height:1.7;max-width:520px;margin:0 auto 20px;}
+  .res-msg strong{color:var(--lavender);}
+  .keys-recap{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:24px;}
+  .rk-card{background:var(--card);border-radius:14px;padding:14px 12px;text-align:center;
+    border:1px solid rgba(168,85,247,.18);}
+  .rk-key{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;
+    color:var(--purple);background:rgba(168,85,247,.1);border:2px solid rgba(168,85,247,.3);
+    border-radius:8px;padding:6px 12px;display:inline-block;margin-bottom:6px;}
+  .rk-name{font-family:'Orbitron',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+  .rk-desc{font-size:11px;color:rgba(255,255,255,.55);line-height:1.4;}
+  .btn-restart{padding:13px 36px;background:linear-gradient(135deg,var(--purple),var(--violet));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(168,85,247,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:700px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .key{min-height:34px;}
+    .key .kl{font-size:7px;}
+    .key.wide{min-width:46px;}.key.wider{min-width:58px;}.key.widest{min-width:72px;}
+    .key.space{min-width:120px;}
+    .kbd-body{padding:10px 6px 14px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 2 · TEMA 3</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(168,85,247,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#a855f7"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(168,85,247,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#a855f7" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#a855f7"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#c4b5fd"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#a855f7"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! ⌨️ Vamos a conocer las <strong>teclas del teclado</strong>. Te diré para qué sirve una tecla y tú tendrás que encontrarla y hacer clic en ella. ¡Observa bien el teclado!</p>
+    </div>
+  </div>
+
+  <!-- TARGET + SCORE -->
+  <div class="target-row">
+    <div class="target-box">
+      <div class="t-icon" id="tIcon">🔍</div>
+      <div>
+        <div class="t-label">// ENCUENTRA Y HAZ CLIC EN:</div>
+        <div class="t-name" id="tName">Iniciando…</div>
+        <div class="t-hint" id="tHint">Observa el teclado</div>
+      </div>
+    </div>
+    <div class="scores">
+      <div class="sc ok"><div class="v" id="sOk">0</div><div class="l">CORRECTAS</div></div>
+      <div class="sc err"><div class="v" id="sErr">0</div><div class="l">ERRORES</div></div>
+      <div class="sc rem"><div class="v" id="sRem">8</div><div class="l">RESTANTES</div></div>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="pBar"></div></div>
+  <div class="dot-row" id="dotRow"></div>
+
+  <!-- KEYBOARD -->
+  <div class="kbd-wrap" id="kbdWrap">
+    <div class="kbd-header"></div>
+    <div class="kbd-label">// TECLADO INTERACTIVO · HAZ CLIC EN LA TECLA CORRECTA</div>
+    <div class="kbd-body" id="kbdBody"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore">8/8</div>
+    <div class="res-label">TECLAS IDENTIFICADAS</div>
+    <div class="res-msg"  id="resMsg">¡Perfecto!</div>
+    <div class="keys-recap" id="recapGrid"></div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;JUGAR DE NUEVO</button>
+  </div>
+
+</div>
+
+<script>
+// ══ KEY DEFINITIONS ══
+// Each key: id, display label(s), width class, row
+const ROWS = [
+  // Row 0: Fn row
+  [
+    {id:'esc', l:'ESC', w:'fn'},{id:'f1',l:'F1',w:'fn'},{id:'f2',l:'F2',w:'fn'},
+    {id:'f3',l:'F3',w:'fn'},{id:'f4',l:'F4',w:'fn'},{id:'f5',l:'F5',w:'fn'},
+    {id:'f6',l:'F6',w:'fn'},{id:'f7',l:'F7',w:'fn'},{id:'f8',l:'F8',w:'fn'},
+    {id:'f9',l:'F9',w:'fn'},{id:'f10',l:'F10',w:'fn'},{id:'f11',l:'F11',w:'fn'},
+    {id:'f12',l:'F12',w:'fn'},
+  ],
+  // Row 1: Numbers
+  [
+    {id:'tilde',l:'~\n`',w:'num'},{id:'n1',l:'!\n1',w:'num'},{id:'n2',l:'@\n2',w:'num'},
+    {id:'n3',l:'#\n3',w:'num'},{id:'n4',l:'$\n4',w:'num'},{id:'n5',l:'%\n5',w:'num'},
+    {id:'n6',l:'^\n6',w:'num'},{id:'n7',l:'&\n7',w:'num'},{id:'n8',l:'*\n8',w:'num'},
+    {id:'n9',l:'(\n9',w:'num'},{id:'n0',l:')\n0',w:'num'},
+    {id:'minus',l:'_\n-',w:'num'},{id:'equals',l:'+\n=',w:'num'},
+    {id:'backspace',l:'← BORRAR',w:'wider',special:true},
+  ],
+  // Row 2: QWERTY
+  [
+    {id:'tab',l:'TAB',w:'wide'},{id:'q',l:'Q'},{id:'w',l:'W'},{id:'e',l:'E'},
+    {id:'r',l:'R'},{id:'t',l:'T'},{id:'y',l:'Y'},{id:'u',l:'U'},{id:'i',l:'I'},
+    {id:'o',l:'O'},{id:'p',l:'P'},{id:'lbracket',l:'{\n['},{id:'rbracket',l:'}\n]'},
+    {id:'backslash',l:'|\n\\',w:'wide'},
+  ],
+  // Row 3: ASDF
+  [
+    {id:'capslock',l:'BLOQ\nMAYÚS',w:'wider'},{id:'a',l:'A'},{id:'s',l:'S'},{id:'d',l:'D'},
+    {id:'f',l:'F'},{id:'g',l:'G'},{id:'h',l:'H'},{id:'j',l:'J'},{id:'k',l:'K'},
+    {id:'l',l:'L'},{id:'semicolon',l:':\n;'},{id:'apostrophe',l:'"\n\''},
+    {id:'enter',l:'ENTER\n↵',w:'widest',special:true},
+  ],
+  // Row 4: ZXCV
+  [
+    {id:'shift',l:'⇧ MAYÚSCULA\nSHIFT',w:'widest',special:true},{id:'z',l:'Z'},{id:'x',l:'X'},
+    {id:'c',l:'C'},{id:'v',l:'V'},{id:'b',l:'B'},{id:'n',l:'N'},{id:'m',l:'M'},
+    {id:'comma',l:'<\n,'},{id:'period',l:'>\n.'},{id:'slash',l:'?\n/'},
+    {id:'rshift',l:'⇧ SHIFT',w:'wider',special:true},
+  ],
+  // Row 5: Bottom
+  [
+    {id:'ctrl',l:'CTRL',w:'wide'},{id:'win',l:'🪟',w:'num'},{id:'alt',l:'ALT',w:'wide'},
+    {id:'space',l:'BARRA ESPACIADORA',w:'space',special:true},
+    {id:'ralt',l:'ALT',w:'wide'},{id:'rctrl',l:'CTRL',w:'wide'},
+  ],
+];
+
+// ══ TARGETS ══
+const TARGETS = [
+  { id:'letters',  keys:['a','s','d','f','q','w','e','r','t','y','u','i','o','p','z','x','c','v','b','n','m','g','h','j','k','l'],
+    name:'ZONA DE LETRAS', icon:'🔤',
+    hint:'Son las teclas con A, B, C... las 26 letras del alfabeto',
+    uni:'¡Correcto! 🔤 La <strong>zona de letras</strong> ocupa el centro del teclado. Con estas teclas escribimos todas las palabras.',
+    desc:'Las letras A-Z ocupan la parte central del teclado.' },
+  { id:'numbers',  keys:['n1','n2','n3','n4','n5','n6','n7','n8','n9','n0'],
+    name:'ZONA DE NÚMEROS', icon:'🔢',
+    hint:'Son las teclas con 1, 2, 3... en la parte de arriba',
+    uni:'¡Muy bien! 🔢 Los <strong>números</strong> están en la fila superior del teclado. También tienen símbolos como @, #, $.',
+    desc:'Los números 0-9 están en la fila superior, también con símbolos.' },
+  { id:'space',    keys:['space'],
+    name:'BARRA ESPACIADORA', icon:'↔️',
+    hint:'Es la tecla larga y ancha en la parte de abajo',
+    uni:'¡Excelente! ↔️ La <strong>Barra Espaciadora</strong> es la tecla más grande. Cada vez que la presionas crea un espacio entre palabras.',
+    desc:'La tecla más larga. Crea espacios entre palabras.' },
+  { id:'enter',    keys:['enter'],
+    name:'TECLA ENTER (INTRO)', icon:'↵',
+    hint:'Busca la tecla que dice ENTER o tiene una flecha ↵',
+    uni:'¡Perfecto! ↵ La tecla <strong>ENTER</strong> confirma acciones y baja a la siguiente línea cuando escribimos.',
+    desc:'ENTER confirma acciones y baja de línea al escribir.' },
+  { id:'backspace',keys:['backspace'],
+    name:'TECLA BORRAR (BACKSPACE)', icon:'⌫',
+    hint:'Es la tecla con la flecha ← a la derecha de los números',
+    uni:'¡Ojo de águila! ⌫ La tecla <strong>BORRAR</strong> (Backspace) elimina el carácter que está a la izquierda del cursor. ¡Para corregir errores!',
+    desc:'Backspace borra el carácter anterior al cursor.' },
+  { id:'shift',    keys:['shift','rshift'],
+    name:'TECLA MAYÚSCULA (SHIFT)', icon:'⇧',
+    hint:'Busca la tecla que dice SHIFT o tiene una flecha ⇧',
+    uni:'¡Genial! ⇧ La tecla <strong>SHIFT</strong> se mantiene presionada para escribir en MAYÚSCULAS o hacer símbolos especiales.',
+    desc:'SHIFT = mayúsculas mientras la mantienes presionada.' },
+  { id:'tab',      keys:['tab'],
+    name:'TECLA TAB', icon:'⇥',
+    hint:'Es la tecla que dice TAB a la izquierda de la Q',
+    uni:'¡Bien! ⇥ La tecla <strong>TAB</strong> mueve el cursor varios espacios a la vez. ¡Perfecta para hacer sangrías en documentos!',
+    desc:'TAB agrega varios espacios de una vez (sangría).' },
+  { id:'esc',      keys:['esc'],
+    name:'TECLA ESC (ESCAPE)', icon:'⎋',
+    hint:'Está en la esquina superior izquierda del teclado',
+    uni:'¡Perfecto! ⎋ La tecla <strong>ESC</strong> cancela o cierra lo que estás haciendo. ¡Es el botón de "salir" o "cancelar"!',
+    desc:'ESC cancela acciones o cierra menús y ventanas.' },
+];
+
+let queue=[], cur=null, nOk=0, nErr=0, results=[], total=TARGETS.length;
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+function init(){
+  queue=shuffle([...TARGETS]);
+  cur=null;nOk=0;nErr=0;results=[];
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('kbdWrap').style.display='block';
+  buildDots();
+  buildKeyboard();
+  nextTarget();
+}
+
+function buildDots(){
+  const r=document.getElementById('dotRow');r.innerHTML='';
+  TARGETS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' cur':'');d.id='dot-'+i;r.appendChild(d);
+  });
+}
+
+function buildKeyboard(){
+  const body=document.getElementById('kbdBody');body.innerHTML='';
+  ROWS.forEach(row=>{
+    const rowEl=document.createElement('div');rowEl.className='key-row';
+    row.forEach(k=>{
+      const el=document.createElement('div');
+      el.className='key'+(k.w?' '+k.w:'');
+      if(k.special)el.style.background='rgba(124,58,237,.18)';
+      el.id='key-'+k.id;
+      const lines=k.l.split('\n');
+      el.innerHTML=lines.map((l,i)=>`<span class="${i===0&&lines.length>1?'kl2':'kl'}">${l}</span>`).join('');
+      el.addEventListener('click',()=>keyClick(k.id));
+      rowEl.appendChild(el);
+    });
+    body.appendChild(rowEl);
+  });
+}
+
+function nextTarget(){
+  // clear all highlights
+  document.querySelectorAll('.key').forEach(k=>{
+    k.classList.remove('target','correct-hit','wrong-hit');
+  });
+  if(!queue.length){showResults();return;}
+  cur=queue[0];
+  document.getElementById('tIcon').textContent=cur.icon;
+  document.getElementById('tName').textContent=cur.name;
+  document.getElementById('tHint').textContent=cur.hint;
+  document.getElementById('sRem').textContent=queue.length;
+  document.getElementById('uniMsg').innerHTML=
+    '🎯 Encuentra y haz clic en la <strong>'+cur.name+'</strong>. '+cur.hint+'.';
+  upProg();
+}
+
+function keyClick(keyId){
+  if(!cur)return;
+  const isCorrect=cur.keys.includes(keyId);
+  const keyEl=document.getElementById('key-'+keyId);
+  if(isCorrect){
+    nOk++;results.push(true);
+    // highlight all correct keys
+    cur.keys.forEach(k=>{
+      const el=document.getElementById('key-'+k);
+      if(el){el.classList.add('correct-hit');el.classList.remove('target','wrong-hit');}
+    });
+    document.getElementById('uniMsg').innerHTML='✅ '+cur.uni;
+    spawnConf(keyEl);
+    upScore();
+    queue.shift();
+    const qi=total-queue.length-1;
+    const dot=document.getElementById('dot-'+qi);
+    if(dot)dot.className='dot ok';
+    const nextDot=document.getElementById('dot-'+(qi+1));
+    if(nextDot)nextDot.className='dot cur';
+    setTimeout(nextTarget,1000);
+  } else {
+    nErr++;
+    if(keyEl){
+      keyEl.classList.add('wrong-hit');
+      setTimeout(()=>keyEl.classList.remove('wrong-hit'),420);
+    }
+    document.getElementById('uniMsg').innerHTML='❌ Esa no es. '+cur.hint+'. ¡Sigue buscando!';
+    upScore();
+  }
+}
+
+function upScore(){
+  document.getElementById('sOk').textContent=nOk;
+  document.getElementById('sErr').textContent=nErr;
+}
+function upProg(){
+  document.getElementById('pBar').style.width=((total-queue.length)/total*100)+'%';
+}
+
+function spawnConf(el){
+  if(!el)return;
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const colors=['#a855f7','#c4b5fd','#00e676','#ffd93d','#00f5e4'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};
+      left:${cx}px;top:${cy}px;
+      --tx:${(Math.random()-.5)*180}px;--ty:${(Math.random()-.8)*160}px;
+      --r:${Math.random()*360}deg;animation-delay:${Math.random()*.08}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+
+function showResults(){
+  document.getElementById('kbdWrap').style.display='none';
+  const res=document.getElementById('results');res.classList.add('visible');
+  const pct=Math.round((nOk/total)*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto, Explorador! 🚀 Encontraste todas las teclas importantes. ¡Ya puedes usar el teclado como un pro!'
+    :pct>=60
+    ?'¡Muy bien! Ya conoces las teclas principales. Practica un poco más y las ubicarás sin mirar.'
+    :'¡Buen intento! Mira el teclado con calma e inténtalo de nuevo. ¡Cada intento te acerca al éxito!';
+  document.getElementById('resStars').textContent=stars;
+  document.getElementById('resScore').textContent=nOk+'/'+total;
+  document.getElementById('resMsg').innerHTML=msg;
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya conoces las teclas más importantes del teclado. ¡Eres un Explorador Digital! ⌨️';
+  document.getElementById('pBar').style.width='100%';
+  document.getElementById('recapGrid').innerHTML=TARGETS.map(t=>`
+    <div class="rk-card">
+      <div class="rk-key">${t.icon} ${t.name.split(' ')[t.name.split(' ').length-1]}</div>
+      <div class="rk-name">${t.name}</div>
+      <div class="rk-desc">${t.desc}</div>
+    </div>`).join('');
+  if(pct>=60)setTimeout(bigConf,300);
+}
+
+function bigConf(){
+  const colors=['#a855f7','#c4b5fd','#00e676','#ffd93d','#ff2d9b','#00f5e4'];
+  for(let i=0;i<45;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*260}px;--ty:${80+Math.random()*260}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){init();window.scrollTo({top:0,behavior:'smooth'});}
+init();
+</script>
+</body>
+</html>
