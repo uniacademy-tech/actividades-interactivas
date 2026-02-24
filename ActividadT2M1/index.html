@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conectando los Componentes · T2 · Módulo 1 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--magenta:#ff2d9b;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--orange:#ff8c00;--blue:#3b82f6;--purple:#a855f7;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;
+    min-height:100vh;overflow-x:hidden;user-select:none;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 15% 40%,rgba(255,140,0,.055) 0%,transparent 55%),
+               radial-gradient(ellipse at 85% 25%,rgba(0,245,228,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(255,140,0,.015) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,140,0,.015) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(255,140,0,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--orange),var(--gold));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--orange);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--orange);
+    letter-spacing:2px;border:1px solid var(--orange);padding:4px 14px;border-radius:2px;
+    background:rgba(255,140,0,.05);}
+
+  .container{position:relative;z-index:5;max-width:1060px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(255,140,0,.2);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--orange),var(--gold),var(--cyan),var(--orange));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(255,140,0,.05);border:1px solid rgba(255,140,0,.2);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(255,140,0,.2);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--orange);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* PROGRESS */
+  .prog-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+  .prog-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+  .prog-label span{color:var(--orange);}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;
+    background:linear-gradient(90deg,var(--orange),var(--gold));
+    transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+  .score-pills{display:flex;gap:8px;}
+  .pill{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    padding:5px 14px;border-radius:20px;border:1px solid;}
+  .pill.ok {color:var(--green);border-color:var(--green);background:rgba(0,230,118,.08);}
+  .pill.err{color:var(--red);  border-color:var(--red);  background:rgba(255,61,61,.08);}
+
+  /* ══ GAME LAYOUT ══ */
+  .game{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+
+  /* ── LEFT: CPU PANEL ── */
+  .cpu-panel{background:var(--card);border:1.5px solid rgba(255,140,0,.2);
+    border-radius:20px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .cpu-panel-top{height:4px;background:linear-gradient(90deg,var(--orange),var(--gold),var(--cyan));}
+  .cpu-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;
+    color:var(--orange);padding:12px 18px 8px;border-bottom:1px solid rgba(255,140,0,.1);}
+
+  /* SVG CPU back panel */
+  .cpu-svg-wrap{padding:16px;display:flex;justify-content:center;}
+  .cpu-svg{width:100%;max-width:340px;}
+
+  /* Port drop targets */
+  .port-target{
+    position:absolute;border-radius:4px;cursor:pointer;
+    border:2px dashed rgba(255,255,255,.18);
+    background:rgba(0,0,0,.2);
+    transition:all .2s ease;
+  }
+  .port-target:hover,.port-target.drag-over{
+    border-color:var(--gold);background:rgba(255,217,61,.12);
+    box-shadow:0 0 16px rgba(255,217,61,.3);}
+  .port-target.matched{
+    border-color:var(--green)!important;border-style:solid!important;
+    background:rgba(0,230,118,.2)!important;
+    box-shadow:0 0 18px rgba(0,230,118,.35)!important;
+    cursor:default;}
+  .port-target.wrong-flash{animation:portWrong .4s ease;}
+  @keyframes portWrong{0%,100%{border-color:rgba(255,255,255,.18)}
+    50%{border-color:var(--red);background:rgba(255,61,61,.18);box-shadow:0 0 14px rgba(255,61,61,.4)}}
+
+  /* Port label inside target */
+  .port-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+    font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+    color:var(--muted);white-space:nowrap;pointer-events:none;}
+  .port-target.matched .port-label{color:var(--green);}
+
+  /* Check mark on matched */
+  .port-check{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:18px;display:none;pointer-events:none;}
+  .port-target.matched .port-check{display:block;}
+
+  /* ── RIGHT: CABLE BANK ── */
+  .cable-panel{background:var(--card);border:1.5px solid rgba(255,140,0,.2);
+    border-radius:20px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .cable-panel-top{height:4px;background:linear-gradient(90deg,var(--gold),var(--orange),var(--magenta));}
+  .cable-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;
+    color:var(--gold);padding:12px 18px 8px;border-bottom:1px solid rgba(255,200,0,.1);}
+  .cable-list{padding:14px;display:flex;flex-direction:column;gap:12px;}
+
+  /* Cable chip */
+  .cable-chip{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.12);
+    border-radius:13px;padding:13px 16px;cursor:grab;
+    transition:all .18s ease;touch-action:none;position:relative;
+  }
+  .cable-chip:hover{border-color:var(--gold);background:rgba(255,217,61,.07);
+    box-shadow:0 0 16px rgba(255,217,61,.18);transform:translateY(-2px);}
+  .cable-chip.dragging{opacity:.3;cursor:grabbing;}
+  .cable-chip.matched{opacity:.4;pointer-events:none;border-color:rgba(0,230,118,.3);
+    background:rgba(0,230,118,.06);}
+  .cable-chip.wrong-shake{animation:cableShake .38s ease;}
+  @keyframes cableShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .cable-icon{font-size:26px;flex-shrink:0;}
+  .cable-info{flex:1;}
+  .cable-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--text);letter-spacing:.5px;}
+  .cable-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3;}
+  .cable-connector{font-size:18px;flex-shrink:0;}
+
+  /* Drag ghost */
+  .drag-ghost{position:fixed;pointer-events:none;z-index:999;
+    background:var(--card);border:2px solid var(--gold);border-radius:13px;
+    padding:13px 16px;box-shadow:0 12px 40px rgba(255,217,61,.4);
+    display:none;align-items:center;gap:12px;
+    opacity:.92;transform:rotate(2deg) scale(1.05);}
+
+  /* ══ RESULTS ══ */
+  .results{display:none;flex-direction:column;align-items:center;gap:22px;
+    padding:36px 20px;text-align:center;}
+  .results.visible{display:flex;}
+  .game.hidden{display:none;}
+
+  .res-stars{font-size:44px;letter-spacing:8px;
+    animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .res-score{font-family:'Orbitron',monospace;font-size:60px;font-weight:900;
+    background:linear-gradient(135deg,var(--orange),var(--gold));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+  .res-label{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:3px;}
+  .res-msg{font-size:15px;line-height:1.7;max-width:520px;}
+  .res-msg strong{color:var(--gold);}
+
+  /* Connection recap */
+  .recap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:10px;width:100%;max-width:760px;}
+  .recap-card{background:var(--card);border-radius:14px;padding:14px 16px;
+    display:flex;align-items:center;gap:10px;border:1px solid rgba(0,230,118,.25);}
+  .recap-icons{display:flex;align-items:center;gap:6px;font-size:20px;}
+  .recap-arrow{font-size:14px;color:var(--green);}
+  .recap-info{flex:1;}
+  .recap-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--text);letter-spacing:1px;}
+  .recap-tip {font-size:10px;color:var(--muted);margin-top:2px;}
+
+  .btn-restart{padding:13px 36px;
+    background:linear-gradient(135deg,var(--orange),var(--gold));
+    color:#000;border:none;border-radius:12px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(255,140,0,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}
+    100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;
+    pointer-events:none;animation:conf .85s ease-out forwards;z-index:998;}
+
+  @media(max-width:720px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .game{grid-template-columns:1fr;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 1 · TEMA 2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(255,140,0,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#ff8c00" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#ffd93d"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(255,140,0,.25)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#ff8c00" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#ff8c00"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff8c00"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🔌 Ahora vamos a <strong>conectar los cables</strong> a sus puertos correctos en la CPU. Arrastra cada cable al puerto donde pertenece. ¡Veamos si puedes conectar todo!</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-row">
+    <div class="prog-label">CONEXIONES <span id="pOk">0</span> / <span id="pTotal">5</span></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="score-pills">
+      <div class="pill ok">✓ <span id="sOk">0</span></div>
+      <div class="pill err">✗ <span id="sErr">0</span></div>
+    </div>
+  </div>
+
+  <!-- ══ GAME ══ -->
+  <div class="game" id="game">
+
+    <!-- LEFT: CPU BACK PANEL -->
+    <div class="cpu-panel">
+      <div class="cpu-panel-top"></div>
+      <div class="cpu-title">// PANEL TRASERO DE LA CPU · ARRASTRA AQUÍ</div>
+      <div class="cpu-svg-wrap">
+        <!-- Relative wrapper for port overlays -->
+        <div style="position:relative;display:inline-block;width:100%;max-width:340px;">
+          <svg class="cpu-svg" viewBox="0 0 340 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cpuBodyG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1a2440"/>
+                <stop offset="100%" stop-color="#0d1628"/>
+              </linearGradient>
+              <filter id="portGlow">
+                <feGaussianBlur stdDeviation="2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- CPU body -->
+            <rect x="10" y="10" width="320" height="460" rx="14" fill="url(#cpuBodyG)"/>
+            <rect x="10" y="10" width="320" height="460" rx="14" stroke="rgba(255,140,0,.25)" stroke-width="1.5" fill="none"/>
+
+            <!-- Top label -->
+            <text x="170" y="36" text-anchor="middle" fill="rgba(255,140,0,.5)"
+              font-family="'Orbitron',monospace" font-size="10" letter-spacing="3">PANEL TRASERO</text>
+            <line x1="30" y1="44" x2="310" y2="44" stroke="rgba(255,140,0,.12)" stroke-width="1"/>
+
+            <!-- Power supply area (top) -->
+            <rect x="20" y="52" width="300" height="80" rx="8" fill="rgba(0,0,0,.3)"/>
+            <rect x="20" y="52" width="300" height="80" rx="8" stroke="rgba(255,255,255,.06)" stroke-width="1" fill="none"/>
+            <!-- PSU fan grille -->
+            <circle cx="290" cy="92" r="32" fill="rgba(0,0,0,.4)"/>
+            <circle cx="290" cy="92" r="30" stroke="rgba(255,255,255,.08)" stroke-width="1" fill="none"/>
+            <g opacity=".4">
+              <line x1="290" y1="62" x2="290" y2="122" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+              <line x1="260" y1="92" x2="320" y2="92" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+              <line x1="269" y1="71" x2="311" y2="113" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+              <line x1="311" y1="71" x2="269" y2="113" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            </g>
+            <circle cx="290" cy="92" r="8" fill="rgba(0,0,0,.5)"/>
+            <!-- PSU label -->
+            <text x="150" y="96" text-anchor="middle" fill="rgba(255,255,255,.2)"
+              font-family="'Orbitron',monospace" font-size="8" letter-spacing="1">FUENTE DE PODER</text>
+
+            <!-- POWER PORT (IEC C13) -->
+            <rect x="28" y="64" width="54" height="38" rx="5" fill="#0a0e18"/>
+            <rect x="28" y="64" width="54" height="38" rx="5" stroke="rgba(255,140,0,.4)" stroke-width="1.5" fill="none"/>
+            <rect x="32" y="68" width="46" height="30" rx="3" fill="#060810"/>
+            <!-- IEC shape -->
+            <path d="M43,78 L43,90 M55,74 Q61,82 55,90 M37,82 Q40,74 44,74" stroke="rgba(255,140,0,.6)" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <text x="55" y="112" text-anchor="middle" fill="rgba(255,140,0,.45)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">CORRIENTE</text>
+
+            <!-- Motherboard ports area -->
+            <rect x="20" y="148" width="300" height="300" rx="8" fill="rgba(0,0,0,.2)"/>
+            <rect x="20" y="148" width="300" height="300" rx="8" stroke="rgba(255,255,255,.05)" stroke-width="1" fill="none"/>
+            <text x="30" y="165" fill="rgba(255,255,255,.15)"
+              font-family="'Orbitron',monospace" font-size="7" letter-spacing="2">PLACA MADRE</text>
+
+            <!-- HDMI PORT -->
+            <rect x="30" y="172" width="46" height="26" rx="4" fill="#0a0e18"/>
+            <rect x="30" y="172" width="46" height="26" rx="4" stroke="rgba(0,245,228,.5)" stroke-width="1.5" fill="none"/>
+            <!-- HDMI shape (trapezoid) -->
+            <path d="M34,190 L38,178 L72,178 L76,190Z" fill="rgba(0,245,228,.12)"/>
+            <path d="M34,190 L38,178 L72,178 L76,190Z" stroke="rgba(0,245,228,.4)" stroke-width="1" fill="none"/>
+            <text x="53" y="208" text-anchor="middle" fill="rgba(0,245,228,.6)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">HDMI</text>
+
+            <!-- VGA PORT -->
+            <rect x="86" y="170" width="54" height="30" rx="4" fill="#0a0e18"/>
+            <rect x="86" y="170" width="54" height="30" rx="4" stroke="rgba(168,85,247,.45)" stroke-width="1.5" fill="none"/>
+            <!-- VGA pins (3x5 grid) -->
+            <g fill="rgba(168,85,247,.5)">
+              <circle cx="96" cy="181" r="1.5"/><circle cx="102" cy="181" r="1.5"/>
+              <circle cx="108" cy="181" r="1.5"/><circle cx="114" cy="181" r="1.5"/>
+              <circle cx="120" cy="181" r="1.5"/>
+              <circle cx="99"  cy="186" r="1.5"/><circle cx="105" cy="186" r="1.5"/>
+              <circle cx="111" cy="186" r="1.5"/><circle cx="117" cy="186" r="1.5"/>
+              <circle cx="96"  cy="191" r="1.5"/><circle cx="102" cy="191" r="1.5"/>
+              <circle cx="108" cy="191" r="1.5"/><circle cx="114" cy="191" r="1.5"/>
+              <circle cx="120" cy="191" r="1.5"/>
+            </g>
+            <rect x="87" y="196" width="52" height="3" rx="1" fill="rgba(168,85,247,.2)"/>
+            <text x="113" y="210" text-anchor="middle" fill="rgba(168,85,247,.6)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">VGA</text>
+
+            <!-- USB PORTS (x4 stacked) -->
+            <rect x="30" y="220" width="46" height="18" rx="3" fill="#060810"/>
+            <rect x="30" y="220" width="46" height="18" rx="3" stroke="rgba(59,130,246,.5)" stroke-width="1.5" fill="none"/>
+            <rect x="33" y="223" width="40" height="12" rx="2" fill="rgba(59,130,246,.08)"/>
+            <text x="53" y="249" text-anchor="middle" fill="rgba(59,130,246,.6)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">USB 2.0</text>
+
+            <rect x="30" y="242" width="46" height="18" rx="3" fill="#060810"/>
+            <rect x="30" y="242" width="46" height="18" rx="3" stroke="rgba(59,130,246,.5)" stroke-width="1.5" fill="none"/>
+            <rect x="33" y="245" width="40" height="12" rx="2" fill="rgba(59,130,246,.08)"/>
+
+            <rect x="86" y="220" width="46" height="18" rx="3" fill="#060810"/>
+            <rect x="86" y="220" width="46" height="18" rx="3" stroke="rgba(0,180,255,.6)" stroke-width="1.5" fill="none"/>
+            <rect x="89" y="223" width="40" height="12" rx="2" fill="rgba(0,180,255,.12)"/>
+            <text x="109" y="249" text-anchor="middle" fill="rgba(0,180,255,.7)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">USB 3.0</text>
+
+            <rect x="86" y="242" width="46" height="18" rx="3" fill="#060810"/>
+            <rect x="86" y="242" width="46" height="18" rx="3" stroke="rgba(0,180,255,.6)" stroke-width="1.5" fill="none"/>
+            <rect x="89" y="245" width="40" height="12" rx="2" fill="rgba(0,180,255,.12)"/>
+
+            <!-- AUDIO JACK (3.5mm) row -->
+            <circle cx="30"  cy="280" r="7" fill="#060810" stroke="rgba(0,230,118,.4)" stroke-width="1.2"/>
+            <circle cx="30"  cy="280" r="4" fill="#0a0e18"/>
+            <circle cx="30"  cy="280" r="2" fill="rgba(0,230,118,.3)"/>
+            <circle cx="50"  cy="280" r="7" fill="#060810" stroke="rgba(255,100,100,.4)" stroke-width="1.2"/>
+            <circle cx="50"  cy="280" r="4" fill="#0a0e18"/>
+            <circle cx="50"  cy="280" r="2" fill="rgba(255,100,100,.3)"/>
+            <circle cx="70"  cy="280" r="7" fill="#060810" stroke="rgba(255,200,0,.4)" stroke-width="1.2"/>
+            <circle cx="70"  cy="280" r="4" fill="#0a0e18"/>
+            <circle cx="70"  cy="280" r="2" fill="rgba(255,200,0,.3)"/>
+            <text x="50" y="298" text-anchor="middle" fill="rgba(255,255,255,.25)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">AUDIO</text>
+
+            <!-- ETHERNET -->
+            <rect x="148" y="172" width="54" height="36" rx="4" fill="#060810"/>
+            <rect x="148" y="172" width="54" height="36" rx="4" stroke="rgba(255,217,61,.5)" stroke-width="1.5" fill="none"/>
+            <!-- RJ45 detail -->
+            <rect x="152" y="176" width="46" height="28" rx="2" fill="rgba(255,217,61,.06)"/>
+            <g fill="rgba(255,217,61,.45)">
+              <rect x="155" y="180" width="4" height="14" rx="1"/>
+              <rect x="161" y="180" width="4" height="14" rx="1"/>
+              <rect x="167" y="180" width="4" height="14" rx="1"/>
+              <rect x="173" y="180" width="4" height="14" rx="1"/>
+              <rect x="179" y="180" width="4" height="14" rx="1"/>
+              <rect x="185" y="180" width="4" height="14" rx="1"/>
+              <rect x="191" y="180" width="4" height="14" rx="1"/>
+              <rect x="197" y="180" width="4" height="14" rx="1"/>
+            </g>
+            <!-- LEDs -->
+            <circle cx="153" cy="202" r="2.5" fill="rgba(0,230,118,.7)"/>
+            <circle cx="198" cy="202" r="2.5" fill="rgba(255,200,0,.6)"/>
+            <text x="175" y="218" text-anchor="middle" fill="rgba(255,217,61,.6)"
+              font-family="'Orbitron',monospace" font-size="6" letter-spacing="1">ETHERNET</text>
+
+            <!-- Bottom grill -->
+            <rect x="20" y="422" width="300" height="40" rx="6" fill="rgba(0,0,0,.25)"/>
+            <text x="170" y="448" text-anchor="middle" fill="rgba(255,255,255,.1)"
+              font-family="'Orbitron',monospace" font-size="7" letter-spacing="2">VENTILACIÓN</text>
+            <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+              <line x1="30"  y1="430" x2="30"  y2="458"/>
+              <line x1="50"  y1="430" x2="50"  y2="458"/>
+              <line x1="70"  y1="430" x2="70"  y2="458"/>
+              <line x1="90"  y1="430" x2="90"  y2="458"/>
+              <line x1="110" y1="430" x2="110" y2="458"/>
+              <line x1="130" y1="430" x2="130" y2="458"/>
+              <line x1="230" y1="430" x2="230" y2="458"/>
+              <line x1="250" y1="430" x2="250" y2="458"/>
+              <line x1="270" y1="430" x2="270" y2="458"/>
+              <line x1="290" y1="430" x2="290" y2="458"/>
+              <line x1="310" y1="430" x2="310" y2="458"/>
+            </g>
+          </svg>
+
+          <!-- ── INTERACTIVE PORT TARGETS (absolutely over SVG) ── -->
+          <!-- Positions are % of the wrapper -->
+          <!-- Power IEC -->
+          <div class="port-target" id="port-power"
+            style="left:8.2%;top:13.4%;width:16%;height:8%"
+            data-port="power">
+            <span class="port-check">✓</span>
+            <span class="port-label">CORRIENTE</span>
+          </div>
+          <!-- HDMI -->
+          <div class="port-target" id="port-hdmi"
+            style="left:8.8%;top:35.8%;width:13.5%;height:5.4%"
+            data-port="hdmi">
+            <span class="port-check">✓</span>
+            <span class="port-label">HDMI</span>
+          </div>
+          <!-- VGA -->
+          <div class="port-target" id="port-vga"
+            style="left:25.3%;top:35.4%;width:15.9%;height:6.3%"
+            data-port="vga">
+            <span class="port-check">✓</span>
+            <span class="port-label">VGA</span>
+          </div>
+          <!-- USB -->
+          <div class="port-target" id="port-usb"
+            style="left:8.8%;top:45.8%;width:30%;height:8.6%"
+            data-port="usb">
+            <span class="port-check">✓</span>
+            <span class="port-label">USB</span>
+          </div>
+          <!-- Ethernet -->
+          <div class="port-target" id="port-ethernet"
+            style="left:43.5%;top:35.8%;width:16%;height:7.5%"
+            data-port="ethernet">
+            <span class="port-check">✓</span>
+            <span class="port-label">ETHERNET</span>
+          </div>
+
+        </div><!-- /relative wrapper -->
+      </div>
+    </div><!-- /cpu-panel -->
+
+    <!-- RIGHT: CABLE BANK -->
+    <div class="cable-panel">
+      <div class="cable-panel-top"></div>
+      <div class="cable-title">// CABLES · ARRASTRA AL PUERTO CORRECTO</div>
+      <div class="cable-list" id="cableList"></div>
+    </div>
+
+  </div><!-- /game -->
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore">5/5</div>
+    <div class="res-label">CONEXIONES COMPLETADAS</div>
+    <div class="res-msg"  id="resMsg">¡Todo conectado!</div>
+    <div class="recap-grid" id="recapGrid"></div>
+    <button class="btn-restart" onclick="restart()">🔄 &nbsp;INTENTAR DE NUEVO</button>
+  </div>
+
+</div>
+
+<!-- DRAG GHOST -->
+<div class="drag-ghost" id="dragGhost">
+  <span id="ghostIcon" style="font-size:22px">🔌</span>
+  <span id="ghostName" style="font-family:'Orbitron',monospace;font-size:11px">Cable</span>
+</div>
+
+<script>
+// ══ DATA ══
+const CABLES = [
+  { id:'power',    icon:'🔌', connector:'⚡',
+    name:'Cable de Corriente', desc:'Cable negro grueso para dar electricidad a la CPU',
+    port:'power',
+    tip:'Se conecta a la corriente eléctrica de la pared para encender la CPU.',
+    uni:'¡Correcto! ⚡ El <strong>Cable de Corriente</strong> da energía eléctrica a la CPU. ¡Sin él no enciende nada!' },
+  { id:'hdmi',     icon:'📺', connector:'🔷',
+    name:'Cable HDMI', desc:'Cable plano para conectar el monitor y ver imagen',
+    port:'hdmi',
+    tip:'Transmite imagen y sonido de alta definición al monitor.',
+    uni:'¡Excelente! 📺 El <strong>Cable HDMI</strong> envía la imagen al monitor en alta definición. ¡Así vemos todo en pantalla!' },
+  { id:'usb',      icon:'⌨️', connector:'🔵',
+    name:'Cable USB', desc:'Cable para teclado, ratón, impresora y más',
+    port:'usb',
+    tip:'Los puertos USB conectan teclado, ratón, impresoras y memorias USB.',
+    uni:'¡Muy bien! 🔵 El <strong>Cable USB</strong> conecta el teclado, ratón e impresora. ¡Es el más versátil de todos!' },
+  { id:'ethernet', icon:'🌐', connector:'🟡',
+    name:'Cable de Red (Ethernet)', desc:'Cable con conector cuadrado para conectarse a internet',
+    port:'ethernet',
+    tip:'El cable Ethernet conecta la computadora al router para acceder a internet.',
+    uni:'¡Perfecto! 🌐 El <strong>Cable Ethernet</strong> conecta la CPU al router para tener internet. ¡Sin él no hay páginas web!' },
+  { id:'vga',      icon:'🖥️', connector:'🟣',
+    name:'Cable VGA', desc:'Cable azul con muchos pines para monitores más antiguos',
+    port:'vga',
+    tip:'El cable VGA también conecta el monitor, pero es más antiguo que el HDMI.',
+    uni:'¡Ojo de águila! 🟣 El <strong>Cable VGA</strong> conecta monitores más antiguos. Tiene muchos pines pequeños en su conector.' },
+];
+
+let nOk=0, nErr=0, matched=new Set();
+
+const UNI_WRONG=[
+  '¡Casi! 🤔 Ese no es el puerto correcto. Observa bien la <strong>forma del conector</strong>.',
+  '¡Inténtalo de nuevo! 💡 Cada cable tiene un puerto específico. ¡Fíjate en su forma!',
+  '¡No te rindas! 🔧 Piensa: ¿para qué sirve ese cable? ¿Qué puerto le corresponde?',
+];
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+
+let dragId=null, ghostEl, offX, offY;
+
+function init(){
+  nOk=0; nErr=0; matched.clear();
+  document.getElementById('game').classList.remove('hidden');
+  document.getElementById('results').classList.remove('visible');
+  // Reset ports
+  document.querySelectorAll('.port-target').forEach(p=>{
+    p.className='port-target';p.style.pointerEvents='auto';
+  });
+  buildCables(); upScore();
+}
+
+function buildCables(){
+  const list=document.getElementById('cableList');
+  list.innerHTML='';
+  const shuffled=[...CABLES].sort(()=>Math.random()-.5);
+  shuffled.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='cable-chip';div.id='cable-'+c.id;div.dataset.cableId=c.id;
+    div.innerHTML=`<span class="cable-icon">${c.icon}</span>
+      <div class="cable-info">
+        <div class="cable-name">${c.name}</div>
+        <div class="cable-desc">${c.desc}</div>
+      </div>
+      <span class="cable-connector">${c.connector}</span>`;
+    div.addEventListener('mousedown', onMouseDown);
+    div.addEventListener('touchstart', onTouchStart, {passive:false});
+    list.appendChild(div);
+  });
+}
+
+// ── PORT TARGETS: add event listeners ──
+document.querySelectorAll('.port-target').forEach(p=>{
+  p.addEventListener('mouseenter',()=>{ if(dragId) p.classList.add('drag-over');});
+  p.addEventListener('mouseleave',()=>p.classList.remove('drag-over'));
+});
+
+// ── DRAG MOUSE ──
+function onMouseDown(e){
+  const chip=e.currentTarget;
+  if(chip.classList.contains('matched'))return;
+  dragId=chip.dataset.cableId;
+  const c=CABLES.find(x=>x.id===dragId);
+  ghostEl=document.getElementById('dragGhost');
+  document.getElementById('ghostIcon').textContent=c.icon;
+  document.getElementById('ghostName').textContent=c.name;
+  ghostEl.style.display='flex';
+  const r=chip.getBoundingClientRect();
+  offX=e.clientX-r.left; offY=e.clientY-r.top;
+  moveGhost(e.clientX,e.clientY);
+  chip.classList.add('dragging');
+  document.addEventListener('mousemove',onMouseMove);
+  document.addEventListener('mouseup',onMouseUp);
+  e.preventDefault();
+}
+function onMouseMove(e){
+  moveGhost(e.clientX,e.clientY);
+  clearDragOver();
+  const p=getPortAt(e.clientX,e.clientY);
+  if(p)p.classList.add('drag-over');
+}
+function onMouseUp(e){
+  document.removeEventListener('mousemove',onMouseMove);
+  document.removeEventListener('mouseup',onMouseUp);
+  ghostEl.style.display='none';
+  const chip=document.getElementById('cable-'+dragId);
+  if(chip)chip.classList.remove('dragging');
+  clearDragOver();
+  const p=getPortAt(e.clientX,e.clientY);
+  if(p)tryMatch(dragId,p.dataset.port,chip,p);
+  dragId=null;
+}
+
+// ── DRAG TOUCH ──
+function onTouchStart(e){
+  const chip=e.currentTarget;
+  if(chip.classList.contains('matched'))return;
+  dragId=chip.dataset.cableId;
+  const c=CABLES.find(x=>x.id===dragId);
+  ghostEl=document.getElementById('dragGhost');
+  document.getElementById('ghostIcon').textContent=c.icon;
+  document.getElementById('ghostName').textContent=c.name;
+  ghostEl.style.display='flex';
+  const t=e.touches[0];
+  const r=chip.getBoundingClientRect();
+  offX=t.clientX-r.left; offY=t.clientY-r.top;
+  moveGhost(t.clientX,t.clientY);
+  chip.classList.add('dragging');
+  document.addEventListener('touchmove',onTouchMove,{passive:false});
+  document.addEventListener('touchend',onTouchEnd);
+  e.preventDefault();
+}
+function onTouchMove(e){
+  const t=e.touches[0];
+  moveGhost(t.clientX,t.clientY);
+  clearDragOver();
+  const p=getPortAt(t.clientX,t.clientY);
+  if(p)p.classList.add('drag-over');
+  e.preventDefault();
+}
+function onTouchEnd(e){
+  document.removeEventListener('touchmove',onTouchMove);
+  document.removeEventListener('touchend',onTouchEnd);
+  ghostEl.style.display='none';
+  const chip=document.getElementById('cable-'+dragId);
+  if(chip)chip.classList.remove('dragging');
+  clearDragOver();
+  const t=e.changedTouches[0];
+  const p=getPortAt(t.clientX,t.clientY);
+  if(p)tryMatch(dragId,p.dataset.port,chip,p);
+  dragId=null;
+}
+
+function moveGhost(x,y){
+  ghostEl.style.left=(x-offX)+'px';
+  ghostEl.style.top=(y-offY)+'px';
+}
+function clearDragOver(){
+  document.querySelectorAll('.port-target.drag-over').forEach(p=>p.classList.remove('drag-over'));
+}
+function getPortAt(x,y){
+  const ports=document.querySelectorAll('.port-target:not(.matched)');
+  for(const p of ports){
+    const r=p.getBoundingClientRect();
+    if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return p;
+  }
+  return null;
+}
+
+// ── MATCH LOGIC ──
+function tryMatch(cableId,portId,chipEl,portEl){
+  const cable=CABLES.find(c=>c.id===cableId);
+  const correct=cable.port===portId;
+  if(correct){
+    nOk++; matched.add(cableId);
+    chipEl.classList.add('matched');
+    portEl.classList.add('matched');
+    portEl.style.pointerEvents='none';
+    spawnConf(portEl);
+    document.getElementById('uniMsg').innerHTML=cable.uni;
+    upScore();
+    if(matched.size===CABLES.length)setTimeout(showResults,700);
+  } else {
+    nErr++;
+    chipEl.classList.add('wrong-shake');
+    portEl.classList.add('wrong-flash');
+    setTimeout(()=>{
+      chipEl.classList.remove('wrong-shake');
+      portEl.classList.remove('wrong-flash');
+    },420);
+    document.getElementById('uniMsg').innerHTML=rand(UNI_WRONG);
+    upScore();
+  }
+}
+
+function upScore(){
+  document.getElementById('sOk').textContent=nOk;
+  document.getElementById('sErr').textContent=nErr;
+  document.getElementById('pOk').textContent=matched.size;
+  document.getElementById('progFill').style.width=(matched.size/CABLES.length*100)+'%';
+}
+
+function spawnConf(el){
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const colors=['#00e676','#ffd93d','#ff8c00','#00f5e4'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};
+      left:${cx}px;top:${cy}px;
+      --tx:${(Math.random()-.5)*180}px;
+      --ty:${(Math.random()-.7)*160}px;
+      --r:${Math.random()*360}deg;
+      animation-delay:${Math.random()*.08}s;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+
+function showResults(){
+  document.getElementById('game').classList.add('hidden');
+  const res=document.getElementById('results');res.classList.add('visible');
+  const pct=Math.round((nOk/CABLES.length)*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ? '¡Perfecto, Explorador! 🚀 Conectaste todos los cables correctamente. ¡Ya sabes exactamente dónde va cada cable!'
+    : pct>=60
+    ? '¡Muy bien! Ya conoces la mayoría de los puertos. Recuerda: cada cable tiene una forma única que solo entra en su puerto.'
+    : '¡Buen intento! La clave es observar la forma de cada conector. ¡Inténtalo de nuevo!';
+  document.getElementById('resStars').textContent=stars;
+  document.getElementById('resScore').textContent=nOk+'/'+CABLES.length;
+  document.getElementById('resMsg').innerHTML=msg;
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya sabes conectar los cables de la computadora. ¡Eres un Explorador Digital! 🔌';
+
+  // Recap
+  document.getElementById('recapGrid').innerHTML=CABLES.map(c=>`
+    <div class="recap-card">
+      <div class="recap-icons">
+        <span style="font-size:20px">${c.icon}</span>
+        <span class="recap-arrow">→</span>
+        <span style="font-size:20px">${c.connector}</span>
+      </div>
+      <div class="recap-info">
+        <div class="recap-name">${c.name}</div>
+        <div class="recap-tip">${c.tip}</div>
+      </div>
+    </div>`).join('');
+
+  // Big confetti
+  setTimeout(()=>{
+    const colors=['#00e676','#ffd93d','#ff8c00','#00f5e4','#ff2d9b'];
+    for(let i=0;i<40;i++){
+      setTimeout(()=>{
+        const p=document.createElement('div');p.className='conf';
+        p.style.cssText=`background:${colors[i%colors.length]};
+          left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+          --tx:${(Math.random()-.5)*260}px;--ty:${80+Math.random()*260}px;
+          --r:${Math.random()*720}deg;animation-duration:.9s;
+          border-radius:${Math.random()>.5?'50%':'2px'};
+          width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+        document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+      },i*28);
+    }
+  },200);
+}
+
+function restart(){init();window.scrollTo({top:0,behavior:'smooth'});}
+init();
+</script>
+</body>
+</html>
