@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear una Carpeta · T2 · Módulo 3 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--gold:#ffd93d;--green:#00e676;--red:#ff3d3d;
+    --orange:#ff8c00;--teal:#14b8a6;--emerald:#10b981;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(20,184,166,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(16,185,129,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(20,184,166,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(20,184,166,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(20,184,166,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--emerald));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--teal);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--teal);
+    letter-spacing:2px;border:1px solid var(--teal);padding:4px 14px;border-radius:2px;background:rgba(20,184,166,.06);}
+
+  .container{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:22px 18px 60px;}
+
+  /* UNI */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(20,184,166,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--teal),var(--emerald),var(--cyan),var(--teal));}
+  .uni-svg{width:60px;height:60px;flex-shrink:0;}
+  .speech{background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(20,184,166,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--emerald);}
+
+  /* INSTRUCCIONES */
+  .instr-bar{background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.18);
+    border-radius:12px;padding:12px 18px;margin-bottom:18px;
+    display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.7);}
+  .instr-bar span{font-size:20px;}
+  .instr-bar strong{color:var(--teal);}
+
+  /* SCORE ROW */
+  .score-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--emerald));transition:width .5s ease;width:0%;}
+  .attempt-pill{font-family:'Orbitron',monospace;font-size:10px;padding:4px 14px;border-radius:20px;
+    border:1px solid rgba(255,255,255,.1);color:var(--muted);}
+  .attempt-pill span{color:var(--teal);font-weight:700;}
+
+  /* MAIN LAYOUT */
+  .game-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+
+  /* STEP BANK */
+  .bank-section{background:var(--card);border:1.5px solid rgba(20,184,166,.18);border-radius:18px;overflow:hidden;}
+  .section-header{padding:14px 18px;border-bottom:1px solid rgba(20,184,166,.12);
+    font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--teal);
+    display:flex;align-items:center;gap:8px;}
+  .section-header span{font-size:16px;}
+  .bank-grid{padding:14px;display:flex;flex-direction:column;gap:8px;min-height:340px;}
+
+  /* STEPS */
+  .step-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:12px 14px;cursor:grab;
+    display:flex;align-items:center;gap:12px;
+    transition:all .18s ease;user-select:none;}
+  .step-card:hover{border-color:var(--teal);background:rgba(20,184,166,.08);
+    transform:translateX(4px);box-shadow:0 4px 16px rgba(20,184,166,.15);}
+  .step-card.dragging{opacity:.45;cursor:grabbing;transform:scale(.97);}
+  .step-card.placed{opacity:.35;border-style:dashed;cursor:default;pointer-events:none;}
+  .step-illus{width:54px;height:44px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.2);}
+  .step-text{flex:1;}
+  .step-num-badge{font-family:'Orbitron',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:2px;}
+  .step-desc{font-size:12px;line-height:1.4;color:rgba(255,255,255,.8);}
+  .drag-handle{color:rgba(255,255,255,.2);font-size:16px;cursor:grab;padding:0 2px;}
+
+  /* ORDER ZONE */
+  .order-section{background:var(--card);border:1.5px solid rgba(20,184,166,.18);border-radius:18px;overflow:hidden;}
+  .order-slots{padding:14px;display:flex;flex-direction:column;gap:8px;min-height:340px;}
+
+  .slot{border:2px dashed rgba(20,184,166,.2);border-radius:12px;min-height:68px;
+    display:flex;align-items:center;justify-content:center;padding:8px;
+    transition:all .2s ease;position:relative;}
+  .slot.drag-over{border-color:var(--teal);background:rgba(20,184,166,.1);
+    box-shadow:0 0 18px rgba(20,184,166,.25);}
+  .slot.filled{border-style:solid;border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.05);}
+  .slot.correct{border-color:var(--green)!important;background:rgba(0,230,118,.08)!important;
+    animation:slotPop .4s ease;}
+  .slot.wrong{border-color:var(--red)!important;background:rgba(255,61,61,.08)!important;
+    animation:slotShake .38s ease;}
+  @keyframes slotPop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes slotShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .slot-num{position:absolute;top:6px;left:10px;font-family:'Orbitron',monospace;
+    font-size:9px;color:rgba(20,184,166,.4);letter-spacing:1px;}
+  .slot-hint{font-family:'Orbitron',monospace;font-size:9px;color:rgba(255,255,255,.15);
+    letter-spacing:1px;text-align:center;}
+  .slot-content{width:100%;}
+
+  /* Placed card inside slot */
+  .placed-card{background:rgba(20,184,166,.08);border:1.5px solid rgba(20,184,166,.25);
+    border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;
+    cursor:pointer;transition:all .15s;}
+  .placed-card:hover{background:rgba(255,61,61,.1);border-color:rgba(255,61,61,.3);}
+  .placed-card:hover .placed-remove{opacity:1;}
+  .placed-remove{font-size:14px;color:var(--red);opacity:0;transition:opacity .15s;margin-left:auto;flex-shrink:0;}
+  .placed-icon{font-size:20px;flex-shrink:0;}
+  .placed-text{font-size:11px;line-height:1.4;color:rgba(255,255,255,.75);}
+  .placed-card.confirmed{cursor:default;}
+  .placed-card.confirmed:hover{background:rgba(20,184,166,.08);border-color:rgba(20,184,166,.25);}
+  .placed-card.confirmed:hover .placed-remove{opacity:0;}
+
+  /* CHECK BTN */
+  .check-wrap{padding:14px 18px;border-top:1px solid rgba(20,184,166,.1);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .slots-filled{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .slots-filled span{color:var(--teal);font-weight:700;}
+  .btn-check{padding:10px 28px;background:linear-gradient(135deg,var(--teal),var(--emerald));
+    color:#fff;border:none;border-radius:10px;font-family:'Orbitron',monospace;
+    font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;
+    transition:opacity .18s,transform .18s;box-shadow:0 4px 16px rgba(20,184,166,.3);}
+  .btn-check:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-check:not(:disabled):hover{opacity:.85;transform:translateY(-2px);}
+
+  /* RESULT PANEL */
+  .result-panel{display:none;background:var(--card);border-radius:20px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);}
+  .result-panel.visible{display:block;}
+  .rp-top{height:4px;background:linear-gradient(90deg,var(--teal),var(--emerald),var(--cyan));}
+  .rp-body{padding:36px 28px;text-align:center;}
+  .rp-stars{font-size:44px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .rp-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;
+    color:var(--teal);margin:8px 0 4px;}
+  .rp-sub{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:20px;}
+  .rp-msg{font-size:14px;line-height:1.7;max-width:540px;margin:0 auto 24px;color:rgba(255,255,255,.8);}
+  .rp-msg strong{color:var(--emerald);}
+
+  /* Correct order recap */
+  .recap-list{text-align:left;margin-bottom:24px;}
+  .recap-item{display:flex;align-items:center;gap:12px;padding:10px 14px;
+    border-radius:10px;margin-bottom:6px;background:rgba(20,184,166,.06);
+    border:1px solid rgba(20,184,166,.15);}
+  .recap-n{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;
+    color:var(--teal);width:22px;text-align:center;flex-shrink:0;}
+  .recap-icon{font-size:20px;flex-shrink:0;}
+  .recap-text{font-size:12px;color:rgba(255,255,255,.75);}
+
+  .btn-restart{padding:12px 32px;background:linear-gradient(135deg,var(--teal),var(--emerald));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 6px 20px rgba(20,184,166,.3);}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* Confetti */
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:700px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .game-layout{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 3 · TEMA 2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(20,184,166,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#14b8a6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#14b8a6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#10b981"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#14b8a6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📁 Voy a mostrarte los pasos para <strong>crear una carpeta</strong> en Windows, pero están todos revueltos. ¡Ponlos en el orden correcto!</p>
+    </div>
+  </div>
+
+  <!-- INSTRUCCIONES -->
+  <div class="instr-bar">
+    <span>👆</span>
+    <div>Haz clic en cada paso del lado izquierdo para colocarlo en el orden correcto del lado derecho. Haz clic en un paso ya colocado para quitarlo. Cuando termines, pulsa <strong>VERIFICAR ORDEN</strong>.</div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-row">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="attempt-pill">Intentos: <span id="attempts">0</span></div>
+  </div>
+
+  <!-- GAME -->
+  <div class="game-layout" id="gameLayout">
+
+    <!-- BANK -->
+    <div class="bank-section">
+      <div class="section-header"><span>🔀</span> PASOS (en desorden)</div>
+      <div class="bank-grid" id="bankGrid"></div>
+    </div>
+
+    <!-- ORDER ZONE -->
+    <div class="order-section">
+      <div class="section-header"><span>✅</span> Orden correcto (del 1 al 6)</div>
+      <div class="order-slots" id="orderSlots"></div>
+      <div class="check-wrap">
+        <div class="slots-filled">Pasos colocados: <span id="filledCount">0</span> / 6</div>
+        <button class="btn-check" id="btnCheck" disabled onclick="checkOrder()">VERIFICAR ORDEN ✓</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESULT PANEL -->
+  <div class="result-panel" id="resultPanel">
+    <div class="rp-top"></div>
+    <div class="rp-body">
+      <div class="rp-stars" id="rpStars">⭐⭐⭐</div>
+      <div class="rp-title" id="rpTitle">¡PERFECTO!</div>
+      <div class="rp-sub">MÓDULO 3 · TEMA 2 · COMPLETADO</div>
+      <div class="rp-msg"  id="rpMsg"></div>
+      <div class="recap-list" id="recapList"></div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;INTENTAR DE NUEVO</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STEPS = [
+  { id:1, icon:'🖥️', illus:'🖥️',
+    short:'Ve al Escritorio',
+    desc:'Ve al <strong>Escritorio</strong> de Windows — la pantalla principal con los íconos.' },
+  { id:2, icon:'🖱️', illus:'🖱️',
+    short:'Clic derecho en espacio vacío',
+    desc:'Haz <strong>clic derecho</strong> en un espacio vacío del escritorio (donde no haya íconos).' },
+  { id:3, icon:'📋', illus:'📋',
+    short:'Selecciona "Nuevo"',
+    desc:'En el menú que aparece, busca y haz clic en la opción <strong>"Nuevo"</strong>.' },
+  { id:4, icon:'📁', illus:'📁',
+    short:'Selecciona "Carpeta"',
+    desc:'En el submenú que aparece, haz clic en <strong>"Carpeta"</strong>.' },
+  { id:5, icon:'⌨️', illus:'⌨️',
+    short:'Escribe el nombre',
+    desc:'Escribe el <strong>nombre</strong> que quieres darle a tu carpeta (ej: "Mis Fotos").' },
+  { id:6, icon:'↵', illus:'↵',
+    short:'Presiona Enter',
+    desc:'Presiona la tecla <strong>Enter</strong> para confirmar el nombre. ¡Listo, carpeta creada!' },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let placed=new Array(6).fill(null); // slots 0-5
+let attempts=0, confirmed=false;
+
+function init(){
+  placed=new Array(6).fill(null);
+  attempts=0;confirmed=false;
+  document.getElementById('gameLayout').style.display='grid';
+  document.getElementById('resultPanel').classList.remove('visible');
+  document.getElementById('attempts').textContent=0;
+  document.getElementById('progFill').style.width='0%';
+  document.getElementById('uniMsg').innerHTML='¡Hola, Explorador! 📁 Voy a mostrarte los pasos para <strong>crear una carpeta</strong> en Windows, pero están todos revueltos. ¡Ponlos en el orden correcto!';
+  renderBank();
+  renderSlots();
+}
+
+function renderBank(){
+  const grid=document.getElementById('bankGrid');
+  grid.innerHTML='';
+  const shuffled=shuffle([...STEPS]);
+  shuffled.forEach(s=>{
+    const isPlaced=placed.some(p=>p&&p.id===s.id);
+    const div=document.createElement('div');
+    div.className='step-card'+(isPlaced?' placed':'');
+    div.id='bank-'+s.id;
+    div.innerHTML=`
+      <div class="step-illus">${s.illus}</div>
+      <div class="step-text">
+        <div class="step-num-badge">PASO</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+      <div class="drag-handle">⠿</div>`;
+    if(!isPlaced) div.addEventListener('click',()=>placeNext(s));
+    grid.appendChild(div);
+  });
+}
+
+function renderSlots(){
+  const container=document.getElementById('orderSlots');
+  container.innerHTML='';
+  for(let i=0;i<6;i++){
+    const slot=document.createElement('div');
+    slot.className='slot'+(placed[i]?' filled':'');
+    slot.id='slot-'+i;
+    slot.innerHTML=`<div class="slot-num">PASO ${i+1}</div>`;
+    if(placed[i]){
+      const s=placed[i];
+      const card=document.createElement('div');
+      card.className='placed-card'+(confirmed?' confirmed':'');
+      card.innerHTML=`
+        <div class="placed-icon">${s.icon}</div>
+        <div class="placed-text">${s.desc}</div>
+        <div class="placed-remove">✕</div>`;
+      if(!confirmed) card.addEventListener('click',()=>removePlaced(i));
+      slot.appendChild(card);
+    } else {
+      slot.innerHTML+=`<div class="slot-hint">ARRASTRA O HAZ CLIC EN UN PASO</div>`;
+    }
+    container.appendChild(slot);
+  }
+  const filled=placed.filter(Boolean).length;
+  document.getElementById('filledCount').textContent=filled;
+  document.getElementById('btnCheck').disabled=filled<6;
+  document.getElementById('progFill').style.width=(filled/6*100)+'%';
+}
+
+function placeNext(step){
+  if(confirmed)return;
+  // Find first empty slot
+  const idx=placed.findIndex(p=>!p);
+  if(idx===-1)return;
+  placed[idx]=step;
+  renderBank();
+  renderSlots();
+  document.getElementById('uniMsg').innerHTML=
+    '👍 Colocaste <strong>"'+step.short+'"</strong> en el paso '+(idx+1)+'. ¡Sigue!';
+}
+
+function removePlaced(idx){
+  if(confirmed)return;
+  placed[idx]=null;
+  // Compact: shift remaining down
+  const compact=placed.filter(Boolean);
+  placed=new Array(6).fill(null);
+  compact.forEach((s,i)=>placed[i]=s);
+  renderBank();
+  renderSlots();
+  document.getElementById('uniMsg').innerHTML='↩️ Paso quitado. Puedes volver a colocarlo en el orden correcto.';
+}
+
+function checkOrder(){
+  attempts++;
+  document.getElementById('attempts').textContent=attempts;
+  confirmed=true;
+  let allCorrect=true;
+  placed.forEach((s,i)=>{
+    const slot=document.getElementById('slot-'+i);
+    if(!s){allCorrect=false;return;}
+    const isCorrect=s.id===(i+1);
+    slot.classList.add(isCorrect?'correct':'wrong');
+    if(!isCorrect)allCorrect=false;
+    setTimeout(()=>slot.classList.remove('correct','wrong'),800);
+  });
+
+  const correctCount=placed.filter((s,i)=>s&&s.id===(i+1)).length;
+
+  if(allCorrect){
+    document.getElementById('uniMsg').innerHTML='🎉 ¡<strong>PERFECTO!</strong> ¡Todos los pasos en el orden correcto! ¡Sabes crear carpetas!';
+    document.getElementById('progFill').style.width='100%';
+    setTimeout(()=>showResult(true,correctCount),700);
+  } else {
+    confirmed=false;
+    document.getElementById('uniMsg').innerHTML='❌ <strong>'+correctCount+' de 6</strong> pasos correctos. Los incorrectos se marcan en rojo. ¡Ajústalos e intenta de nuevo!';
+    // Re-render so cards become clickable again
+    renderSlots();
+    renderBank();
+  }
+}
+
+function showResult(perfect,correct){
+  document.getElementById('gameLayout').style.display='none';
+  const rp=document.getElementById('resultPanel');rp.classList.add('visible');
+  const stars=attempts===1?'⭐⭐⭐':attempts<=2?'⭐⭐':'⭐';
+  const msg=attempts===1
+    ?'¡Increíble! 🚀 Lo ordenaste perfecto en el <strong>primer intento</strong>. ¡Eres todo un experto en organización!'
+    :attempts<=2
+    ?'¡Muy bien! 💪 Lo lograste en <strong>'+attempts+' intentos</strong>. Recuerda estos pasos y la próxima vez será a la primera.'
+    :'¡Lo conseguiste! 🌟 Tardaste <strong>'+attempts+' intentos</strong>, pero al final lo lograste. ¡Practica y lo memorizarás!';
+  document.getElementById('rpStars').textContent=stars;
+  document.getElementById('rpTitle').textContent=perfect?'¡ORDEN PERFECTO!':'¡COMPLETADO!';
+  document.getElementById('rpMsg').innerHTML=msg;
+  document.getElementById('recapList').innerHTML=
+    STEPS.map(s=>`<div class="recap-item">
+      <div class="recap-n">${s.id}</div>
+      <div class="recap-icon">${s.icon}</div>
+      <div class="recap-text">${s.desc}</div>
+    </div>`).join('');
+  if(attempts<=2)setTimeout(bigConf,200);
+}
+
+function restart(){
+  document.getElementById('resultPanel').classList.remove('visible');
+  init();
+}
+
+function bigConf(){
+  const colors=['#14b8a6','#10b981','#00e676','#ffd93d','#a855f7','#00f5e4'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};
+        left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;
+        --r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+init();
+</script>
+</body>
+</html>
