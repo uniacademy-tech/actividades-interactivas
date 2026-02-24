@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuentra la Tecnología · Tema 5 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00f5e4;--magenta:#ff2d9b;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--orange:#ff8c00;
+    --bg:#060b18;--card:#111d35;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;
+    min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 50%,rgba(0,245,228,.05) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(255,45,155,.04) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(0,245,228,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,228,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(0,245,228,.12);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),#0055ff);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#000;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--magenta);
+    letter-spacing:2px;border:1px solid var(--magenta);padding:4px 14px;border-radius:2px;}
+
+  .container{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:22px 20px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(0,245,228,.18);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--gold),var(--cyan));}
+  .uni-svg{width:64px;height:64px;flex-shrink:0;}
+  .speech{background:rgba(0,245,228,.05);border:1px solid rgba(0,245,228,.18);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(0,245,228,.18);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* TARGET + SCORE */
+  .target-section{display:flex;align-items:center;justify-content:space-between;
+    gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .target-box{display:flex;align-items:center;gap:14px;background:var(--card);
+    border:2px solid var(--gold);border-radius:14px;padding:11px 20px;
+    flex:1;min-width:230px;animation:pulse-gold 2.2s ease-in-out infinite;}
+  @keyframes pulse-gold{0%,100%{box-shadow:0 0 18px rgba(255,217,61,.12);}
+    50%{box-shadow:0 0 36px rgba(255,217,61,.28);}}
+  .target-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);letter-spacing:2px;margin-bottom:2px;}
+  .target-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#fff;}
+  .target-icon{font-size:30px;}
+  .scores{display:flex;gap:10px;flex-wrap:wrap;}
+  .sc{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;
+    padding:8px 14px;text-align:center;min-width:74px;}
+  .sc .v{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;}
+  .sc .l{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+  .sc.ok .v{color:var(--green);}.sc.err .v{color:var(--red);}.sc.rem .v{color:var(--cyan);}
+
+  .prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:18px;overflow:hidden;}
+  .prog-bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));
+    border-radius:3px;transition:width .5s ease;width:0%;}
+
+  /* ══ ROOM SCENE ══ */
+  .scene-wrap{position:relative;border:2px solid rgba(255,200,100,.2);
+    border-radius:22px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.7);background:#1a0e08;}
+  .scene-label{position:absolute;top:11px;left:15px;
+    font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;
+    color:rgba(255,200,100,.6);z-index:10;
+    background:rgba(20,10,5,.75);padding:3px 10px;border-radius:4px;
+    border:1px solid rgba(255,200,100,.2);}
+  .room-svg{width:100%;display:block;}
+
+  /* HOTSPOTS */
+  .hotspot{position:absolute;cursor:pointer;border-radius:50%;
+    border:2.5px dashed rgba(255,200,80,.55);
+    width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,200,80,.08);
+    transition:all .2s ease;transform:translate(-50%,-50%);}
+  .hotspot:hover{background:rgba(255,200,80,.22);border-color:var(--gold);
+    border-style:solid;transform:translate(-50%,-50%) scale(1.15);
+    box-shadow:0 0 20px rgba(255,200,80,.4);}
+  .hotspot.ok{border-color:var(--green)!important;border-style:solid!important;
+    background:rgba(0,230,118,.2)!important;
+    box-shadow:0 0 22px rgba(0,230,118,.45)!important;
+    animation:popOk .4s ease;cursor:default;}
+  .hotspot.err{border-color:var(--red)!important;border-style:solid!important;
+    background:rgba(255,61,61,.2)!important;animation:shake .38s ease;}
+  @keyframes popOk{0%{transform:translate(-50%,-50%) scale(1)}
+    50%{transform:translate(-50%,-50%) scale(1.35)}
+    100%{transform:translate(-50%,-50%) scale(1)}}
+  @keyframes shake{0%,100%{transform:translate(-50%,-50%) translateX(0)}
+    25%{transform:translate(-50%,-50%) translateX(-7px)}
+    75%{transform:translate(-50%,-50%) translateX(7px)}}
+  .hotspot.ok::after{content:'✓';font-size:22px;color:var(--green);font-weight:900;
+    text-shadow:0 0 8px rgba(0,230,118,.8);}
+  .hotspot.err::after{content:'✗';font-size:22px;color:var(--red);font-weight:900;}
+  /* Pulse ring on active hotspot */
+  .hotspot:not(.ok):not(.err)::before{content:'';position:absolute;inset:-6px;
+    border-radius:50%;border:2px solid rgba(255,200,80,.25);
+    animation:pulseRing 2s ease-in-out infinite;}
+  @keyframes pulseRing{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.2);opacity:0}}
+
+  .hsbadge{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;
+    color:var(--gold);background:rgba(10,6,2,.9);padding:3px 9px;
+    border-radius:4px;border:1px solid rgba(255,200,80,.3);
+    white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;
+    position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);z-index:20;}
+  .hotspot:hover .hsbadge{opacity:1;}
+  .hotspot.ok .hsbadge{opacity:1;color:var(--green);border-color:var(--green);}
+
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:90;
+    opacity:0;pointer-events:none;transition:opacity .28s;backdrop-filter:blur(5px);}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.72);
+    background:#0d1628;border-radius:20px;padding:28px 34px;text-align:center;
+    z-index:100;box-shadow:0 32px 90px rgba(0,0,0,.85);
+    opacity:0;pointer-events:none;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    min-width:300px;max-width:88vw;}
+  .modal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+  .modal.success{border:2px solid var(--green);}
+  .modal.error  {border:2px solid var(--red);}
+  .modal.complete{border:2px solid var(--gold);}
+  .modal-icon{font-size:46px;margin-bottom:8px;}
+  .modal-title{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;margin-bottom:6px;}
+  .modal.success .modal-title{color:var(--green);}
+  .modal.error   .modal-title{color:var(--red);}
+  .modal.complete .modal-title{color:var(--gold);}
+  .modal-msg{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:16px;}
+  .modal-msg strong{color:var(--gold);}
+  /* Category tags in modal */
+  .modal-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+  .mtag{font-family:'Orbitron',monospace;font-size:9px;padding:3px 12px;
+    border-radius:20px;border:1px solid;letter-spacing:1px;}
+  .mtag-hw{color:var(--magenta);border-color:rgba(255,45,155,.4);background:rgba(255,45,155,.08);}
+  .mtag-sw{color:var(--cyan);   border-color:rgba(0,245,228,.4); background:rgba(0,245,228,.08);}
+  .mtag-both{color:var(--gold); border-color:rgba(255,217,61,.4);background:rgba(255,217,61,.08);}
+  .modal-btn{background:linear-gradient(135deg,var(--cyan),#0055ff);color:#000;
+    border:none;border-radius:10px;padding:10px 24px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    cursor:pointer;letter-spacing:1px;transition:opacity .18s;}
+  .modal-btn:hover{opacity:.82;}
+  .modal-btn.restart{background:linear-gradient(135deg,var(--gold),#ff8c00);
+    margin-top:8px;display:block;width:100%;}
+  .stars{font-size:28px;letter-spacing:4px;margin-bottom:5px;}
+  .final-score{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--gold);margin:5px 0;}
+
+  @media(max-width:680px){
+    .header{padding:10px 14px;}
+    .container{padding:12px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .hotspot{width:40px;height:40px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">EXPLORADOR DIGITAL</div></div>
+  </div>
+  <div class="header-module">MÓDULO INICIAL · TEMA 5</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(0,245,228,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".4"/>
+      <circle cx="40" cy="57" r="5" fill="#00e676"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="27" y="48" width="26" height="2" rx="1" fill="rgba(0,245,228,.2)"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#00f5e4" stroke-width="1.5" stroke-opacity=".5"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#00f5e4"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <circle cx="48" cy="25" r="5" fill="#ffd93d"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#ff2d9b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🏠 La tecnología está <strong>en todas partes</strong>, ¡no solo en la computadora! Observa esta habitación y encuentra el objeto que te pido. ¿Listo?</p>
+    </div>
+  </div>
+
+  <!-- TARGET + SCORE -->
+  <div class="target-section">
+    <div class="target-box">
+      <div class="target-icon" id="tIcon">🔍</div>
+      <div>
+        <div class="target-label">// ENCUENTRA AHORA:</div>
+        <div class="target-name" id="tName">INICIANDO…</div>
+      </div>
+    </div>
+    <div class="scores">
+      <div class="sc ok"><div class="v" id="sOk">0</div><div class="l">CORRECTOS</div></div>
+      <div class="sc err"><div class="v" id="sErr">0</div><div class="l">ERRORES</div></div>
+      <div class="sc rem"><div class="v" id="sRem">8</div><div class="l">RESTANTES</div></div>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="pBar"></div></div>
+
+  <!-- ══ ROOM SCENE ══ -->
+  <div class="scene-wrap" id="sceneWrap">
+    <div class="scene-label">// HABITACIÓN COTIDIANA · TECH SCAN ACTIVO</div>
+
+    <!-- ══════════════════════════════
+         ILLUSTRATED COZY BEDROOM/LIVING ROOM SVG
+    ══════════════════════════════ -->
+    <svg class="room-svg" viewBox="0 0 1100 640" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Room gradients -->
+        <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2a1a0e"/>
+          <stop offset="100%" stop-color="#1e1208"/>
+        </linearGradient>
+        <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3d2410"/>
+          <stop offset="100%" stop-color="#2a1808"/>
+        </linearGradient>
+        <linearGradient id="rugG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#6b2e2e"/>
+          <stop offset="100%" stop-color="#4a1f1f"/>
+        </linearGradient>
+        <!-- Window -->
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a3a6e"/>
+          <stop offset="100%" stop-color="#2e5fa8"/>
+        </linearGradient>
+        <!-- TV -->
+        <linearGradient id="tvG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a0e18"/>
+          <stop offset="100%" stop-color="#060910"/>
+        </linearGradient>
+        <linearGradient id="tvScr" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0d2040"/>
+          <stop offset="100%" stop-color="#051028"/>
+        </linearGradient>
+        <!-- Sofa -->
+        <linearGradient id="sofaG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5a3a28"/>
+          <stop offset="100%" stop-color="#3d2618"/>
+        </linearGradient>
+        <!-- Lamp -->
+        <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,220,120,.5)"/>
+          <stop offset="100%" stop-color="rgba(255,150,50,0)"/>
+        </radialGradient>
+        <!-- Smart watch glow -->
+        <radialGradient id="watchGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(0,245,228,.4)"/>
+          <stop offset="100%" stop-color="rgba(0,245,228,0)"/>
+        </radialGradient>
+        <!-- Filters -->
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glowWarm">
+          <feGaussianBlur stdDeviation="8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="shadow">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
+        </filter>
+        <filter id="shadowSm">
+          <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity=".4"/>
+        </filter>
+      </defs>
+
+      <!-- ══ WALLS & FLOOR ══ -->
+      <rect width="1100" height="640" fill="url(#wallG)"/>
+      <!-- Wall texture panels -->
+      <rect x="0"    y="0"   width="1100" height="420" fill="url(#wallG)"/>
+      <rect x="60"   y="40"  width="280"  height="340" rx="4" fill="rgba(255,255,255,.015)" stroke="rgba(255,200,100,.06)" stroke-width="1"/>
+      <rect x="400"  y="40"  width="300"  height="340" rx="4" fill="rgba(255,255,255,.015)" stroke="rgba(255,200,100,.06)" stroke-width="1"/>
+      <rect x="760"  y="40"  width="280"  height="340" rx="4" fill="rgba(255,255,255,.015)" stroke="rgba(255,200,100,.06)" stroke-width="1"/>
+      <!-- Wainscoting -->
+      <rect x="0" y="390" width="1100" height="32" fill="rgba(80,45,15,.5)"/>
+      <rect x="0" y="390" width="1100" height="2"  fill="rgba(255,200,100,.12)"/>
+      <rect x="0" y="420" width="1100" height="2"  fill="rgba(255,200,100,.08)"/>
+
+      <!-- Floor -->
+      <rect x="0" y="422" width="1100" height="218" fill="url(#floorG)"/>
+      <!-- Floor planks -->
+      <line x1="0" y1="422" x2="1100" y2="422" stroke="rgba(255,200,100,.1)" stroke-width="2"/>
+      <line x1="0" y1="470" x2="1100" y2="470" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+      <line x1="0" y1="520" x2="1100" y2="520" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+      <line x1="0" y1="570" x2="1100" y2="570" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+      <line x1="0" y1="620" x2="1100" y2="620" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+      <!-- Vertical plank lines -->
+      <line x1="220"  y1="422" x2="220"  y2="640" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <line x1="440"  y1="422" x2="440"  y2="640" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <line x1="660"  y1="422" x2="660"  y2="640" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <line x1="880"  y1="422" x2="880"  y2="640" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <!-- Plank offset stagger -->
+      <line x1="110"  y1="470" x2="110"  y2="520" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+      <line x1="330"  y1="520" x2="330"  y2="570" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+      <line x1="550"  y1="470" x2="550"  y2="520" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+      <line x1="770"  y1="520" x2="770"  y2="570" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+      <line x1="990"  y1="470" x2="990"  y2="520" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
+
+      <!-- ══ WINDOW ══ -->
+      <!-- Window frame -->
+      <rect x="400" y="50" width="300" height="260" rx="6" fill="#2a1a0e" filter="url(#shadow)"/>
+      <rect x="408" y="56" width="284" height="248" rx="4" fill="url(#skyG)"/>
+      <!-- Window cross -->
+      <rect x="544" y="56" width="8" height="248" fill="rgba(42,26,14,.7)"/>
+      <rect x="408" y="174" width="284" height="8" fill="rgba(42,26,14,.7)"/>
+      <!-- Stars/moon outside -->
+      <circle cx="450" cy="100" r="1.5" fill="rgba(255,255,255,.7)"/>
+      <circle cx="520" cy="80"  r="1"   fill="rgba(255,255,255,.6)"/>
+      <circle cx="600" cy="110" r="1.5" fill="rgba(255,255,255,.7)"/>
+      <circle cx="650" cy="90"  r="1"   fill="rgba(255,255,255,.6)"/>
+      <circle cx="470" cy="140" r="1"   fill="rgba(255,255,255,.5)"/>
+      <!-- Moon -->
+      <circle cx="630" cy="130" r="22" fill="rgba(255,240,200,.85)"/>
+      <circle cx="642" cy="122" r="18" fill="rgba(30,58,110,.7)"/>
+      <!-- City silhouette outside -->
+      <rect x="408" y="248" width="60"  height="56" fill="rgba(10,18,40,.8)"/>
+      <rect x="470" y="262" width="40"  height="42" fill="rgba(10,18,40,.8)"/>
+      <rect x="512" y="236" width="30"  height="68" fill="rgba(10,18,40,.8)"/>
+      <rect x="544" y="254" width="50"  height="50" fill="rgba(10,18,40,.8)"/>
+      <rect x="596" y="244" width="36"  height="60" fill="rgba(10,18,40,.8)"/>
+      <rect x="634" y="258" width="58"  height="46" fill="rgba(10,18,40,.8)"/>
+      <!-- Curtains -->
+      <path d="M400,56 Q380,180 390,310 L408,310 L408,56Z" fill="rgba(100,40,20,.65)"/>
+      <path d="M700,56 Q720,180 710,310 L692,310 L692,56Z" fill="rgba(100,40,20,.65)"/>
+      <!-- Curtain folds detail -->
+      <path d="M400,56 Q395,130 398,200" stroke="rgba(0,0,0,.2)" stroke-width="2" fill="none"/>
+      <path d="M700,56 Q705,130 702,200" stroke="rgba(0,0,0,.2)" stroke-width="2" fill="none"/>
+      <!-- Window glow on floor -->
+      <ellipse cx="550" cy="440" rx="130" ry="18" fill="rgba(30,60,140,.12)"/>
+
+      <!-- ══ FLOOR RUG ══ -->
+      <ellipse cx="550" cy="550" rx="320" ry="80" fill="url(#rugG)"/>
+      <ellipse cx="550" cy="550" rx="320" ry="80" stroke="rgba(150,70,50,.4)" stroke-width="1" fill="none"/>
+      <ellipse cx="550" cy="550" rx="290" ry="68" fill="none" stroke="rgba(200,100,70,.2)" stroke-width="2"/>
+      <ellipse cx="550" cy="550" rx="240" ry="55" fill="none" stroke="rgba(200,100,70,.15)" stroke-width="1"/>
+      <!-- Rug pattern -->
+      <ellipse cx="550" cy="550" rx="100" ry="30" fill="none" stroke="rgba(200,100,70,.12)" stroke-width="2"/>
+
+      <!-- ══ TV UNIT / ENTERTAINMENT CENTER ══ -->
+      <!-- TV stand/cabinet -->
+      <rect x="120" y="330" width="360" height="100" rx="8" fill="#2e1c0a" filter="url(#shadow)"/>
+      <rect x="120" y="330" width="360" height="6" rx="4" fill="rgba(255,200,100,.1)"/>
+      <!-- Cabinet doors -->
+      <rect x="130" y="345" width="155" height="75" rx="5" fill="#261508"/>
+      <rect x="295" y="345" width="175" height="75" rx="5" fill="#261508"/>
+      <rect x="130" y="345" width="155" height="75" rx="5" stroke="rgba(255,200,100,.08)" stroke-width="1" fill="none"/>
+      <rect x="295" y="345" width="175" height="75" rx="5" stroke="rgba(255,200,100,.08)" stroke-width="1" fill="none"/>
+      <!-- Door handles -->
+      <rect x="200" y="378" width="14" height="5" rx="2" fill="rgba(255,200,100,.3)"/>
+      <rect x="356" y="378" width="14" height="5" rx="2" fill="rgba(255,200,100,.3)"/>
+
+      <!-- TV -->
+      <rect x="90"  y="150" width="420" height="190" rx="12" fill="url(#tvG)" filter="url(#shadow)"/>
+      <rect x="90"  y="150" width="420" height="190" rx="12" stroke="rgba(40,25,10,.8)" stroke-width="2" fill="none"/>
+      <!-- Screen -->
+      <rect x="102" y="160" width="396" height="162" rx="7" fill="url(#tvScr)"/>
+      <!-- TV content (movie scene) -->
+      <rect x="102" y="160" width="396" height="162" rx="7" fill="rgba(0,20,60,.4)"/>
+      <!-- Content on screen - abstract scene -->
+      <rect x="102" y="265" width="396" height="57"  rx="0" fill="rgba(20,10,5,.6)"/><!-- ground -->
+      <ellipse cx="300" cy="220" rx="180" ry="80" fill="rgba(30,50,120,.3)"/><!-- sky area -->
+      <!-- Character silhouette -->
+      <rect x="276" y="240" width="12" height="28" rx="3" fill="rgba(0,0,0,.7)"/>
+      <circle cx="282" cy="234" r="8" fill="rgba(0,0,0,.7)"/>
+      <!-- Subtitle bar -->
+      <rect x="150" y="296" width="300" height="14" rx="3" fill="rgba(0,0,0,.5)"/>
+      <rect x="175" y="299" width="250" height="5"  rx="2" fill="rgba(255,255,255,.2)"/>
+      <!-- Netflix-like logo on screen corner -->
+      <rect x="110" y="165" width="28" height="20" rx="2" fill="rgba(180,20,20,.7)"/>
+      <text x="124" y="179" text-anchor="middle" fill="rgba(255,255,255,.8)" font-family="serif" font-size="11" font-weight="bold">N</text>
+      <!-- TV Power LED -->
+      <circle cx="490" cy="334" r="3" fill="rgba(0,245,228,.6)" filter="url(#glow)">
+        <animate attributeName="opacity" values="1;.4;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <!-- TV base / stand -->
+      <rect x="278" y="338" width="44" height="10" rx="3" fill="#261508"/>
+      <rect x="270" y="346" width="60" height="6"  rx="3" fill="#1e1006"/>
+
+      <!-- ══ GAMING CONSOLE (under TV cabinet) ══ -->
+      <rect x="140" y="357" width="100" height="24" rx="5" fill="#1a1a2e" filter="url(#shadowSm)"/>
+      <rect x="140" y="357" width="100" height="24" rx="5" stroke="rgba(100,100,200,.2)" stroke-width="1" fill="none"/>
+      <!-- Console disc slot -->
+      <rect x="158" y="365" width="50" height="4" rx="2" fill="rgba(0,0,0,.5)"/>
+      <rect x="158" y="365" width="50" height="4" rx="2" stroke="rgba(100,100,200,.15)" stroke-width=".5" fill="none"/>
+      <!-- Console buttons -->
+      <circle cx="220" cy="369" r="3" fill="#00b4ff" opacity=".6"/>
+      <circle cx="228" cy="369" r="3" fill="rgba(255,255,255,.2)"/>
+      <!-- Console LED strip -->
+      <rect x="140" y="379" width="100" height="2" rx="1" fill="rgba(100,100,255,.4)" filter="url(#glow)"/>
+
+      <!-- GAME CONTROLLER on cabinet top -->
+      <rect x="310" y="320" width="80" height="34" rx="14" fill="#1a1a2e" filter="url(#shadowSm)"/>
+      <rect x="310" y="320" width="80" height="34" rx="14" stroke="rgba(100,100,200,.2)" stroke-width="1" fill="none"/>
+      <!-- Controller grips -->
+      <rect x="310" y="338" width="22" height="18" rx="8" fill="#141424"/>
+      <rect x="368" y="338" width="22" height="18" rx="8" fill="#141424"/>
+      <!-- D-pad -->
+      <rect x="322" y="328" width="8" height="20" rx="2" fill="rgba(255,255,255,.12)"/>
+      <rect x="318" y="332" width="16" height="8" rx="2" fill="rgba(255,255,255,.12)"/>
+      <!-- ABXY buttons -->
+      <circle cx="375" cy="329" r="3" fill="rgba(0,180,255,.5)"/>
+      <circle cx="381" cy="335" r="3" fill="rgba(255,50,50,.5)"/>
+      <circle cx="369" cy="335" r="3" fill="rgba(50,255,50,.5)"/>
+      <circle cx="375" cy="341" r="3" fill="rgba(255,200,0,.5)"/>
+
+      <!-- ══ FLOOR LAMP ══ -->
+      <!-- Lamp base -->
+      <ellipse cx="880" cy="432" rx="28" ry="7" fill="#1e1208"/>
+      <rect x="876" y="140" width="8" height="294" rx="4" fill="#2a1a0a"/>
+      <!-- Lamp arm bend -->
+      <path d="M880,155 Q900,140 920,145" stroke="#2a1a0a" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <!-- Lamp shade -->
+      <path d="M900,110 L940,110 L950,148 L890,148Z" fill="#8b5e3c"/>
+      <path d="M900,110 L940,110 L950,148 L890,148Z" stroke="rgba(255,200,100,.15)" stroke-width="1" fill="none"/>
+      <!-- Bulb glow -->
+      <ellipse cx="920" cy="148" rx="40" ry="30" fill="url(#lampGlow)" filter="url(#glowWarm)"/>
+      <circle cx="920" cy="140" r="8" fill="rgba(255,230,150,.9)"/>
+      <!-- Lamp glow on wall -->
+      <ellipse cx="920" cy="260" rx="140" ry="160" fill="rgba(255,180,60,.04)"/>
+      <!-- Lamp glow on floor -->
+      <ellipse cx="880" cy="450" rx="100" ry="28" fill="rgba(255,160,50,.06)"/>
+
+      <!-- ══ BOOKSHELF ══ -->
+      <rect x="820" y="140" width="120" height="290" rx="5" fill="#2e1a08" filter="url(#shadow)"/>
+      <rect x="820" y="140" width="120" height="6"   rx="3" fill="rgba(255,200,100,.1)"/>
+      <!-- Shelves -->
+      <rect x="820" y="220" width="120" height="6" rx="2" fill="#1e1006"/>
+      <rect x="820" y="300" width="120" height="6" rx="2" fill="#1e1006"/>
+      <rect x="820" y="380" width="120" height="6" rx="2" fill="#1e1006"/>
+      <!-- Books row 1 -->
+      <rect x="826" y="155" width="14" height="62" rx="2" fill="#8b2020"/>
+      <rect x="842" y="162" width="12" height="55" rx="2" fill="#2060a0"/>
+      <rect x="856" y="155" width="10" height="62" rx="2" fill="#20802a"/>
+      <rect x="868" y="160" width="14" height="57" rx="2" fill="#806020"/>
+      <rect x="884" y="155" width="10" height="62" rx="2" fill="#602080"/>
+      <rect x="896" y="162" width="14" height="55" rx="2" fill="#204060"/>
+      <rect x="912" y="155" width="12" height="62" rx="2" fill="#802020"/>
+      <rect x="926" y="162" width="10" height="55" rx="2" fill="#206060"/>
+      <!-- Books row 2 -->
+      <rect x="826" y="228" width="12" height="68" rx="2" fill="#605020"/>
+      <rect x="840" y="232" width="16" height="64" rx="2" fill="#402060"/>
+      <rect x="858" y="228" width="10" height="68" rx="2" fill="#204020"/>
+      <rect x="870" y="234" width="14" height="62" rx="2" fill="#602020"/>
+      <rect x="886" y="228" width="12" height="68" rx="2" fill="#206080"/>
+      <rect x="900" y="232" width="14" height="64" rx="2" fill="#804020"/>
+      <rect x="916" y="228" width="10" height="68" rx="2" fill="#204060"/>
+      <rect x="928" y="232" width="10" height="64" rx="2" fill="#402040"/>
+      <!-- Decorative item on shelf 2 - small plant -->
+      <rect x="826" y="280" width="18" height="16" rx="3" fill="rgba(80,40,10,.6)"/>
+      <circle cx="835" cy="272" r="10" fill="rgba(20,80,20,.7)"/>
+      <circle cx="829" cy="278" r="7"  fill="rgba(30,90,25,.6)"/>
+      <circle cx="841" cy="278" r="7"  fill="rgba(25,85,22,.6)"/>
+      <!-- Books row 3 -->
+      <rect x="826" y="308" width="14" height="68" rx="2" fill="#20408a"/>
+      <rect x="842" y="312" width="10" height="64" rx="2" fill="#8a4020"/>
+      <rect x="854" y="308" width="14" height="68" rx="2" fill="#208a50"/>
+      <rect x="870" y="312" width="12" height="64" rx="2" fill="#6a2080"/>
+      <rect x="884" y="308" width="10" height="68" rx="2" fill="#208060"/>
+      <rect x="896" y="312" width="14" height="64" rx="2" fill="#804040"/>
+      <rect x="912" y="308" width="10" height="68" rx="2" fill="#406020"/>
+      <rect x="924" y="312" width="14" height="64" rx="2" fill="#204880"/>
+
+      <!-- ══ SOFA ══ -->
+      <!-- Sofa body -->
+      <rect x="350" y="430" width="460" height="140" rx="18" fill="url(#sofaG)" filter="url(#shadow)"/>
+      <!-- Sofa backrest -->
+      <rect x="350" y="400" width="460" height="56" rx="14" fill="#6a4530"/>
+      <rect x="350" y="400" width="460" height="10" rx="7" fill="rgba(255,255,255,.06)"/>
+      <!-- Sofa armrests -->
+      <rect x="340" y="415" width="38" height="100" rx="10" fill="#5a3a28"/>
+      <rect x="782" y="415" width="38" height="100" rx="10" fill="#5a3a28"/>
+      <!-- Sofa cushions -->
+      <rect x="362" y="438" width="138" height="118" rx="12" fill="#7a5040"/>
+      <rect x="366" y="442" width="130" height="110" rx="10" fill="#724838"/>
+      <rect x="362" y="438" width="138" height="6" rx="6" fill="rgba(255,255,255,.05)"/>
+      <rect x="512" y="438" width="138" height="118" rx="12" fill="#7a5040"/>
+      <rect x="516" y="442" width="130" height="110" rx="10" fill="#724838"/>
+      <rect x="512" y="438" width="138" height="6" rx="6" fill="rgba(255,255,255,.05)"/>
+      <rect x="660" y="438" width="120" height="118" rx="12" fill="#7a5040"/>
+      <rect x="664" y="442" width="112" height="110" rx="10" fill="#724838"/>
+      <rect x="660" y="438" width="120" height="6" rx="6" fill="rgba(255,255,255,.05)"/>
+      <!-- Sofa pillow 1 -->
+      <rect x="374" y="408" width="60" height="60" rx="8" fill="#4a2818"/>
+      <rect x="376" y="410" width="56" height="56" rx="7" fill="#5a3020"/>
+      <line x1="404" y1="410" x2="404" y2="466" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <line x1="376" y1="438" x2="432" y2="438" stroke="rgba(0,0,0,.2)" stroke-width="1"/>
+      <!-- Sofa pillow 2 (with phone on it) -->
+      <rect x="520" y="408" width="65" height="60" rx="8" fill="#603818"/>
+      <rect x="522" y="410" width="61" height="56" rx="7" fill="#724020"/>
+
+      <!-- ══ COFFEE TABLE ══ -->
+      <rect x="385" y="555" width="330" height="14" rx="5" fill="#2e1808" filter="url(#shadowSm)"/>
+      <rect x="385" y="555" width="330" height="4" rx="3" fill="rgba(255,200,100,.1)"/>
+      <!-- Table top -->
+      <rect x="380" y="538" width="340" height="22" rx="6" fill="#3a2010"/>
+      <rect x="380" y="538" width="340" height="4" rx="3" fill="rgba(255,200,100,.08)"/>
+      <!-- Table legs -->
+      <rect x="395" y="569" width="14" height="50" rx="4" fill="#2a1608"/>
+      <rect x="691" y="569" width="14" height="50" rx="4" fill="#2a1608"/>
+      <!-- Table feet -->
+      <rect x="388" y="616" width="28" height="6" rx="3" fill="#221205"/>
+      <rect x="684" y="616" width="28" height="6" rx="3" fill="#221205"/>
+
+      <!-- ══ ITEMS ON TABLE ══ -->
+      <!-- Remote control -->
+      <rect x="420" y="520" width="22" height="50" rx="8" fill="#1a1a28" filter="url(#shadowSm)"/>
+      <rect x="420" y="520" width="22" height="50" rx="8" stroke="rgba(255,255,255,.08)" stroke-width="1" fill="none"/>
+      <circle cx="431" cy="532" r="5" fill="#ff3030" opacity=".7"/>
+      <rect x="424" y="542" width="14" height="4" rx="2" fill="rgba(255,255,255,.15)"/>
+      <rect x="424" y="550" width="6"  height="4" rx="2" fill="rgba(255,255,255,.1)"/>
+      <rect x="433" y="550" width="6"  height="4" rx="2" fill="rgba(255,255,255,.1)"/>
+      <rect x="424" y="558" width="14" height="4" rx="2" fill="rgba(255,255,255,.1)"/>
+
+      <!-- Coffee mug -->
+      <rect x="640" y="516" width="36" height="36" rx="6" fill="#3a2010"/>
+      <rect x="640" y="516" width="36" height="36" rx="6" stroke="rgba(255,200,100,.15)" stroke-width="1" fill="none"/>
+      <rect x="644" y="520" width="28" height="28" rx="4" fill="#4a2a14"/>
+      <!-- Coffee liquid -->
+      <ellipse cx="658" cy="528" rx="12" ry="4" fill="#2a1408"/>
+      <!-- Mug handle -->
+      <path d="M676,526 Q686,526 686,534 Q686,542 676,542" stroke="#3a2010" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- Steam -->
+      <path d="M650,514 Q653,508 650,502" stroke="rgba(255,255,255,.1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M658,512 Q661,506 658,500" stroke="rgba(255,255,255,.1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+      <!-- ══ SMART SPEAKER (on shelf/side table) ══ -->
+      <rect x="50" y="390" width="52" height="50" rx="14" fill="#1a1a28" filter="url(#shadowSm)"/>
+      <rect x="50" y="390" width="52" height="50" rx="14" stroke="rgba(0,200,255,.2)" stroke-width="1" fill="none"/>
+      <!-- Speaker mesh -->
+      <rect x="55" y="398" width="42" height="28" rx="4" fill="rgba(0,0,0,.3)"/>
+      <line x1="55" y1="404" x2="97" y2="404" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="55" y1="410" x2="97" y2="410" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="55" y1="416" x2="97" y2="416" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="55" y1="422" x2="97" y2="422" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <!-- Speaker LED ring -->
+      <rect x="60" y="432" width="32" height="4" rx="2" fill="rgba(0,200,255,.5)" filter="url(#glow)">
+        <animate attributeName="opacity" values="1;.4;1" dur="2.5s" repeatCount="indefinite"/>
+      </rect>
+      <!-- Speaker top button -->
+      <circle cx="76" cy="396" r="4" fill="rgba(255,255,255,.15)"/>
+
+      <!-- ══ SMARTPHONE (on sofa pillow) ══ -->
+      <rect x="528" y="398" width="28" height="50" rx="6" fill="#141420" filter="url(#shadowSm)"/>
+      <rect x="528" y="398" width="28" height="50" rx="6" stroke="rgba(100,100,200,.25)" stroke-width="1" fill="none"/>
+      <!-- Phone screen -->
+      <rect x="531" y="402" width="22" height="40" rx="4" fill="#0a1428"/>
+      <!-- Screen content - app grid -->
+      <rect x="533" y="406" width="8"  height="8"  rx="2" fill="rgba(255,100,50,.6)"/>
+      <rect x="544" y="406" width="8"  height="8"  rx="2" fill="rgba(50,150,255,.6)"/>
+      <rect x="533" y="418" width="8"  height="8"  rx="2" fill="rgba(50,200,100,.6)"/>
+      <rect x="544" y="418" width="8"  height="8"  rx="2" fill="rgba(255,200,50,.6)"/>
+      <rect x="533" y="430" width="8"  height="8"  rx="2" fill="rgba(200,50,200,.6)"/>
+      <rect x="544" y="430" width="8"  height="8"  rx="2" fill="rgba(50,200,200,.6)"/>
+      <!-- Phone notch -->
+      <rect x="538" y="402" width="8" height="3" rx="1" fill="rgba(0,0,0,.6)"/>
+      <!-- Home bar -->
+      <rect x="537" y="439" width="10" height="2" rx="1" fill="rgba(255,255,255,.2)"/>
+      <!-- Screen glow -->
+      <rect x="531" y="402" width="22" height="40" rx="4" fill="rgba(100,150,255,.05)"/>
+
+      <!-- ══ SMART WATCH (on side table / wrist area) ══ -->
+      <rect x="960" y="420" width="34" height="40" rx="9" fill="#1a1a2e" filter="url(#shadowSm)"/>
+      <rect x="960" y="420" width="34" height="40" rx="9" stroke="rgba(0,245,228,.25)" stroke-width="1" fill="none"/>
+      <!-- Watch band -->
+      <rect x="964" y="414" width="26" height="10" rx="4" fill="#141428"/>
+      <rect x="964" y="456" width="26" height="10" rx="4" fill="#141428"/>
+      <!-- Watch screen -->
+      <rect x="963" y="424" width="28" height="28" rx="6" fill="#040820"/>
+      <rect x="963" y="424" width="28" height="28" rx="6" fill="url(#watchGlow)"/>
+      <!-- Watch face content -->
+      <text x="977" y="437" text-anchor="middle" fill="rgba(0,245,228,.9)" font-family="'Orbitron',monospace" font-size="6" font-weight="700">10:42</text>
+      <text x="977" y="446" text-anchor="middle" fill="rgba(255,255,255,.4)" font-family="monospace" font-size="5">LUN 22</text>
+      <!-- Health icon -->
+      <text x="977" y="454" text-anchor="middle" font-size="7">❤️</text>
+      <!-- Crown button -->
+      <rect x="992" y="432" width="4" height="12" rx="2" fill="#141428"/>
+
+      <!-- ══ TABLET (on bookshelf) ══ -->
+      <rect x="826" y="155" width="0" height="0"/><!-- placeholder handled below -->
+      <!-- Actually put tablet leaning on shelf -->
+      <rect x="945" y="308" width="52" height="68" rx="7" fill="#181828" filter="url(#shadowSm)"/>
+      <rect x="945" y="308" width="52" height="68" rx="7" stroke="rgba(100,100,220,.2)" stroke-width="1" fill="none"/>
+      <!-- Tablet screen -->
+      <rect x="949" y="312" width="44" height="56" rx="5" fill="#06101e"/>
+      <!-- Tablet screen content -->
+      <rect x="951" y="314" width="40" height="20" rx="3" fill="rgba(30,60,140,.5)"/>
+      <rect x="953" y="316" width="36" height="3"  rx="1" fill="rgba(255,255,255,.15)"/>
+      <rect x="953" y="321" width="24" height="3"  rx="1" fill="rgba(255,255,255,.1)"/>
+      <rect x="953" y="326" width="30" height="3"  rx="1" fill="rgba(255,255,255,.08)"/>
+      <!-- App icons on tablet -->
+      <rect x="951" y="338" width="10" height="10" rx="2" fill="rgba(255,100,50,.5)"/>
+      <rect x="964" y="338" width="10" height="10" rx="2" fill="rgba(50,150,255,.5)"/>
+      <rect x="977" y="338" width="10" height="10" rx="2" fill="rgba(50,200,100,.5)"/>
+      <rect x="951" y="352" width="10" height="10" rx="2" fill="rgba(200,50,200,.5)"/>
+      <rect x="964" y="352" width="10" height="10" rx="2" fill="rgba(255,200,50,.5)"/>
+      <rect x="977" y="352" width="10" height="10" rx="2" fill="rgba(0,200,200,.5)"/>
+      <!-- Tablet home bar -->
+      <rect x="961" y="364" width="18" height="2" rx="1" fill="rgba(255,255,255,.15)"/>
+
+      <!-- ══ WIFI ROUTER (on shelf) ══ -->
+      <rect x="60"  y="330" width="55" height="28" rx="5" fill="#181828" filter="url(#shadowSm)"/>
+      <rect x="60"  y="330" width="55" height="28" rx="5" stroke="rgba(0,245,228,.12)" stroke-width="1" fill="none"/>
+      <!-- Router antennas -->
+      <rect x="72"  y="312" width="4" height="22" rx="2" fill="#141424"/>
+      <rect x="98"  y="308" width="4" height="26" rx="2" fill="#141424"/>
+      <!-- Router LEDs -->
+      <circle cx="70" cy="345" r="2.5" fill="rgba(0,245,228,.7)" filter="url(#glow)">
+        <animate attributeName="opacity" values="1;.3;1" dur="1.2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="78" cy="345" r="2.5" fill="rgba(0,230,118,.6)">
+        <animate attributeName="opacity" values="1;.5;1" dur="2.1s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="86" cy="345" r="2.5" fill="rgba(0,230,118,.6)">
+        <animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="94" cy="345" r="2.5" fill="rgba(0,230,118,.4)"/>
+      <circle cx="102" cy="345" r="2.5" fill="rgba(255,200,0,.5)"/>
+      <!-- Router brand -->
+      <text x="87" y="340" text-anchor="middle" fill="rgba(255,255,255,.15)" font-family="'Orbitron',monospace" font-size="5" letter-spacing="1">ROUTER</text>
+
+      <!-- ══ SMALL SIDE TABLE ══ -->
+      <rect x="40"  y="390" width="78" height="10" rx="4" fill="#2e1a08"/>
+      <rect x="40"  y="400" width="78" height="40" rx="3" fill="#261508"/>
+      <rect x="40"  y="440" width="78" height="8"  rx="2" fill="#1e1006"/>
+      <!-- Side table leg -->
+      <rect x="55"  y="446" width="10" height="60" rx="4" fill="#1e1006"/>
+      <rect x="90"  y="446" width="10" height="60" rx="4" fill="#1e1006"/>
+      <rect x="48"  y="504" width="62" height="6"  rx="3" fill="#18100a"/>
+
+      <!-- ══ WALL CLOCK ══ -->
+      <circle cx="130" cy="100" r="44" fill="#2e1a08" filter="url(#shadowSm)"/>
+      <circle cx="130" cy="100" r="40" fill="#261508"/>
+      <circle cx="130" cy="100" r="38" stroke="rgba(255,200,100,.15)" stroke-width="1" fill="none"/>
+      <!-- Clock face -->
+      <circle cx="130" cy="100" r="34" fill="#1e1006"/>
+      <!-- Hour markers -->
+      <rect x="129" y="68" width="2" height="8"  rx="1" fill="rgba(255,200,100,.5)"/><!-- 12 -->
+      <rect x="129" y="122" width="2" height="8" rx="1" fill="rgba(255,200,100,.4)"/><!-- 6 -->
+      <rect x="96"  y="99" width="8" height="2"  rx="1" fill="rgba(255,200,100,.4)"/><!-- 9 -->
+      <rect x="126" y="99" width="8" height="2"  rx="1" fill="rgba(255,200,100,.4)"/><!-- 3 -->
+      <!-- Hands -->
+      <rect x="129" y="74" width="2" height="22" rx="1" fill="rgba(255,200,100,.8)" transform="rotate(-30,130,100)"/><!-- hour -->
+      <rect x="129.5" y="72" width="1" height="28" rx="1" fill="rgba(255,255,255,.7)" transform="rotate(90,130,100)"/><!-- minute -->
+      <circle cx="130" cy="100" r="3" fill="rgba(255,200,100,.8)"/>
+
+      <!-- ══ DECORATIVE PLANT (corner) ══ -->
+      <rect x="1030" y="380" width="40" height="52" rx="8" fill="rgba(60,30,10,.7)"/>
+      <rect x="1030" y="380" width="40" height="52" rx="8" stroke="rgba(100,60,20,.3)" stroke-width="1" fill="none"/>
+      <ellipse cx="1050" cy="355" rx="28" ry="34" fill="rgba(20,80,20,.7)"/>
+      <ellipse cx="1036" cy="365" rx="20" ry="28" fill="rgba(25,90,22,.65)"/>
+      <ellipse cx="1064" cy="362" rx="20" ry="30" fill="rgba(22,88,20,.65)"/>
+      <ellipse cx="1050" cy="340" rx="16" ry="22" fill="rgba(30,100,28,.7)"/>
+      <!-- Leaf highlights -->
+      <path d="M1050,355 Q1040,345 1036,330" stroke="rgba(80,160,60,.3)" stroke-width="1.5" fill="none"/>
+      <path d="M1050,355 Q1062,348 1068,332" stroke="rgba(80,160,60,.3)" stroke-width="1.5" fill="none"/>
+    </svg>
+
+    <!-- ══ HOTSPOTS ══ -->
+    <!-- TV -->
+    <div class="hotspot" id="hs-tv"
+      style="left:27%;top:34%;width:52px;height:52px"
+      onclick="hit('tv')">
+      <span class="hsbadge">TELEVISOR</span>
+    </div>
+    <!-- Smartphone -->
+    <div class="hotspot" id="hs-phone"
+      style="left:49.5%;top:64%;width:52px;height:52px"
+      onclick="hit('phone')">
+      <span class="hsbadge">SMARTPHONE</span>
+    </div>
+    <!-- Gaming Console -->
+    <div class="hotspot" id="hs-console"
+      style="left:17%;top:59%;width:52px;height:52px"
+      onclick="hit('console')">
+      <span class="hsbadge">CONSOLA</span>
+    </div>
+    <!-- Smart Speaker -->
+    <div class="hotspot" id="hs-speaker"
+      style="left:7%;top:65%;width:52px;height:52px"
+      onclick="hit('speaker')">
+      <span class="hsbadge">BOCINA INTELIGENTE</span>
+    </div>
+    <!-- Smart Watch -->
+    <div class="hotspot" id="hs-watch"
+      style="left:88.5%;top:67%;width:52px;height:52px"
+      onclick="hit('watch')">
+      <span class="hsbadge">SMARTWATCH</span>
+    </div>
+    <!-- WiFi Router -->
+    <div class="hotspot" id="hs-router"
+      style="left:8%;top:55%;width:52px;height:52px"
+      onclick="hit('router')">
+      <span class="hsbadge">ROUTER WIFI</span>
+    </div>
+    <!-- Tablet -->
+    <div class="hotspot" id="hs-tablet"
+      style="left:87.5%;top:53%;width:52px;height:52px"
+      onclick="hit('tablet')">
+      <span class="hsbadge">TABLET</span>
+    </div>
+    <!-- Game Controller -->
+    <div class="hotspot" id="hs-controller"
+      style="left:32%;top:51%;width:52px;height:52px"
+      onclick="hit('controller')">
+      <span class="hsbadge">CONTROL</span>
+    </div>
+
+  </div><!-- /scene-wrap -->
+
+</div><!-- /container -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="modal">
+  <div class="modal-icon"  id="mIcon">✅</div>
+  <div class="modal-title" id="mTitle">¡Correcto!</div>
+  <div class="modal-tags"  id="mTags"></div>
+  <div class="modal-msg"   id="mMsg">Mensaje</div>
+  <button class="modal-btn"         id="mBtn"     onclick="closeModal()">¡SIGUIENTE →</button>
+  <button class="modal-btn restart" id="mRestart" onclick="restart()"   style="display:none">🔄 JUGAR DE NUEVO</button>
+</div>
+
+<script>
+const DATA = [
+  { id:'tv', name:'TELEVISOR', icon:'📺',
+    tags:['hw'],
+    desc:'El <strong>Televisor</strong> es Hardware — un dispositivo físico de salida. Pero necesita software para mostrar apps como Netflix o YouTube. ¡La tecnología nos rodea!',
+    uni:'¡Correcto! 📺 El <strong>Televisor</strong> es hardware de salida. Los Smart TVs también tienen software para apps de streaming. ¡Tecnología en tu sala!',
+    hint:'Pista: Es la <strong>pantalla grande</strong> en el mueble del centro 📺'},
+  { id:'phone', name:'SMARTPHONE', icon:'📱',
+    tags:['hw','both'],
+    desc:'El <strong>Smartphone</strong> tiene hardware (pantalla, cámara, batería) <em>y</em> software (Android/iOS, apps). ¡Es el dispositivo más completo del día a día!',
+    uni:'¡Excelente! 📱 El <strong>Smartphone</strong> combina hardware y software. Sin hardware no existe, sin software no hace nada útil.',
+    hint:'Pista: Es el <strong>teléfono</strong> sobre el cojín del sofá 📱'},
+  { id:'console', name:'CONSOLA DE JUEGOS', icon:'🎮',
+    tags:['hw','both'],
+    desc:'La <strong>Consola</strong> tiene hardware (procesador, GPU, disco) y software (sistema operativo, videojuegos). ¡Un ejemplo perfecto de la unión entre ambos!',
+    uni:'¡Genial! 🎮 La <strong>Consola</strong> es hardware que corre videojuegos — que son software. ¡Sin los dos no hay partida!',
+    hint:'Pista: Está debajo del televisor en el <strong>mueble</strong> 🎮'},
+  { id:'speaker', name:'BOCINA INTELIGENTE', icon:'🔊',
+    tags:['hw','both'],
+    desc:'La <strong>Bocina Inteligente</strong> tiene hardware (altavoz, micrófono) y software (asistente de voz con IA). ¡Le hablas y te responde gracias al software!',
+    uni:'¡Correcto! 🔊 La <strong>Bocina Inteligente</strong> usa IA (software) para entenderte. El hardware capta tu voz, el software la procesa.',
+    hint:'Pista: Es el <strong>dispositivo cilíndrico</strong> en la mesita lateral 🔊'},
+  { id:'watch', name:'SMARTWATCH', icon:'⌚',
+    tags:['hw','both'],
+    desc:'El <strong>Smartwatch</strong> tiene hardware (pantalla, sensores de ritmo cardíaco) y software (watchOS, apps de salud). ¡Una computadora en tu muñeca!',
+    uni:'¡Ojo de águila! ⌚ El <strong>Smartwatch</strong> es hardware y software juntos. Mide tu salud gracias a sensores (hardware) y algoritmos (software).',
+    hint:'Pista: Es el <strong>reloj inteligente</strong> a la derecha, cerca de la planta ⌚'},
+  { id:'router', name:'ROUTER WIFI', icon:'📡',
+    tags:['hw','both'],
+    desc:'El <strong>Router WiFi</strong> tiene hardware (antenas, chips) y software (firmware) que gestiona la red. ¡Sin él no habría internet en casa!',
+    uni:'¡Muy bien! 📡 El <strong>Router</strong> tiene hardware (antenas) y software (firmware) que dirige todos los datos de tu red WiFi.',
+    hint:'Pista: Es el <strong>router con antenas</strong> en la mesita lateral 📡'},
+  { id:'tablet', name:'TABLET', icon:'📲',
+    tags:['hw','both'],
+    desc:'La <strong>Tablet</strong> combina hardware (pantalla táctil, batería, cámara) con software (sistema operativo, apps). ¡Como un smartphone pero más grande!',
+    uni:'¡Correcto! 📲 La <strong>Tablet</strong> es hardware y software. Tiene apps (software) que corren en su hardware táctil. ¡Perfecta para aprender!',
+    hint:'Pista: Está <strong>apoyada en el estante</strong> de libros a la derecha 📲'},
+  { id:'controller', name:'CONTROL DE VIDEOJUEGO', icon:'🕹️',
+    tags:['hw'],
+    desc:'El <strong>Control</strong> es Hardware — botones físicos que envían señales al software del videojuego. Sin él, no puedes dar instrucciones a la consola.',
+    uni:'¡Exacto! 🕹️ El <strong>Control de videojuego</strong> es hardware de entrada. Sus botones físicos mandan órdenes al software del juego.',
+    hint:'Pista: Está sobre el <strong>mueble del televisor</strong>, junto a la consola 🕹️'},
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let queue=[], cur=null, nOk=0, nErr=0, errThis=0, total=DATA.length;
+
+function init(){
+  queue=shuffle([...DATA]);
+  cur=null; nOk=0; nErr=0; errThis=0;
+  DATA.forEach(c=>{
+    const h=document.getElementById('hs-'+c.id);
+    if(!h)return;
+    h.className='hotspot';h.style.pointerEvents='auto';
+    h.querySelector('.hsbadge').textContent=c.name.split(' ')[0];
+  });
+  upScore(); nextQ();
+}
+
+function nextQ(){
+  if(!queue.length){showEnd();return;}
+  cur=queue[0]; errThis=0;
+  $('tIcon').textContent=cur.icon;
+  $('tName').textContent=cur.name;
+  $('sRem').textContent=queue.length;
+  $('uniMsg').innerHTML='Muy bien, Explorador. ¿Dónde está <strong>'+cur.name+'</strong>? Haz clic sobre él en la habitación. ¡Tú puedes! 🔍';
+}
+
+function hit(id){
+  if(!cur)return;
+  if(id===cur.id){
+    nOk++;
+    const h=document.getElementById('hs-'+id);
+    h.className='hotspot ok'; h.style.pointerEvents='none';
+    h.querySelector('.hsbadge').textContent='✓ '+cur.name.split(' ')[0];
+    queue.shift(); upScore(); upProg();
+    showModal('success',cur);
+  } else {
+    nErr++; errThis++; upScore();
+    const h=document.getElementById('hs-'+id);
+    h.classList.add('err');
+    setTimeout(()=>h.classList.remove('err'),420);
+    const msg = errThis===1
+      ? 'Ese no es el <strong>'+cur.name+'</strong>. ¡Observa bien la habitación!'
+      : '¡No te rindas! '+cur.hint;
+    showModal('error',null,msg);
+  }
+}
+
+function buildTags(tags){
+  return tags.map(t=>{
+    if(t==='hw')   return '<span class="mtag mtag-hw">🔧 HARDWARE</span>';
+    if(t==='sw')   return '<span class="mtag mtag-sw">💻 SOFTWARE</span>';
+    if(t==='both') return '<span class="mtag mtag-both">⚡ HARDWARE + SOFTWARE</span>';
+    return '';
+  }).join('');
+}
+
+function showModal(type,comp,errMsg){
+  const m=$('modal'),ov=$('overlay');
+  if(type==='success'){
+    $('mIcon').textContent='✅';
+    $('mTitle').textContent='¡CORRECTO! 🎉';
+    $('mTags').innerHTML=buildTags(comp.tags);
+    $('mMsg').innerHTML=comp.desc;
+    $('mBtn').style.display='inline-block';
+    $('mBtn').textContent=queue.length?'¡SIGUIENTE →':'¡VER RESULTADO!';
+    $('mRestart').style.display='none';
+    m.className='modal success show';
+    $('uniMsg').innerHTML=comp.uni;
+  } else {
+    $('mIcon').textContent='❌';
+    $('mTitle').textContent='INTÉNTALO DE NUEVO';
+    $('mTags').innerHTML='';
+    $('mMsg').innerHTML=errMsg;
+    $('mBtn').style.display='inline-block';
+    $('mBtn').textContent='← VOLVER A INTENTAR';
+    $('mRestart').style.display='none';
+    m.className='modal error show';
+  }
+  ov.className='overlay show';
+}
+
+function showEnd(){
+  const pct=Math.round((nOk/(nOk+nErr))*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ? '¡Perfecto, Explorador! 🚀 Encontraste toda la tecnología de la habitación. ¡La tecnología está en <strong>todas partes</strong>!'
+    : pct>=60
+    ? '¡Muy bien! Ya ves la tecnología en el día a día. Recuerda: <strong>hardware + software = tecnología en tu vida</strong>.'
+    : '¡Buen intento! Observa con cuidado — hay tecnología <strong>en cada rincón</strong>. ¡Inténtalo de nuevo!';
+
+  $('mIcon').innerHTML='<div class="stars">'+stars+'</div>';
+  $('mTitle').innerHTML='<span style="color:var(--gold)">¡MÓDULO COMPLETADO!</span>';
+  $('mTags').innerHTML='';
+  $('mMsg').innerHTML='<div class="final-score">'+nOk+'/'+total+'</div>'+msg
+    +'<br><br><span style="font-size:11px;color:var(--muted)">Precisión: '+pct+'% · Errores: '+nErr+'</span>';
+  $('mBtn').style.display='none';
+  $('mRestart').style.display='block';
+  $('modal').className='modal complete show';
+  $('overlay').className='overlay show';
+  $('tName').textContent='¡COMPLETADO!';
+  $('tIcon').textContent='🏆';
+  $('pBar').style.width='100%';
+  $('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> La tecnología está en todas partes de tu vida cotidiana. ¡Eres un Explorador Digital increíble! 🚀';
+}
+
+function closeModal(){
+  const m=$('modal');m.classList.remove('show');$('overlay').classList.remove('show');
+  if(!m.classList.contains('error'))nextQ();
+}
+function restart(){$('modal').classList.remove('show');$('overlay').classList.remove('show');init();}
+function upScore(){$('sOk').textContent=nOk;$('sErr').textContent=nErr;$('sRem').textContent=queue.length;}
+function upProg(){$('pBar').style.width=((total-queue.length)/total*100)+'%';}
+function $(id){return document.getElementById(id);}
+
+$('overlay').addEventListener('click',()=>{if(!$('modal').classList.contains('error'))closeModal();});
+init();
+</script>
+</body>
+</html>
