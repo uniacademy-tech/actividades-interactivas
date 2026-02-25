@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué es el Email? · T1+T2 · Módulo 5 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amber:#f59e0b;--orange:#f97316;--rose:#f43f5e;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--cyan:#00f5e4;
+    --bg:#060b18;--card:#111820;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(245,158,11,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(249,115,22,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(245,158,11,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,158,11,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(245,158,11,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--amber);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--amber);
+    letter-spacing:2px;border:1px solid var(--amber);padding:4px 14px;border-radius:2px;background:rgba(245,158,11,.06);}
+
+  .container{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:24px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold),var(--amber));}
+  .uni-svg{width:62px;height:62px;flex-shrink:0;}
+  .speech{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(245,158,11,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.55;}
+  .speech strong{color:var(--gold);}
+
+  /* PHASE TABS */
+  .phase-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .ptab{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    padding:6px 16px;border-radius:8px;border:1px solid;cursor:default;transition:all .3s;}
+  .ptab.done  {color:var(--green);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+  .ptab.active{color:var(--amber);border-color:var(--amber);background:rgba(245,158,11,.1);
+    box-shadow:0 0 14px rgba(245,158,11,.2);}
+  .ptab.pending{color:var(--muted);border-color:rgba(255,255,255,.08);}
+
+  /* INTRO SECTION */
+  .intro-section{background:var(--card);border:1.5px solid rgba(245,158,11,.2);
+    border-radius:20px;overflow:hidden;margin-bottom:20px;}
+  .is-top{height:4px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .is-body{padding:28px;}
+
+  /* ANALOGY */
+  .analogy-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin-bottom:24px;}
+  .analogy-card{background:rgba(245,158,11,.06);border:1.5px solid rgba(245,158,11,.2);border-radius:14px;padding:18px;text-align:center;}
+  .an-icon{font-size:44px;margin-bottom:8px;}
+  .an-title{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:5px;}
+  .an-desc{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5;}
+  .an-arrow{font-size:30px;color:rgba(245,158,11,.4);text-align:center;}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .cmp-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;}
+  .cmp-postal{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.04);}
+  .cmp-email {border-color:rgba(249,115,22,.2);background:rgba(249,115,22,.04);}
+  .cmp-icon{font-size:22px;flex-shrink:0;}
+  .cmp-text{font-size:12px;line-height:1.5;color:rgba(255,255,255,.75);}
+  .cmp-text strong{color:var(--gold);}
+
+  /* HOTSPOT SECTION */
+  .hs-section{background:var(--card);border:1.5px solid rgba(245,158,11,.2);
+    border-radius:20px;overflow:hidden;}
+  .hs-top{height:4px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .hs-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--amber);
+    padding:8px 18px 6px;border-bottom:1px solid rgba(245,158,11,.1);}
+  .hs-body{padding:24px;position:relative;}
+
+  /* EMAIL ADDRESS DISPLAY */
+  .email-display{display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.4);border:2px solid rgba(245,158,11,.25);
+    border-radius:14px;padding:22px 28px;margin-bottom:20px;gap:0;
+    font-family:monospace;font-size:clamp(18px,4vw,28px);font-weight:700;
+    position:relative;overflow:visible;}
+  .ep{position:relative;cursor:pointer;transition:all .2s;padding:2px 4px;border-radius:6px;}
+  .ep:hover{background:rgba(245,158,11,.15);}
+  .ep.ok {background:rgba(0,230,118,.2)!important;color:var(--green)!important;cursor:default;
+    animation:partPop .35s ease;}
+  .ep.err{background:rgba(255,61,61,.15)!important;animation:partShake .35s ease;}
+  @keyframes partPop  {0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+  @keyframes partShake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+  .ep-usuario{color:#93c5fd;}
+  .ep-arroba {color:var(--gold);}
+  .ep-dominio{color:#a78bfa;}
+  .ep-punto  {color:rgba(255,255,255,.5);}
+  .ep-ext    {color:#34d399;}
+  .ep-label{position:absolute;bottom:-38px;left:50%;transform:translateX(-50%);
+    font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+    white-space:nowrap;opacity:0;transition:opacity .18s;
+    background:rgba(6,11,24,.95);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,.3);}
+  .ep:hover .ep-label{opacity:1;}
+  .ep.ok .ep-label{opacity:1;color:var(--green);border-color:rgba(0,230,118,.4);}
+
+  /* TARGET DISPLAY */
+  .hs-target{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:rgba(245,158,11,.06);border:2px solid var(--amber);border-radius:14px;
+    padding:13px 20px;margin-bottom:16px;animation:amberPulse 2s ease-in-out infinite;}
+  @keyframes amberPulse{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.1)}50%{box-shadow:0 0 32px rgba(245,158,11,.28)}}
+  .hs-target-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:2px;}
+  .hs-target-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#fff;}
+  .hs-target-icon{font-size:28px;}
+
+  /* SCORE CHIPS */
+  .score-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .chip{background:var(--card);border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;padding:7px 14px;text-align:center;min-width:68px;}
+  .chip .v{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;}
+  .chip .l{font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+  .chip.ok .v{color:var(--green);}
+  .chip.err.v{color:var(--red);}
+  .chip.rem .v{color:var(--amber);}
+
+  /* PROGRESS */
+  .prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:18px;overflow:hidden;}
+  .prog-bar{height:100%;background:linear-gradient(90deg,var(--amber),var(--orange));border-radius:3px;transition:width .5s ease;width:0%;}
+
+  /* PARTS LEGEND */
+  .parts-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    padding:14px 18px;background:rgba(245,158,11,.03);border-top:1px solid rgba(245,158,11,.1);}
+  .pl-item{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.6);}
+  .pl-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:90;
+    opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(5px);}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.72);
+    background:#0d1628;border-radius:20px;padding:28px 32px;text-align:center;z-index:100;
+    box-shadow:0 32px 90px rgba(0,0,0,.85);opacity:0;pointer-events:none;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);min-width:300px;max-width:88vw;}
+  .modal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+  .modal.success{border:2px solid var(--green);}
+  .modal.error  {border:2px solid var(--red);}
+  .modal.complete{border:2px solid var(--amber);}
+  .modal-icon{font-size:44px;margin-bottom:8px;}
+  .modal-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:8px;}
+  .modal.success  .modal-title{color:var(--green);}
+  .modal.error    .modal-title{color:var(--red);}
+  .modal.complete .modal-title{color:var(--amber);}
+  .modal-tag{display:inline-block;font-family:'Orbitron',monospace;font-size:9px;
+    padding:3px 14px;border-radius:20px;border:1px solid;letter-spacing:1px;margin-bottom:10px;}
+  .modal-msg{font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:16px;max-width:380px;}
+  .modal-msg strong{color:var(--gold);}
+  .modal-btn{background:linear-gradient(135deg,var(--amber),var(--orange));color:#fff;
+    border:none;border-radius:10px;padding:10px 24px;
+    font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+    cursor:pointer;letter-spacing:1px;transition:opacity .18s;}
+  .modal-btn:hover{opacity:.82;}
+  .modal-btn.restart{background:linear-gradient(135deg,var(--gold),var(--amber));
+    color:#000;margin-top:8px;display:block;width:100%;}
+  .stars{font-size:28px;letter-spacing:4px;margin-bottom:5px;}
+  .final-score{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--amber);margin:5px 0;}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 10px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .analogy-grid{grid-template-columns:1fr;gap:12px;}
+    .an-arrow{display:none;}
+    .compare-grid{grid-template-columns:1fr;}
+    .email-display{font-size:16px;padding:14px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 5 · T1 + T2</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(245,158,11,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#2a1e0f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#f59e0b"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <circle cx="10" cy="56" r="5" fill="#3d2510"/>
+      <circle cx="70" cy="56" r="5" fill="#3d2510"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#2a1a0a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#2a1e0f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#f59e0b"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#f97316"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#3d2510"/>
+      <circle cx="40" cy="3" r="3" fill="#f59e0b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📧 Hoy aprenderemos qué es el <strong>Correo Electrónico</strong> y sus partes. ¡Primero la teoría, luego el juego!</p>
+    </div>
+  </div>
+
+  <!-- PHASE TABS -->
+  <div class="phase-row">
+    <div class="ptab active" id="ptab-1">📧 T1 · ¿QUÉ ES EL EMAIL?</div>
+    <div class="ptab pending" id="ptab-2">🔍 T2 · PARTES DEL CORREO</div>
+  </div>
+
+  <!-- INTRO: ANALOGÍA -->
+  <div class="intro-section" id="introSection">
+    <div class="is-top"></div>
+    <div class="is-body">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--amber);margin-bottom:6px;">// TEMA 1 · ¿QUÉ ES EL CORREO ELECTRÓNICO?</div>
+        <div style="font-size:15px;line-height:1.7;max-width:620px;margin:0 auto;color:rgba(255,255,255,.85);">
+          El <strong style="color:var(--gold)">Correo Electrónico (Email)</strong> es como enviar cartas por Internet. Podemos escribir mensajes y enviarlos al instante a cualquier persona en el mundo que tenga una dirección de correo.
+        </div>
+      </div>
+
+      <!-- ANALOGY -->
+      <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:12px;text-align:center;">// ANALOGÍA: CORREO POSTAL vs. CORREO ELECTRÓNICO</div>
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="an-icon">✉️</div>
+          <div class="an-title">CORREO POSTAL</div>
+          <div class="an-desc">Escribes en papel → lo pones en un sobre → lo llevas al buzón → tarda días en llegar</div>
+        </div>
+        <div class="an-arrow">↔️</div>
+        <div class="analogy-card">
+          <div class="an-icon">📧</div>
+          <div class="an-title">CORREO ELECTRÓNICO</div>
+          <div class="an-desc">Escribes en la computadora → haces clic en "Enviar" → llega en segundos a cualquier parte del mundo</div>
+        </div>
+      </div>
+
+      <!-- COMPARE TABLE -->
+      <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);margin:18px 0 10px;text-align:center;">// COMPARACIÓN</div>
+      <div class="compare-grid">
+        <div class="cmp-item cmp-postal"><div class="cmp-icon">📮</div><div class="cmp-text"><strong>Dirección postal:</strong><br>Calle Flores 123, Ciudad</div></div>
+        <div class="cmp-item cmp-email"> <div class="cmp-icon">📧</div><div class="cmp-text"><strong>Dirección de email:</strong><br>maria@gmail.com</div></div>
+        <div class="cmp-item cmp-postal"><div class="cmp-icon">📬</div><div class="cmp-text"><strong>Buzón:</strong><br>Donde llegan las cartas</div></div>
+        <div class="cmp-item cmp-email"> <div class="cmp-icon">📥</div><div class="cmp-text"><strong>Bandeja de entrada:</strong><br>Donde llegan los emails</div></div>
+        <div class="cmp-item cmp-postal"><div class="cmp-icon">📨</div><div class="cmp-text"><strong>Sobre y papel:</strong><br>El mensaje físico</div></div>
+        <div class="cmp-item cmp-email"> <div class="cmp-icon">💬</div><div class="cmp-text"><strong>Mensaje digital:</strong><br>Texto, fotos, archivos adjuntos</div></div>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;">
+        <button onclick="startHotspot()" style="padding:12px 32px;background:linear-gradient(135deg,var(--amber),var(--orange));
+          color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+          font-weight:700;letter-spacing:2px;cursor:pointer;box-shadow:0 6px 20px rgba(245,158,11,.3);
+          transition:opacity .18s,transform .18s;">
+          ¡ENTENDIDO! → JUGAR CON LAS PARTES 🎯
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOTSPOT SECTION (hidden initially) -->
+  <div class="hs-section" id="hsSection" style="display:none;">
+    <div class="hs-top"></div>
+    <div class="hs-label" id="hsLabel">// TEMA 2 · IDENTIFICA LAS PARTES DE UN CORREO ELECTRÓNICO</div>
+    <div class="hs-body">
+
+      <!-- TARGET -->
+      <div class="hs-target">
+        <div>
+          <div class="hs-target-label">// ENCUENTRA Y HAZ CLIC EN:</div>
+          <div class="hs-target-name" id="tName">INICIANDO…</div>
+        </div>
+        <div class="hs-target-icon" id="tIcon">🔍</div>
+      </div>
+
+      <!-- SCORE -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+        <div class="score-chips">
+          <div class="chip ok"><div class="v" id="sOk">0</div><div class="l">CORRECTOS</div></div>
+          <div class="chip err"><div class="v" id="sErr" style="color:var(--red)">0</div><div class="l">ERRORES</div></div>
+          <div class="chip rem"><div class="v" id="sRem">5</div><div class="l">RESTANTES</div></div>
+        </div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bar" id="pBar"></div></div>
+
+      <!-- EMAIL ADDRESS WITH CLICKABLE PARTS -->
+      <div style="margin-bottom:40px;">
+        <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:14px;text-align:center;">
+          // HAZ CLIC EN LA PARTE QUE SE TE PIDE
+        </div>
+        <div class="email-display" id="emailDisplay">
+          <span class="ep ep-usuario" id="ep-usuario" onclick="hit('usuario')">
+            maria
+            <span class="ep-label">USUARIO</span>
+          </span>
+          <span class="ep ep-arroba" id="ep-arroba" onclick="hit('arroba')">
+            @
+            <span class="ep-label">ARROBA</span>
+          </span>
+          <span class="ep ep-dominio" id="ep-dominio" onclick="hit('dominio')">
+            gmail
+            <span class="ep-label">DOMINIO</span>
+          </span>
+          <span class="ep ep-punto" id="ep-punto" onclick="hit('punto')">
+            .
+            <span class="ep-label">PUNTO</span>
+          </span>
+          <span class="ep ep-ext" id="ep-ext" onclick="hit('ext')">
+            com
+            <span class="ep-label">EXTENSIÓN</span>
+          </span>
+        </div>
+
+        <!-- SECOND EMAIL for variety after first is done -->
+        <div style="text-align:center;margin-top:50px;font-size:13px;color:rgba(255,255,255,.35);">
+          Otro ejemplo: &nbsp;
+          <span style="font-family:monospace;color:rgba(255,255,255,.5);">
+            <span style="color:#93c5fd;">juan</span><span style="color:var(--gold);">@</span><span style="color:#a78bfa;">hotmail</span><span style="color:rgba(255,255,255,.4);">.</span><span style="color:#34d399;">com</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LEGEND -->
+    <div class="parts-legend">
+      <div class="pl-item"><div class="pl-dot" style="background:#93c5fd;"></div>Usuario — tu nombre único</div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--gold);"></div>@ — arroba, separa usuario y dominio</div>
+      <div class="pl-item"><div class="pl-dot" style="background:#a78bfa;"></div>Dominio — el proveedor (Gmail, etc.)</div>
+      <div class="pl-item"><div class="pl-dot" style="background:#34d399;"></div>Extensión — .com, .org, .mx, etc.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay"></div>
+<div class="modal"   id="modal">
+  <div class="modal-icon"  id="mIcon">✅</div>
+  <div class="modal-title" id="mTitle">¡Correcto!</div>
+  <div class="modal-tag"   id="mTag"  style="color:var(--amber);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08);"></div>
+  <div class="modal-msg"   id="mMsg"></div>
+  <button class="modal-btn"         id="mBtn"     onclick="closeModal()">SIGUIENTE →</button>
+  <button class="modal-btn restart" id="mRestart" onclick="restart()"   style="display:none">🔄 JUGAR DE NUEVO</button>
+</div>
+
+<script>
+const PARTS = [
+  { id:'usuario', name:'EL USUARIO',   icon:'👤',
+    color:'#93c5fd',
+    desc:'El <strong>Usuario</strong> es tu nombre único en el correo. Es la parte antes del @. En <em>maria@gmail.com</em>, el usuario es <strong>"maria"</strong>. ¡No puede haber dos personas con el mismo usuario en el mismo proveedor!',
+    uni:'👤 ¡Correcto! El <strong>Usuario</strong> es como tu nombre en el mundo digital. Es único y lo eliges tú.' },
+  { id:'arroba', name:'LA ARROBA (@)',  icon:'@',
+    color:getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#ffd93d',
+    desc:'La <strong>Arroba (@)</strong> es el símbolo que separa el usuario del dominio. ¡Todas las direcciones de correo tienen una! Se lee "arroba" y es obligatoria.',
+    uni:'@ ¡Exacto! La <strong>Arroba (@)</strong> siempre está en el medio de un correo electrónico. ¡Es su seña de identidad!' },
+  { id:'dominio', name:'EL DOMINIO',   icon:'🏢',
+    color:'#a78bfa',
+    desc:'El <strong>Dominio</strong> es el nombre del servicio de correo que usas. En <em>maria@gmail.com</em>, el dominio es <strong>"gmail"</strong>. Otros ejemplos: hotmail, yahoo, outlook.',
+    uni:'🏢 ¡Muy bien! El <strong>Dominio</strong> es el proveedor de tu correo. Gmail, Hotmail y Yahoo son los más populares.' },
+  { id:'punto', name:'EL PUNTO (.)',   icon:'•',
+    color:'rgba(255,255,255,.6)',
+    desc:'El <strong>Punto (.)</strong> separa el dominio de la extensión. Es obligatorio y muy importante. Sin él, la dirección no funcionaría.',
+    uni:'• ¡Bien! El <strong>Punto</strong> separa el dominio de la extensión. ¡Sin él no existe el correo!' },
+  { id:'ext',    name:'LA EXTENSIÓN',  icon:'🌍',
+    color:'#34d399',
+    desc:'La <strong>Extensión</strong> indica el tipo de organización o país. Las más comunes son <strong>.com</strong> (comercial), <strong>.org</strong> (organización) y <strong>.mx</strong> (México).',
+    uni:'🌍 ¡Perfecto! La <strong>Extensión</strong> (.com, .mx, .org) nos dice el tipo o país del dominio. ¡La última parte del correo!' },
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let queue=[], cur=null, nOk=0, nErr=0, total=PARTS.length, hsStarted=false;
+
+function startHotspot(){
+  document.getElementById('introSection').style.display='none';
+  document.getElementById('hsSection').style.display='block';
+  document.getElementById('ptab-1').className='ptab done';
+  document.getElementById('ptab-2').className='ptab active';
+  document.getElementById('uniMsg').innerHTML='🎯 ¡Muy bien! Ahora <strong>haz clic</strong> en la parte del correo que te pide UNI. ¡Observa bien la dirección!';
+  hsStarted=true;
+  queue=shuffle([...PARTS]);nOk=0;nErr=0;
+  PARTS.forEach(p=>{const el=document.getElementById('ep-'+p.id);if(el){el.className='ep ep-'+p.id;el.style.pointerEvents='auto';}});
+  upScore();nextQ();
+}
+
+function nextQ(){
+  if(!queue.length){showEnd();return;}
+  cur=queue[0];
+  document.getElementById('tIcon').textContent=cur.icon;
+  document.getElementById('tName').textContent=cur.name;
+  document.getElementById('sRem').textContent=queue.length;
+  document.getElementById('uniMsg').innerHTML='🎯 Haz clic en <strong>'+cur.name+'</strong> de la dirección de correo.';
+}
+
+function hit(id){
+  if(!cur||!hsStarted)return;
+  if(id===cur.id){
+    nOk++;queue.shift();upScore();upProg();
+    const el=document.getElementById('ep-'+id);
+    el.className='ep ep-'+id+' ok';el.style.pointerEvents='none';
+    document.getElementById('uniMsg').innerHTML=cur.uni;
+    showModal('success',cur);
+  } else {
+    nErr++;upScore();
+    const el=document.getElementById('ep-'+id);
+    el.classList.add('err');setTimeout(()=>el.classList.remove('err'),400);
+    const wrong=PARTS.find(p=>p.id===id);
+    const msg=wrong?'Eso es <strong>'+wrong.name+'</strong>, pero buscamos <strong>'+cur.name+'</strong>. ¡Sigue buscando!':'Esa no es la parte correcta. Busca <strong>'+cur.name+'</strong>.';
+    showModal('error',null,msg);
+  }
+}
+
+function showModal(type,part,errMsg){
+  const m=document.getElementById('modal'),ov=document.getElementById('overlay');
+  if(type==='success'){
+    document.getElementById('mIcon').textContent='✅';
+    document.getElementById('mTitle').textContent='¡CORRECTO! 🎉';
+    document.getElementById('mTag').textContent=part.name;
+    document.getElementById('mTag').style.color=part.color;
+    document.getElementById('mMsg').innerHTML=part.desc;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent=queue.length?'SIGUIENTE →':'¡VER RESULTADO!';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal success show';spawnConf();
+  } else {
+    document.getElementById('mIcon').textContent='❌';
+    document.getElementById('mTitle').textContent='¡CASI! INTÉNTALO DE NUEVO';
+    document.getElementById('mTag').textContent='';
+    document.getElementById('mMsg').innerHTML=errMsg;
+    document.getElementById('mBtn').style.display='inline-block';
+    document.getElementById('mBtn').textContent='← SEGUIR BUSCANDO';
+    document.getElementById('mRestart').style.display='none';
+    m.className='modal error show';
+  }
+  ov.className='overlay show';
+}
+
+function showEnd(){
+  const pct=Math.round((nOk/(nOk+nErr||1))*100)||100;
+  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  const msg=pct>=90
+    ?'¡Perfecto! 🚀 Ya conoces todas las partes de una dirección de correo electrónico. ¡Eres un experto digital!'
+    :pct>=60
+    ?'¡Muy bien! Reconoces la mayoría de las partes. Repasa las que fallaste.'
+    :'¡Buen intento! Recuerda: <strong>usuario</strong> + <strong>@</strong> + <strong>dominio</strong> + <strong>.</strong> + <strong>extensión</strong>.';
+  document.getElementById('mIcon').innerHTML='<div class="stars">'+stars+'</div>';
+  document.getElementById('mTitle').innerHTML='<span style="color:var(--amber)">¡ACTIVIDAD COMPLETADA!</span>';
+  document.getElementById('mTag').textContent='';
+  document.getElementById('mMsg').innerHTML='<div class="final-score">'+nOk+'/'+total+'</div>'+msg
+    +'<br><br><span style="font-size:11px;color:var(--muted)">Precisión: '+pct+'% · Errores: '+nErr+'</span>';
+  document.getElementById('mBtn').style.display='none';
+  document.getElementById('mRestart').style.display='block';
+  document.getElementById('modal').className='modal complete show';
+  document.getElementById('overlay').className='overlay show';
+  document.getElementById('uniMsg').innerHTML=stars+' <strong>¡Actividad completada!</strong> Ya sabes identificar todas las partes de una dirección de email. ¡Genial! 📧';
+  document.getElementById('pBar').style.width='100%';
+  document.getElementById('ptab-2').className='ptab done';
+  if(pct>=60)setTimeout(bigConf,200);
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  if(!document.getElementById('modal').classList.contains('error'))nextQ();
+}
+function restart(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  PARTS.forEach(p=>{const el=document.getElementById('ep-'+p.id);if(el){el.className='ep ep-'+p.id;el.style.pointerEvents='auto';}});
+  document.getElementById('ptab-2').className='ptab active';
+  nOk=0;nErr=0;queue=shuffle([...PARTS]);upScore();upProg();nextQ();
+}
+function upScore(){document.getElementById('sOk').textContent=nOk;document.getElementById('sErr').textContent=nErr;document.getElementById('sRem').textContent=queue.length;}
+function upProg(){document.getElementById('pBar').style.width=((total-queue.length)/total*100)+'%';}
+document.getElementById('overlay').addEventListener('click',()=>{
+  if(document.getElementById('modal').classList.contains('error'))return;
+  closeModal();
+});
+
+function spawnConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${20+Math.random()*60}vw;top:${10+Math.random()*30}vh;
+      --tx:${(Math.random()-.5)*200}px;--ty:${(Math.random()-.7)*150}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4','#a78bfa'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+</script>
+</body>
+</html>
