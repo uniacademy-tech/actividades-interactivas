@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escribiendo Texto · T3 · Módulo 6 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --violet:#8b5cf6;--purple:#7c3aed;--pink:#ec4899;--lilac:#a78bfa;
+    --green:#00e676;--red:#ff3d3d;--gold:#ffd93d;--cyan:#00f5e4;
+    --bg:#060b18;--card:#0f1020;--text:#e8f4ff;--muted:#7a6aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(139,92,246,.08) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(139,92,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(139,92,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(139,92,246,.18);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--violet);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--lilac);
+    letter-spacing:2px;border:1px solid var(--lilac);padding:4px 14px;border-radius:2px;background:rgba(167,139,250,.06);}
+
+  .container{position:relative;z-index:5;max-width:860px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(139,92,246,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac),var(--violet));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--lilac);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* STEP BAR */
+  .step-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;transition:all .3s;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--violet);border-color:var(--violet);transform:scale(1.4);box-shadow:0 0 10px rgba(139,92,246,.6);}
+  .step-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .step-label span{color:var(--lilac);font-weight:700;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .5s ease;width:0%;}
+
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:10px;
+    padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--green);display:none;animation:fadeIn .3s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  /* SIM WRAPPER */
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(139,92,246,.2);
+    border-radius:20px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:14px;}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--lilac);
+    padding:7px 16px 5px;border-bottom:1px solid rgba(139,92,246,.1);}
+  .action-wrap{padding:12px 16px;border-top:1px solid rgba(139,92,246,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(139,92,246,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* NOTEPAD SHELL */
+  .notepad{background:#fff;border-radius:0;overflow:hidden;width:100%;}
+  .np-titlebar{background:#f0f0f0;padding:5px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #ddd;}
+  .np-btns{display:flex;gap:4px;}
+  .np-btn{width:12px;height:12px;border-radius:50%;}
+  .np-title{font-size:11px;color:#555;flex:1;text-align:center;}
+  .np-menubar{background:#f8f8f8;padding:3px 8px;border-bottom:1px solid #e0e0e0;display:flex;gap:14px;}
+  .np-menu{font-size:12px;color:#333;padding:2px 6px;cursor:default;border-radius:3px;}
+  .np-menu:hover{background:#ddd;}
+  .np-menu.open{background:#0078d4;color:#fff;}
+  .np-area{min-height:140px;background:#fff;padding:10px 12px;
+    font-family:'Courier New',monospace;font-size:14px;color:#1a1a1a;
+    line-height:1.7;position:relative;white-space:pre-wrap;word-break:break-word;}
+  .cursor{display:inline-block;width:2px;height:17px;background:#000;
+    vertical-align:text-bottom;animation:blink .6s step-end infinite;margin-left:1px;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .np-statusbar{background:#f0f0f0;padding:3px 10px;font-size:11px;color:#777;border-top:1px solid #ddd;
+    display:flex;gap:20px;}
+
+  /* KEY HIGHLIGHT */
+  .key-demo{display:flex;align-items:center;justify-content:center;gap:14px;
+    padding:14px;background:#f8f9fa;border-top:1px solid #e0e0e0;flex-wrap:wrap;}
+  .key{display:inline-flex;align-items:center;justify-content:center;
+    background:#fff;border:2px solid #bbb;border-radius:6px;
+    font-family:monospace;font-size:12px;color:#333;font-weight:700;
+    box-shadow:0 3px 0 #999;padding:5px 10px;min-width:36px;transition:all .15s;}
+  .key.pressed{transform:translateY(2px);box-shadow:0 1px 0 #999;background:#e8e8e8;}
+  .key.highlight{border-color:var(--violet);color:var(--violet);box-shadow:0 3px 0 rgba(139,92,246,.4);
+    animation:keyPulse 1s ease-in-out infinite;}
+  @keyframes keyPulse{0%,100%{box-shadow:0 3px 0 rgba(139,92,246,.4)}50%{box-shadow:0 3px 12px rgba(139,92,246,.5)}}
+  .key-label{font-size:11px;color:var(--muted);}
+
+  /* FINAL */
+  .final-result{display:none;background:var(--card);border-radius:20px;overflow:hidden;}
+  .final-result.visible{display:block;}
+  .fr-top{height:5px;background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac));}
+  .fr-body{padding:36px 24px;text-align:center;}
+  .fr-stars{font-size:48px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fr-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--violet),var(--pink));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0 4px;}
+  .fr-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;}
+  .fr-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 20px;color:rgba(255,255,255,.8);}
+  .fr-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:22px;}
+  .sk-card{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--lilac);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:600px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .key-demo{gap:8px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 6 · TEMA 3</div>
+</header>
+
+<div class="container">
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(139,92,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a0a2a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a0a2a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#2d1055"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#2d1055"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e0f3f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#8b5cf6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a0a2a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a0a2a"/>
+      <circle cx="10" cy="56" r="5" fill="#2d1055"/>
+      <circle cx="70" cy="56" r="5" fill="#2d1055"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a0a2a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e0f3f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#8b5cf6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#ec4899"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#2d1055"/>
+      <circle cx="40" cy="3" r="3" fill="#8b5cf6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#2d1055"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#2d1055"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! ⌨️ Vamos a practicar cómo <strong>escribir texto</strong> en el Bloc de Notas. ¡Aprenderás a usar el teclado, la barra espaciadora, Enter y la tecla Borrar!</p>
+    </div>
+  </div>
+
+  <!-- STEP BAR -->
+  <div class="step-bar">
+    <div class="sdots" id="sdots"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="step-label">Paso <span id="stepNum">1</span> de <span id="stepTotal">6</span></div>
+  </div>
+
+  <div class="step-ok" id="stepOk">✅ ¡Muy bien!</div>
+
+  <!-- SIM -->
+  <div class="sim-wrap" id="simWrap">
+    <div class="sim-topbar"></div>
+    <div class="sim-label" id="simLabel">// BLOC DE NOTAS · SIMULACIÓN</div>
+    <div id="simBody"></div>
+    <div class="action-wrap">
+      <button class="btn-action" id="btnAction">→ SIGUIENTE PASO</button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final-result" id="finalResult">
+    <div class="fr-top"></div>
+    <div class="fr-body">
+      <div class="fr-stars">⭐⭐⭐</div>
+      <div class="fr-title">¡TEXTO ESCRITO!</div>
+      <div class="fr-sub">MÓDULO 6 · TEMA 3 · COMPLETADO</div>
+      <div class="fr-msg">¡Fantástico! 🚀 Ya sabes cómo escribir texto en el Bloc de Notas. Practicaste el <strong>cursor</strong>, el <strong>teclado</strong>, la <strong>barra espaciadora</strong>, la tecla <strong>Enter</strong> y la tecla <strong>Borrar</strong>.</div>
+      <div class="skills-grid">
+        <div class="sk-card"><div class="sk-icon">🖱️</div><div class="sk-name">CLIC EN ÁREA</div><div class="sk-desc">Para activar el cursor y empezar a escribir</div></div>
+        <div class="sk-card"><div class="sk-icon">⌨️</div><div class="sk-name">TECLADO</div><div class="sk-desc">Escribe letras, números y símbolos</div></div>
+        <div class="sk-card"><div class="sk-icon">␣</div><div class="sk-name">ESPACIADORA</div><div class="sk-desc">Pone un espacio entre palabras</div></div>
+        <div class="sk-card"><div class="sk-icon">↵</div><div class="sk-name">ENTER</div><div class="sk-desc">Baja a la siguiente línea</div></div>
+        <div class="sk-card"><div class="sk-icon">⌫</div><div class="sk-name">BORRAR</div><div class="sk-desc">Elimina el último carácter escrito</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;PRACTICAR DE NUEVO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── shared notepad builder ──
+function notepad(content, cursorVisible=true, highlightKey='', statusLine='Ln 1, Col 1'){
+  const keyMap = {
+    'espacio': ['<span class="key highlight" id="kSPACE">ESPACIO</span>', '<span class="key-label">Barra espaciadora → agrega espacio entre palabras</span>'],
+    'enter':   ['<span class="key highlight" id="kENTER">↵ Enter</span>', '<span class="key-label">Enter → baja a la siguiente línea</span>'],
+    'borrar':  ['<span class="key highlight" id="kBS">⌫ Borrar</span>', '<span class="key-label">Borrar (Backspace) → elimina el último carácter</span>'],
+    'escribir':['<span class="key highlight">A</span><span class="key">B</span><span class="key">C</span>…', '<span class="key-label">Teclas de letra → escriben el texto</span>'],
+    '':        ['',''],
+  };
+  const [keyHtml, labelHtml] = keyMap[highlightKey] || ['',''];
+  return `
+  <div class="notepad">
+    <div class="np-titlebar">
+      <div class="np-btns">
+        <div class="np-btn" style="background:#ff5f57;"></div>
+        <div class="np-btn" style="background:#ffbd2e;"></div>
+        <div class="np-btn" style="background:#28ca41;"></div>
+      </div>
+      <div class="np-title">Sin título — Bloc de notas</div>
+    </div>
+    <div class="np-menubar">
+      <div class="np-menu">Archivo</div>
+      <div class="np-menu">Edición</div>
+      <div class="np-menu">Ver</div>
+    </div>
+    <div class="np-area" id="npArea">${content}${cursorVisible?'<span class="cursor"></span>':''}</div>
+    ${highlightKey?`<div class="key-demo">${keyHtml} ${labelHtml}</div>`:''}
+    <div class="np-statusbar"><span>${statusLine}</span></div>
+  </div>`;
+}
+
+const STEPS = [
+  { label:'// BLOC DE NOTAS · ÁREA DE ESCRITURA',
+    uni:'✏️ El Bloc de Notas está abierto. Ves el <strong>cursor parpadeante</strong> — es la barrita que indica dónde aparecerá lo que escribas. Primero haz <strong>clic en el área blanca</strong> para activarla.',
+    actionText:'→ HACER CLIC EN EL ÁREA BLANCA',
+    okMsg:'¡Clic en el área! El cursor parpadea listo para escribir.',
+    render(){ return notepad('', true, ''); }
+  },
+  { label:'// BLOC DE NOTAS · ESCRIBIR NOMBRE',
+    uni:'⌨️ ¡Perfecto! Ahora vamos a escribir tu nombre. Pulsa el botón y verás cómo aparece en el documento, <strong>letra por letra</strong>.',
+    actionText:'→ ESCRIBIR MI NOMBRE',
+    okMsg:'¡Nombre escrito! Las letras aparecen donde está el cursor.',
+    render(){ return notepad('', true, 'escribir'); }
+  },
+  { label:'// BLOC DE NOTAS · BARRA ESPACIADORA',
+    uni:'␣ ¡Nombre escrito! La <strong>barra espaciadora</strong> pone un espacio entre palabras. Pulsa el botón para agregar un espacio y escribir más.',
+    actionText:'→ USAR LA BARRA ESPACIADORA',
+    okMsg:'¡Espacio añadido! Ahora podemos escribir la siguiente palabra.',
+    render(){ return notepad('María', true, 'espacio'); }
+  },
+  { label:'// BLOC DE NOTAS · TECLA ENTER',
+    uni:'↵ ¡Muy bien! La tecla <strong>Enter</strong> baja a la siguiente línea — como cuando presionas Enter en el teclado físico para empezar un nuevo párrafo.',
+    actionText:'→ PRESIONAR ENTER',
+    okMsg:'¡Enter! El cursor bajó a la nueva línea.',
+    render(){ return notepad('María García', true, 'enter'); }
+  },
+  { label:'// BLOC DE NOTAS · TECLA BORRAR',
+    uni:'⌫ ¡Genial! Cometimos un error a propósito: escribimos "Holla" en vez de "Hola". La tecla <strong>Borrar (Backspace)</strong> elimina el último carácter. ¡Pulsa el botón para corregirlo!',
+    actionText:'→ USAR LA TECLA BORRAR',
+    okMsg:'¡Error corregido! Borrar elimina el carácter anterior al cursor.',
+    render(){ return notepad('María García\nHolla', true, 'borrar'); }
+  },
+  { label:'// BLOC DE NOTAS · ¡TEXTO COMPLETO!',
+    uni:'🎉 ¡<strong>Excelente!</strong> Corregiste el error y el documento quedó perfecto. ¡Ya dominas las teclas básicas de escritura!',
+    actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+    okMsg:'¡Actividad completada! ⭐',
+    render(){ return notepad('María García\nHola, soy estudiante de UNI Academy.\n¡Aprender computación es genial!', false, ''); }
+  },
+];
+
+const TOTAL = STEPS.length;
+let stepIdx = 0;
+
+function init(){
+  stepIdx = 0;
+  document.getElementById('simWrap').style.display='block';
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('stepTotal').textContent = TOTAL;
+  buildDots(); renderStep();
+}
+
+function buildDots(){
+  const r = document.getElementById('sdots'); r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='sdot'+(i===0?' cur':''); d.id='sdot-'+i; r.appendChild(d);
+  }
+}
+
+// Typing animation helper
+function typeText(el, text, done){
+  let i=0;
+  el.innerHTML='';
+  const timer = setInterval(()=>{
+    if(i<text.length){
+      el.innerHTML += text[i]==='\\n'?'<br>':text[i];
+      i++;
+    } else { clearInterval(timer); if(done)done(); }
+  }, 60);
+}
+
+function renderStep(){
+  const s = STEPS[stepIdx];
+  document.getElementById('uniMsg').innerHTML = s.uni;
+  document.getElementById('simLabel').textContent = s.label;
+  document.getElementById('stepNum').textContent = stepIdx+1;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('progFill').style.width = (stepIdx/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.getElementById('sdot-'+i);
+    if(d) d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');
+  }
+  document.getElementById('simBody').innerHTML = s.render();
+  const btn = document.getElementById('btnAction');
+  btn.disabled = false;
+  btn.textContent = s.actionText;
+  btn.onclick = ()=> doStep(s);
+}
+
+function doStep(s){
+  document.getElementById('btnAction').disabled = true;
+  const area = document.getElementById('npArea');
+
+  // Animate based on step
+  if(stepIdx===0){
+    // Click animation — cursor pulse
+    if(area){ area.style.outline='2px solid #8b5cf6'; area.style.outlineOffset='2px'; }
+    finishStep(s);
+  } else if(stepIdx===1){
+    // Type name letter by letter
+    if(area){
+      area.innerHTML='';
+      typeText(area,'María',()=>{ area.innerHTML+='<span class="cursor"></span>'; finishStep(s); });
+    }
+  } else if(stepIdx===2){
+    // Add space + "García"
+    if(area){
+      area.innerHTML='María';
+      const k=document.querySelector('.key.highlight');
+      if(k){k.classList.add('pressed');setTimeout(()=>k.classList.remove('pressed'),200);}
+      setTimeout(()=>{
+        typeText(area,' García',()=>{ area.innerHTML='María García<span class="cursor"></span>'; finishStep(s); });
+        area.innerHTML='María';
+      },200);
+    }
+  } else if(stepIdx===3){
+    // Press enter — new line
+    const k=document.querySelector('.key.highlight');
+    if(k){k.classList.add('pressed');setTimeout(()=>k.classList.remove('pressed'),200);}
+    if(area){
+      area.innerHTML='María García<br><span class="cursor"></span>';
+      setTimeout(()=>finishStep(s),400);
+    }
+  } else if(stepIdx===4){
+    // Backspace animation — erase "a" from "Holla"
+    const k=document.querySelector('.key.highlight');
+    if(k){k.classList.add('pressed');setTimeout(()=>k.classList.remove('pressed'),200);}
+    if(area){
+      // show erasing sequence
+      const frames=['María García\nHoll<span class="cursor"></span>','María García\nHola<span class="cursor"></span>'];
+      let fi=0;
+      const t=setInterval(()=>{
+        area.innerHTML=frames[fi].replace(/\n/g,'<br>');
+        fi++;
+        if(fi>=frames.length){clearInterval(t);finishStep(s);}
+      },350);
+    }
+  } else {
+    finishStep(s);
+  }
+}
+
+function finishStep(s){
+  const ok = document.getElementById('stepOk');
+  ok.textContent='✅ '+s.okMsg; ok.classList.add('show');
+  spawnConf();
+  setTimeout(()=>{
+    ok.classList.remove('show');
+    stepIdx++;
+    if(stepIdx>=TOTAL) showFinal(); else renderStep();
+  },900);
+}
+
+function showFinal(){
+  document.getElementById('simWrap').style.display='none';
+  document.getElementById('finalResult').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Tema 3 completado!</strong> Ya sabes escribir texto en el Bloc de Notas. ¡Siguiente paso: guardar tu documento!';
+  document.getElementById('progFill').style.width='100%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  setTimeout(bigConf,200);
+}
+
+function spawnConf(){
+  const colors=['#8b5cf6','#ec4899','#a78bfa','#ffd93d','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${25+Math.random()*50}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#8b5cf6','#ec4899','#a78bfa','#ffd93d','#00f5e4','#00e676'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){ document.getElementById('finalResult').classList.remove('visible');document.getElementById('simWrap').style.display='block';window.scrollTo({top:0,behavior:'smooth'});init(); }
+init();
+</script>
+</body>
+</html>
