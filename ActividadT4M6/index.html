@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardando el Documento · T4 · Módulo 6 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --violet:#8b5cf6;--purple:#7c3aed;--pink:#ec4899;--lilac:#a78bfa;
+    --green:#00e676;--red:#ff3d3d;--gold:#ffd93d;--cyan:#00f5e4;
+    --bg:#060b18;--card:#0f1020;--text:#e8f4ff;--muted:#7a6aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(139,92,246,.08) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(139,92,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(139,92,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(139,92,246,.18);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--violet);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--lilac);
+    letter-spacing:2px;border:1px solid var(--lilac);padding:4px 14px;border-radius:2px;background:rgba(167,139,250,.06);}
+
+  .container{position:relative;z-index:5;max-width:860px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(139,92,246,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac),var(--violet));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--lilac);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  .step-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;transition:all .3s;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--violet);border-color:var(--violet);transform:scale(1.4);box-shadow:0 0 10px rgba(139,92,246,.6);}
+  .step-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .step-label span{color:var(--lilac);font-weight:700;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .5s ease;width:0%;}
+
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:10px;
+    padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--green);display:none;animation:fadeIn .3s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(139,92,246,.2);
+    border-radius:20px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:14px;}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--lilac);
+    padding:7px 16px 5px;border-bottom:1px solid rgba(139,92,246,.1);}
+  .action-wrap{padding:12px 16px;border-top:1px solid rgba(139,92,246,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(139,92,246,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* ── NOTEPAD SHELL ── */
+  .notepad{background:#fff;width:100%;}
+  .np-titlebar{background:#f0f0f0;padding:5px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #ddd;}
+  .np-btns{display:flex;gap:4px;}
+  .np-btn{width:12px;height:12px;border-radius:50%;}
+  .np-title{font-size:11px;color:#555;flex:1;text-align:center;}
+  .np-menubar{background:#f8f8f8;padding:3px 8px;border-bottom:1px solid #e0e0e0;display:flex;gap:0;position:relative;}
+  .np-menu{font-size:12px;color:#333;padding:4px 10px;cursor:pointer;border-radius:3px;position:relative;}
+  .np-menu:hover{background:#ddd;}
+  .np-menu.open{background:#0078d4;color:#fff;}
+  .np-menu.pulse{animation:menuPulse 1s ease-in-out infinite;}
+  @keyframes menuPulse{0%,100%{background:#f8f8f8;color:#333}50%{background:rgba(139,92,246,.15);color:#7c3aed}}
+  .np-dropdown{position:absolute;top:100%;left:0;background:#fff;border:1px solid #ccc;
+    box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:160px;border-radius:0 0 4px 4px;display:none;}
+  .np-dropdown.show{display:block;animation:dropDown .15s ease;}
+  @keyframes dropDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .np-dd-item{padding:6px 16px;font-size:12px;color:#333;cursor:pointer;white-space:nowrap;}
+  .np-dd-item:hover{background:#e8f0fe;}
+  .np-dd-item.highlight{background:rgba(139,92,246,.1);color:#6d28d9;font-weight:600;
+    animation:itemPulse 1s ease-in-out infinite;}
+  @keyframes itemPulse{0%,100%{background:rgba(139,92,246,.1)}50%{background:rgba(139,92,246,.22)}}
+  .np-dd-sep{height:1px;background:#e0e0e0;margin:3px 0;}
+  .np-area{min-height:100px;background:#fff;padding:10px 12px;
+    font-family:'Courier New',monospace;font-size:13px;color:#1a1a1a;line-height:1.7;white-space:pre-wrap;}
+  .np-statusbar{background:#f0f0f0;padding:3px 10px;font-size:11px;color:#777;border-top:1px solid #ddd;}
+
+  /* ── SAVE DIALOG ── */
+  .save-dialog{background:#fff;border:1px solid #aaa;border-radius:6px;
+    box-shadow:0 8px 32px rgba(0,0,0,.35);width:100%;max-width:480px;margin:12px auto;}
+  .sd-titlebar{background:linear-gradient(180deg,#4a7fba,#3a5f9a);color:#fff;
+    padding:6px 12px;display:flex;align-items:center;justify-content:space-between;
+    border-radius:6px 6px 0 0;font-size:12px;font-weight:600;}
+  .sd-close{cursor:pointer;font-size:16px;opacity:.8;}
+  .sd-body{padding:14px 16px;}
+  .sd-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .sd-label{font-size:12px;color:#333;width:90px;flex-shrink:0;}
+  .sd-input{flex:1;border:1px solid #999;border-radius:3px;padding:5px 8px;font-size:12px;color:#333;font-family:'Exo 2',sans-serif;outline:none;}
+  .sd-input:focus{border-color:#3a5f9a;box-shadow:0 0 0 2px rgba(58,95,154,.2);}
+  .sd-input.highlight{border-color:#8b5cf6!important;box-shadow:0 0 0 3px rgba(139,92,246,.2)!important;
+    animation:inputPulse 1s ease-in-out infinite;}
+  @keyframes inputPulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,0)}50%{box-shadow:0 0 0 4px rgba(139,92,246,.2)}}
+  .sd-locations{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+  .sd-loc{background:#f0f0f0;border:1.5px solid #ccc;border-radius:6px;padding:8px 12px;
+    cursor:pointer;text-align:center;font-size:11px;color:#444;transition:all .18s;}
+  .sd-loc:hover{border-color:#8b5cf6;background:rgba(139,92,246,.06);}
+  .sd-loc.selected{border-color:#8b5cf6;background:rgba(139,92,246,.1);color:#6d28d9;font-weight:600;}
+  .sd-loc.pulse-loc{animation:locPulse 1s ease-in-out infinite;}
+  @keyframes locPulse{0%,100%{border-color:#ccc}50%{border-color:#8b5cf6;background:rgba(139,92,246,.08)}}
+  .sd-loc-icon{font-size:20px;margin-bottom:3px;}
+  .sd-footer{display:flex;justify-content:flex-end;gap:8px;padding-top:8px;border-top:1px solid #e0e0e0;}
+  .sd-btn{padding:5px 18px;border-radius:3px;font-size:12px;cursor:pointer;font-family:'Exo 2',sans-serif;}
+  .sd-btn.primary{background:#0078d4;color:#fff;border:1px solid #005a9e;font-weight:600;}
+  .sd-btn.primary:hover{background:#006dc1;}
+  .sd-btn.primary.pulse-btn{animation:btnPulse 1s ease-in-out infinite;}
+  @keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,120,212,0)}50%{box-shadow:0 0 0 5px rgba(0,120,212,.3)}}
+  .sd-btn.secondary{background:#f0f0f0;color:#333;border:1px solid #ccc;}
+
+  /* ── SUCCESS ── */
+  .save-success{text-align:center;padding:28px;background:#fff;}
+  .ss-icon{font-size:52px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+  .ss-title{font-size:16px;color:#202124;margin:10px 0 4px;font-weight:600;}
+  .ss-path{font-family:monospace;font-size:12px;background:#f8f9fa;
+    border:1px solid #e0e0e0;border-radius:6px;padding:7px 14px;display:inline-block;color:#333;margin-top:6px;}
+  .ss-tips{margin-top:14px;display:flex;flex-direction:column;gap:6px;text-align:left;max-width:340px;margin-left:auto;margin-right:auto;}
+  .ss-tip{font-size:12px;color:#5f6368;line-height:1.5;}
+
+  /* FINAL */
+  .final-result{display:none;background:var(--card);border-radius:20px;overflow:hidden;}
+  .final-result.visible{display:block;}
+  .fr-top{height:5px;background:linear-gradient(90deg,var(--violet),var(--pink),var(--lilac));}
+  .fr-body{padding:36px 24px;text-align:center;}
+  .fr-stars{font-size:48px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fr-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--violet),var(--pink));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0 4px;}
+  .fr-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;}
+  .fr-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 20px;color:rgba(255,255,255,.8);}
+  .fr-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:22px;}
+  .sk-card{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--lilac);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--violet),var(--purple));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:600px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .sd-locations{gap:4px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 6 · TEMA 4</div>
+</header>
+
+<div class="container">
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(139,92,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a0a2a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a0a2a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#2d1055"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#2d1055"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e0f3f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#8b5cf6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a0a2a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a0a2a"/>
+      <circle cx="10" cy="56" r="5" fill="#2d1055"/>
+      <circle cx="70" cy="56" r="5" fill="#2d1055"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a0a2a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e0f3f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#8b5cf6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#ec4899"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#2d1055"/>
+      <circle cx="40" cy="3" r="3" fill="#8b5cf6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#2d1055"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#2d1055"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 💾 Ahora aprenderemos a <strong>guardar nuestro documento</strong>. ¡Esto es muy importante para no perder lo que escribimos! Sigue cada paso.</p>
+    </div>
+  </div>
+
+  <div class="step-bar">
+    <div class="sdots" id="sdots"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="step-label">Paso <span id="stepNum">1</span> de <span id="stepTotal">6</span></div>
+  </div>
+
+  <div class="step-ok" id="stepOk">✅ ¡Muy bien!</div>
+
+  <div class="sim-wrap" id="simWrap">
+    <div class="sim-topbar"></div>
+    <div class="sim-label" id="simLabel">// BLOC DE NOTAS · GUARDAR DOCUMENTO</div>
+    <div id="simBody"></div>
+    <div class="action-wrap">
+      <button class="btn-action" id="btnAction">→ SIGUIENTE PASO</button>
+    </div>
+  </div>
+
+  <div class="final-result" id="finalResult">
+    <div class="fr-top"></div>
+    <div class="fr-body">
+      <div class="fr-stars">⭐⭐⭐</div>
+      <div class="fr-title">¡DOCUMENTO GUARDADO!</div>
+      <div class="fr-sub">MÓDULO 6 · TEMA 4 · COMPLETADO</div>
+      <div class="fr-msg">¡Fantástico! 🚀 Ya sabes cómo <strong>guardar un documento</strong>. Usaste el menú <strong>Archivo → Guardar como</strong>, elegiste la ubicación, pusiste un nombre y presionaste <strong>Guardar</strong>. ¡Tu texto está a salvo!</div>
+      <div class="skills-grid">
+        <div class="sk-card"><div class="sk-icon">📂</div><div class="sk-name">MENÚ ARCHIVO</div><div class="sk-desc">Accede a todas las opciones del documento</div></div>
+        <div class="sk-card"><div class="sk-icon">💾</div><div class="sk-name">GUARDAR COMO</div><div class="sk-desc">Elige nombre y ubicación del archivo</div></div>
+        <div class="sk-card"><div class="sk-icon">🖥️</div><div class="sk-name">UBICACIÓN</div><div class="sk-desc">Escritorio, Documentos u otra carpeta</div></div>
+        <div class="sk-card"><div class="sk-icon">🏷️</div><div class="sk-name">NOMBRE</div><div class="sk-desc">Un nombre fácil de recordar</div></div>
+        <div class="sk-card"><div class="sk-icon">✅</div><div class="sk-name">GUARDAR</div><div class="sk-desc">Clic en el botón para confirmar</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;PRACTICAR DE NUEVO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CONTENT = 'María García\nHola, soy estudiante de UNI Academy.\n¡Aprender computación es genial!';
+
+function npBase(menuOpen=false, showDropdown=false, showSaveAs=false, showSuccess=false, fname=''){
+  const ddHtml = showDropdown ? `
+    <div class="np-dropdown show">
+      <div class="np-dd-item">Nuevo</div>
+      <div class="np-dd-item">Abrir…</div>
+      <div class="np-dd-sep"></div>
+      <div class="np-dd-item">Guardar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ctrl+S</div>
+      <div class="np-dd-item highlight" id="ddSaveAs" onclick="handleSaveAs()">Guardar como… &nbsp;Ctrl+Shift+S</div>
+      <div class="np-dd-sep"></div>
+      <div class="np-dd-item">Imprimir…</div>
+      <div class="np-dd-sep"></div>
+      <div class="np-dd-item">Salir</div>
+    </div>` : '';
+
+  const saDialog = showSaveAs ? buildSaveAs(fname) : '';
+  const successHtml = showSuccess ? buildSuccess(fname) : '';
+
+  return `
+  <div class="notepad">
+    <div class="np-titlebar">
+      <div class="np-btns">
+        <div class="np-btn" style="background:#ff5f57;"></div>
+        <div class="np-btn" style="background:#ffbd2e;"></div>
+        <div class="np-btn" style="background:#28ca41;"></div>
+      </div>
+      <div class="np-title">${fname?fname+' — Bloc de notas':'*Sin título — Bloc de notas'}</div>
+    </div>
+    <div class="np-menubar">
+      <div class="np-menu ${menuOpen?'open':'pulse'}" id="menuArchivo" onclick="handleArchivoClick()">
+        Archivo ${ddHtml}
+      </div>
+      <div class="np-menu">Edición</div>
+      <div class="np-menu">Ver</div>
+    </div>
+    <div class="np-area">${CONTENT.replace(/\n/g,'<br>')}</div>
+    ${saDialog}
+    ${successHtml}
+    <div class="np-statusbar">Ln 3, Col 42</div>
+  </div>`;
+}
+
+function buildSaveAs(fname){
+  return `
+  <div class="save-dialog">
+    <div class="sd-titlebar">
+      <span>💾 Guardar como</span>
+      <span class="sd-close">✕</span>
+    </div>
+    <div class="sd-body">
+      <div style="font-size:12px;color:#555;margin-bottom:10px;">Elige dónde guardar tu archivo:</div>
+      <div class="sd-locations">
+        <div class="sd-loc pulse-loc" id="loc-escritorio" onclick="selectLocation('escritorio')">
+          <div class="sd-loc-icon">🖥️</div><div>Escritorio</div>
+        </div>
+        <div class="sd-loc" id="loc-docs" onclick="selectLocation('docs')">
+          <div class="sd-loc-icon">📄</div><div>Documentos</div>
+        </div>
+        <div class="sd-loc" id="loc-carpeta" onclick="selectLocation('carpeta')">
+          <div class="sd-loc-icon">📁</div><div>Mi Carpeta</div>
+        </div>
+      </div>
+      <div class="sd-row">
+        <div class="sd-label">Nombre:</div>
+        <input class="sd-input highlight" id="sd-fname" type="text"
+          value="${fname}" placeholder="Escribe un nombre…" autocomplete="off"/>
+      </div>
+      <div class="sd-row">
+        <div class="sd-label">Tipo:</div>
+        <input class="sd-input" type="text" value="Documento de texto (*.txt)" readonly style="color:#888;background:#f5f5f5;"/>
+      </div>
+      <div class="sd-footer">
+        <button class="sd-btn secondary">Cancelar</button>
+        <button class="sd-btn primary pulse-btn" id="btnGuardar" onclick="handleGuardar()">Guardar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildSuccess(fname){
+  return `
+  <div class="save-success">
+    <div class="ss-icon">💾</div>
+    <div class="ss-title">¡Documento guardado correctamente!</div>
+    <div class="ss-path">🖥️ Escritorio / ${fname||'mi_primer_texto'}.txt</div>
+    <div class="ss-tips">
+      <div class="ss-tip">✅ Ahora tu texto está guardado y no se perderá.</div>
+      <div class="ss-tip">📂 Puedes encontrarlo en el Escritorio haciendo doble clic.</div>
+      <div class="ss-tip">💡 Para guardar cambios después, usa <strong>Ctrl + S</strong>.</div>
+    </div>
+  </div>`;
+}
+
+/* ── step logic ── */
+let stepIdx=0;
+const TOTAL=6;
+let selectedLoc='';
+let fileName='';
+
+const STEP_CONFIG=[
+  { label:'// BLOC DE NOTAS · DOCUMENTO SIN GUARDAR',
+    uni:'📝 Aquí está nuestro documento escrito. Fíjate: el título dice <strong>*Sin título</strong> — el asterisco (*) significa que hay cambios sin guardar. Para guardarlo, vamos al menú <strong>Archivo</strong>.',
+    actionText:'→ HACER CLIC EN MENÚ "ARCHIVO"',
+    okMsg:'¡Menú Archivo abierto!',
+    render:()=>npBase(false,false,false,false,'') },
+  { label:'// BLOC DE NOTAS · MENÚ ARCHIVO ABIERTO',
+    uni:'📂 ¡El menú Archivo está abierto! Vemos varias opciones. Necesitamos <strong>"Guardar como…"</strong> para elegir un nombre y una ubicación. Haz clic en ella.',
+    actionText:'→ HACER CLIC EN "GUARDAR COMO…"',
+    okMsg:'¡Guardar como… seleccionado!',
+    render:()=>npBase(true,true,false,false,'') },
+  { label:'// BLOC DE NOTAS · ELEGIR UBICACIÓN',
+    uni:'🗂️ ¡Se abrió el cuadro "Guardar como"! Primero elige <strong>dónde</strong> vas a guardar el archivo. Te recomendamos el <strong>Escritorio</strong> — es fácil de encontrar.',
+    actionText:'→ ELEGIR "ESCRITORIO" COMO UBICACIÓN',
+    okMsg:'¡Escritorio seleccionado como ubicación!',
+    render:()=>npBase(false,false,true,false,'') },
+  { label:'// BLOC DE NOTAS · ESCRIBIR NOMBRE',
+    uni:'🏷️ ¡Ubicación elegida! Ahora escribe un <strong>nombre para tu archivo</strong>. Ponle un nombre que recuerdes. Pulsa el botón y se rellenará automáticamente.',
+    actionText:'→ ESCRIBIR NOMBRE DEL ARCHIVO',
+    okMsg:'¡Nombre escrito: "mi_primer_texto"!',
+    render:()=>npBase(false,false,true,false,'') },
+  { label:'// BLOC DE NOTAS · CLIC EN GUARDAR',
+    uni:'💾 ¡Todo listo! Nombre puesto, ubicación elegida. Ahora haz clic en el <strong>botón "Guardar"</strong> (azul) para guardar el documento. ¡El asterisco (*) desaparecerá!',
+    actionText:'→ HACER CLIC EN BOTÓN "GUARDAR"',
+    okMsg:'¡Botón Guardar presionado!',
+    render:()=>npBase(false,false,true,false,'mi_primer_texto') },
+  { label:'// BLOC DE NOTAS · ¡DOCUMENTO GUARDADO!',
+    uni:'🎉 ¡<strong>Documento guardado!</strong> El archivo "mi_primer_texto.txt" está ahora en el Escritorio. El título ya no tiene el asterisco (*). ¡No se perderá nunca!',
+    actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+    okMsg:'¡Actividad completada! ⭐',
+    render:()=>npBase(false,false,false,true,'mi_primer_texto') },
+];
+
+function handleArchivoClick(){ if(stepIdx===0) doStep(); }
+function handleSaveAs(){        if(stepIdx===1) doStep(); }
+function selectLocation(loc){
+  if(stepIdx===2){
+    selectedLoc=loc;
+    document.querySelectorAll('.sd-loc').forEach(l=>l.classList.remove('selected','pulse-loc'));
+    const el=document.getElementById('loc-'+loc);if(el)el.classList.add('selected');
+    setTimeout(doStep,400);
+  }
+}
+function handleGuardar(){       if(stepIdx===4) doStep(); }
+
+function init(){
+  stepIdx=0;selectedLoc='';fileName='';
+  document.getElementById('simWrap').style.display='block';
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('stepTotal').textContent=TOTAL;
+  buildDots();renderStep();
+}
+
+function buildDots(){
+  const r=document.getElementById('sdots');r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');d.className='sdot'+(i===0?' cur':'');d.id='sdot-'+i;r.appendChild(d);
+  }
+}
+
+function renderStep(){
+  const s=STEP_CONFIG[stepIdx];
+  document.getElementById('uniMsg').innerHTML=s.uni;
+  document.getElementById('simLabel').textContent=s.label;
+  document.getElementById('stepNum').textContent=stepIdx+1;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('progFill').style.width=(stepIdx/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');}
+  document.getElementById('simBody').innerHTML=s.render();
+  const btn=document.getElementById('btnAction');
+  // Steps 0,1,2 also work via button; step 4 (Guardar) also via button
+  btn.disabled=false;
+  btn.textContent=s.actionText;
+  btn.onclick=doStep;
+
+  // step 3: autofill name
+  if(stepIdx===3){
+    btn.onclick=()=>{
+      const inp=document.getElementById('sd-fname');
+      if(inp) inp.value='mi_primer_texto';
+      fileName='mi_primer_texto';
+      doStep();
+    };
+  }
+}
+
+function doStep(){
+  const s=STEP_CONFIG[stepIdx];
+  const ok=document.getElementById('stepOk');
+  ok.textContent='✅ '+s.okMsg; ok.classList.add('show');
+  document.getElementById('btnAction').disabled=true;
+  spawnConf();
+  setTimeout(()=>{
+    stepIdx++; ok.classList.remove('show');
+    if(stepIdx>=TOTAL) showFinal(); else renderStep();
+  },900);
+}
+
+function showFinal(){
+  document.getElementById('simWrap').style.display='none';
+  document.getElementById('finalResult').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Módulo 6 completado!</strong> Ya sabes escribir Y guardar documentos en la computadora. ¡Eres un Creador Digital! ✏️💾';
+  document.getElementById('progFill').style.width='100%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  setTimeout(bigConf,200);
+}
+
+function spawnConf(){
+  const colors=['#8b5cf6','#ec4899','#a78bfa','#ffd93d','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${25+Math.random()*50}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#8b5cf6','#ec4899','#a78bfa','#ffd93d','#00f5e4','#00e676'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){ document.getElementById('finalResult').classList.remove('visible');document.getElementById('simWrap').style.display='block';window.scrollTo({top:0,behavior:'smooth'});init(); }
+init();
+</script>
+</body>
+</html>
