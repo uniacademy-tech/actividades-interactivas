@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enviar y Recibir Correo · T4+T5 · Módulo 5 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amber:#f59e0b;--orange:#f97316;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--cyan:#00f5e4;--blue:#3b82f6;
+    --bg:#060b18;--card:#111820;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(245,158,11,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(249,115,22,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(245,158,11,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,158,11,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(245,158,11,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--amber);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--amber);
+    letter-spacing:2px;border:1px solid var(--amber);padding:4px 14px;border-radius:2px;background:rgba(245,158,11,.06);}
+
+  .container{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold),var(--amber));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(245,158,11,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* PHASE PILLS */
+  .phase-pills{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .ppill{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    padding:5px 14px;border-radius:20px;border:1px solid;transition:all .3s;}
+  .ppill.done   {color:var(--green);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+  .ppill.active {color:var(--amber);border-color:var(--amber);background:rgba(245,158,11,.1);box-shadow:0 0 12px rgba(245,158,11,.2);}
+  .ppill.pending{color:var(--muted);border-color:rgba(255,255,255,.08);}
+
+  /* STEP BAR */
+  .step-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;transition:all .3s;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--amber);border-color:var(--amber);transform:scale(1.4);box-shadow:0 0 10px rgba(245,158,11,.6);}
+  .step-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .step-label span{color:var(--amber);font-weight:700;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amber),var(--orange));transition:width .5s ease;width:0%;}
+
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:10px;
+    padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--green);display:none;animation:fadeIn .3s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  /* SIM */
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(245,158,11,.2);
+    border-radius:20px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:14px;}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--amber);
+    padding:7px 16px 5px;border-bottom:1px solid rgba(245,158,11,.1);}
+  .action-wrap{padding:12px 16px;border-top:1px solid rgba(245,158,11,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(245,158,11,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* GMAIL LAYOUT */
+  .gmail-shell{background:#f6f8fc;display:flex;min-height:340px;}
+
+  /* SIDEBAR */
+  .gmail-sidebar{width:180px;background:#f6f8fc;padding:10px 8px;flex-shrink:0;border-right:1px solid #e0e0e0;}
+  .gmail-compose-btn{background:#c2e7ff;border:none;border-radius:16px;padding:14px 18px;
+    font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:10px;
+    width:100%;margin-bottom:14px;color:#001d35;transition:all .2s;position:relative;}
+  .gmail-compose-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .gmail-compose-btn.pulse-btn{animation:composePulse 1s ease-in-out infinite;}
+  @keyframes composePulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 8px rgba(245,158,11,.25)}}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:20px;
+    font-size:13px;color:#202124;cursor:pointer;transition:background .15s;}
+  .nav-item:hover{background:rgba(0,0,0,.06);}
+  .nav-item.active{background:#d3e3fd;font-weight:600;}
+  .nav-icon{font-size:18px;width:22px;text-align:center;}
+  .badge{background:#d93025;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:auto;}
+
+  /* MAIN AREA */
+  .gmail-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .gmail-toolbar{background:#f6f8fc;padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e0e0e0;}
+  .gmail-search{flex:1;background:#eaf1fb;border:none;border-radius:24px;padding:8px 16px;
+    font-size:14px;color:#202124;font-family:'Exo 2',sans-serif;outline:none;}
+  .inbox-list{flex:1;background:#fff;}
+  .inbox-item{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f1f3f4;
+    cursor:pointer;transition:background .12s;position:relative;}
+  .inbox-item:hover{background:#f5f5f5;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+  .inbox-item.unread{background:#fff;}
+  .inbox-item.unread .ii-from{font-weight:700;color:#202124;}
+  .inbox-item.unread .ii-subject{font-weight:700;color:#202124;}
+  .inbox-item.pulse-item{animation:inboxPulse 1s ease-in-out infinite;}
+  @keyframes inboxPulse{0%,100%{background:#fff}50%{background:#fff8e6}}
+  .ii-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+  .ii-from{font-size:14px;color:#202124;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ii-body{flex:1;min-width:0;}
+  .ii-subject{font-size:13px;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ii-snippet{font-size:12px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ii-time{font-size:12px;color:#5f6368;white-space:nowrap;margin-left:8px;}
+  .ii-unread-dot{width:8px;height:8px;border-radius:50%;background:#1a73e8;flex-shrink:0;}
+
+  /* COMPOSE WINDOW */
+  .compose-window{position:absolute;bottom:0;right:20px;width:480px;background:#fff;
+    border-radius:12px 12px 0 0;box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:10;
+    display:none;max-width:calc(100% - 40px);}
+  .compose-window.visible{display:block;animation:composeSlide .3s ease;}
+  @keyframes composeSlide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+  .compose-header{background:#404040;color:#fff;padding:8px 14px;border-radius:12px 12px 0 0;
+    display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500;}
+  .compose-close{cursor:pointer;font-size:18px;opacity:.7;}
+  .compose-field{border-bottom:1px solid #e0e0e0;padding:8px 14px;display:flex;align-items:center;gap:8px;}
+  .compose-field-label{font-size:13px;color:#5f6368;width:40px;flex-shrink:0;}
+  .compose-field input{flex:1;border:none;outline:none;font-size:14px;font-family:'Exo 2',sans-serif;color:#202124;}
+  .compose-field input.highlight-field{background:rgba(245,158,11,.08);border-radius:4px;padding:2px 6px;}
+  .compose-body-area{min-height:120px;padding:12px 14px;font-size:14px;color:#202124;
+    font-family:'Exo 2',sans-serif;outline:none;cursor:text;}
+  .compose-body-area.typing{border-left:3px solid var(--amber);background:rgba(245,158,11,.03);}
+  .compose-footer{padding:10px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid #e0e0e0;}
+  .send-btn{background:#0b57d0;color:#fff;border:none;border-radius:20px;padding:8px 22px;
+    font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .send-btn:hover{background:#0842a0;}
+  .send-btn.pulse-send{animation:sendPulse 1s ease-in-out infinite;}
+  @keyframes sendPulse{0%,100%{box-shadow:0 0 0 0 rgba(11,87,208,0)}50%{box-shadow:0 0 0 6px rgba(11,87,208,.25)}}
+
+  /* EMAIL VIEW */
+  .email-view{background:#fff;flex:1;padding:20px 24px;overflow-y:auto;}
+  .ev-subject{font-size:22px;color:#202124;font-weight:400;margin-bottom:14px;}
+  .ev-meta{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #e0e0e0;}
+  .ev-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
+  .ev-from{font-size:13px;color:#202124;font-weight:600;}
+  .ev-to{font-size:12px;color:#5f6368;}
+  .ev-time{font-size:12px;color:#5f6368;margin-left:auto;white-space:nowrap;}
+  .ev-body{font-size:14px;color:#202124;line-height:1.8;}
+
+  /* FINAL */
+  .final-result{display:none;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.55);}
+  .final-result.visible{display:block;}
+  .fr-top{height:5px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .fr-body{padding:36px 24px;text-align:center;}
+  .fr-stars{font-size:48px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fr-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--amber),var(--orange));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0 4px;}
+  .fr-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;}
+  .fr-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .fr-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;margin-bottom:22px;}
+  .sk-card{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--amber);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .gmail-sidebar{width:50px;}
+    .gmail-sidebar .nav-label,.gmail-sidebar .nav-count,.gmail-sidebar span{display:none;}
+    .compose-window{width:calc(100% - 20px);right:10px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 5 · T4 + T5</div>
+</header>
+
+<div class="container">
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(245,158,11,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#2a1e0f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#f59e0b"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <circle cx="10" cy="56" r="5" fill="#3d2510"/>
+      <circle cx="70" cy="56" r="5" fill="#3d2510"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#2a1a0a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#2a1e0f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#f59e0b"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#f97316"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#3d2510"/>
+      <circle cx="40" cy="3" r="3" fill="#f59e0b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📨 Vamos a simular cómo se <strong>redacta, envía y recibe</strong> un correo electrónico en Gmail. ¡Sigue cada instrucción!</p>
+    </div>
+  </div>
+
+  <!-- PHASE PILLS -->
+  <div class="phase-pills">
+    <div class="ppill active" id="pp-1">📤 T4 · ENVIAR CORREO</div>
+    <div class="ppill pending" id="pp-2">📥 T5 · RECIBIR CORREO</div>
+  </div>
+
+  <!-- STEP BAR -->
+  <div class="step-bar">
+    <div class="sdots" id="sdots"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="step-label">Paso <span id="stepNum">1</span> de <span id="stepTotal">8</span></div>
+  </div>
+
+  <div class="step-ok" id="stepOk">✅ ¡Correcto! Continuando…</div>
+
+  <div class="sim-wrap" id="simWrap">
+    <div class="sim-topbar"></div>
+    <div class="sim-label" id="simLabel">// GMAIL · BANDEJA DE ENTRADA</div>
+    <div id="simBody" style="position:relative;"></div>
+    <div class="action-wrap">
+      <button class="btn-action" id="btnAction" disabled>SIGUIENTE PASO →</button>
+    </div>
+  </div>
+
+  <div class="final-result" id="finalResult">
+    <div class="fr-top"></div>
+    <div class="fr-body">
+      <div class="fr-stars">⭐⭐⭐</div>
+      <div class="fr-title">¡CORREO ENVIADO Y RECIBIDO!</div>
+      <div class="fr-sub">MÓDULO 5 · T4+T5 · COMUNICACIÓN DIGITAL</div>
+      <div class="fr-msg">¡Excelente, Explorador! 🚀 Ya sabes cómo <strong>redactar un correo</strong>, completar los campos <strong>Para, Asunto y Mensaje</strong>, enviarlo y también cómo revisar tu <strong>bandeja de entrada</strong>. ¡Estás listo para comunicarte por Internet!</div>
+      <div class="skills-grid">
+        <div class="sk-card"><div class="sk-icon">✏️</div><div class="sk-name">REDACTAR</div><div class="sk-desc">Botón "+" o "Redactar" para escribir</div></div>
+        <div class="sk-card"><div class="sk-icon">📬</div><div class="sk-name">CAMPO "PARA"</div><div class="sk-desc">Dirección del destinatario</div></div>
+        <div class="sk-card"><div class="sk-icon">📋</div><div class="sk-name">ASUNTO</div><div class="sk-desc">Título corto del correo</div></div>
+        <div class="sk-card"><div class="sk-icon">💬</div><div class="sk-name">MENSAJE</div><div class="sk-desc">El cuerpo del correo</div></div>
+        <div class="sk-card"><div class="sk-icon">📤</div><div class="sk-name">ENVIAR</div><div class="sk-desc">Botón azul para enviar</div></div>
+        <div class="sk-card"><div class="sk-icon">📥</div><div class="sk-name">BANDEJA</div><div class="sk-desc">Donde llegan tus correos</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;PRACTICAR DE NUEVO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── shared Gmail UI builders ── */
+function gmailShell(mainHTML, composeHTML){
+  return `
+  <div class="gmail-shell">
+    <div class="gmail-sidebar">
+      <button class="gmail-compose-btn ${composeHTML?'pulse-btn':''}" id="composeBtn" onclick="handleCompose()">
+        <span style="font-size:20px;">✏️</span> <span>Redactar</span>
+      </button>
+      <div class="nav-item active"><span class="nav-icon">📥</span><span class="nav-label">Recibidos</span><span class="badge">3</span></div>
+      <div class="nav-item"><span class="nav-icon">⭐</span><span class="nav-label">Destacados</span></div>
+      <div class="nav-item"><span class="nav-icon">📤</span><span class="nav-label">Enviados</span></div>
+      <div class="nav-item"><span class="nav-icon">🗑️</span><span class="nav-label">Papelera</span></div>
+    </div>
+    <div class="gmail-main">
+      <div class="gmail-toolbar">
+        <input class="gmail-search" type="text" placeholder="🔍  Buscar en el correo"/>
+      </div>
+      ${mainHTML}
+    </div>
+    ${composeHTML?'<div class="compose-window visible" id="composeWin">'+composeHTML+'</div>':''}
+  </div>`;
+}
+
+function inboxRows(highlightIdx){
+  const emails=[
+    {from:'UNI Academy',  color:'#f59e0b', subj:'¡Bienvenido al Módulo 5!', snip:'Hoy aprenderás sobre correo electrónico...', time:'10:30', unread:true},
+    {from:'Juan García',  color:'#3b82f6', subj:'Reunión del martes',        snip:'Hola, ¿podemos reunirnos el martes a las...', time:'Ayer',  unread:true},
+    {from:'Biblioteca',   color:'#10b981', subj:'Tu libro está listo',        snip:'El libro que reservaste ya está disponible...', time:'Lun',  unread:false},
+    {from:'mariagarcia2024', color:'#f97316', subj:'Saludos desde mi nueva cuenta', snip:'¡Hola! Este es mi primer correo electrónico...', time:'Ahora', unread:true},
+  ];
+  return emails.map((e,i)=>`
+    <div class="inbox-item${e.unread?' unread':''}${i===highlightIdx?' pulse-item':''}" id="ii-${i}" onclick="handleInboxClick(${i})">
+      <div class="ii-avatar" style="background:${e.color}">${e.from[0]}</div>
+      <div class="ii-from">${e.from}</div>
+      <div class="ii-body">
+        <div class="ii-subject">${e.subj}</div>
+        <div class="ii-snippet">${e.snip}</div>
+      </div>
+      <div class="ii-time">${e.time}</div>
+      ${e.unread&&i!==3?'<div class="ii-unread-dot"></div>':''}
+    </div>`).join('');
+}
+
+function composeBase(toVal,toHL,subjVal,subjHL,bodyVal,bodyHL,sendHL){
+  return `
+    <div class="compose-header">
+      <span>Nuevo mensaje</span>
+      <span class="compose-close">✕</span>
+    </div>
+    <div class="compose-field">
+      <span class="compose-field-label">Para</span>
+      <input id="cf-to"   type="text" value="${toVal}"   placeholder="Destinatario" class="${toHL?'highlight-field':''}" autocomplete="off"/>
+    </div>
+    <div class="compose-field">
+      <span class="compose-field-label">Asunto</span>
+      <input id="cf-subj" type="text" value="${subjVal}" placeholder="Asunto del mensaje" class="${subjHL?'highlight-field':''}" autocomplete="off"/>
+    </div>
+    <div class="compose-body-area ${bodyHL?'typing':''}" id="cf-body" contenteditable="${bodyHL?'true':'false'}">
+      ${bodyVal?bodyVal:'<span style="color:#9aa0a6">Escribe aquí tu mensaje…</span>'}
+    </div>
+    <div class="compose-footer">
+      <button class="send-btn ${sendHL?'pulse-send':''}" id="sendBtn" onclick="handleSend()">Enviar</button>
+      <span style="font-size:20px;cursor:pointer;color:#5f6368;">📎</span>
+      <span style="font-size:20px;cursor:pointer;color:#5f6368;">🖼️</span>
+      <span style="margin-left:auto;font-size:20px;cursor:pointer;color:#5f6368;">🗑️</span>
+    </div>`;
+}
+
+/* ── step logic ── */
+let stepIdx=0;
+const TOTAL=8;
+let composeOpen=false;
+
+const STEP_CONFIG=[
+  // 0 - Inbox view
+  { label:'// GMAIL · BANDEJA DE ENTRADA',
+    phase:1,
+    uni:'📥 Esta es la <strong>Bandeja de Entrada</strong> de Gmail. Aquí llegan todos tus correos. Para escribir uno nuevo, haz clic en el botón <strong>"Redactar"</strong> (lápiz ✏️) — o pulsa el botón de abajo.',
+    actionText:'→ HACER CLIC EN "REDACTAR" (O PULSA AQUÍ)',
+    render:renderInbox },
+  // 1 - Compose open, fill Para
+  { label:'// GMAIL · NUEVO MENSAJE · CAMPO "PARA"',
+    phase:1,
+    uni:'📬 ¡Se abrió el compositor de correo! En el campo <strong>"Para"</strong> escribe exactamente: <br><span style="display:inline-block;background:rgba(245,158,11,.18);padding:3px 12px;border-radius:6px;color:#ffd93d;font-family:monospace;font-size:15px;margin-top:4px;">uni.academy@gmail.com</span><br>O pulsa el botón de abajo para rellenarlo automático.',
+    actionText:'→ ESCRIBIR (O AUTORELLENAR) CAMPO PARA',
+    render:renderFillTo },
+  // 2 - Fill Asunto
+  { label:'// GMAIL · NUEVO MENSAJE · CAMPO "ASUNTO"',
+    phase:1,
+    uni:'📋 ¡Campo "Para" listo! Ahora en el campo <strong>"Asunto"</strong> escribe exactamente: <br><span style="display:inline-block;background:rgba(245,158,11,.18);padding:3px 12px;border-radius:6px;color:#ffd93d;font-family:monospace;font-size:14px;margin-top:4px;">Saludos desde mi nueva cuenta</span><br>O pulsa el botón de abajo para rellenarlo automático.',
+    actionText:'→ ESCRIBIR (O AUTORELLENAR) ASUNTO',
+    render:renderFillSubj },
+  // 3 - Write body
+  { label:'// GMAIL · NUEVO MENSAJE · CUERPO DEL CORREO',
+    phase:1,
+    uni:'✍️ ¡Asunto listo! Ahora el <strong>cuerpo del mensaje</strong>: pulsa el botón de abajo y se rellenará automáticamente con un mensaje de ejemplo. ¡Rápido y fácil!',
+    actionText:'→ AUTORELLENAR MENSAJE Y CONTINUAR',
+    render:renderFillBody },
+  // 4 - Send
+  { label:'// GMAIL · LISTO PARA ENVIAR',
+    phase:1,
+    uni:'📤 ¡Mensaje escrito! Ahora haz clic en el <strong>botón "Enviar"</strong> (azul) dentro del compositor — o pulsa el botón de abajo.',
+    actionText:'→ HACER CLIC EN "ENVIAR" (O PULSA AQUÍ)',
+    render:renderReadySend },
+  // 5 - Sent confirmation
+  { label:'// GMAIL · MENSAJE ENVIADO ✓',
+    phase:1,
+    uni:'🎉 ¡<strong>Correo enviado!</strong> Apareció el mensaje de confirmación. El correo ya está en camino. Ahora revisaremos la bandeja de entrada.',
+    actionText:'→ VOLVER A BANDEJA DE ENTRADA',
+    render:renderSentConfirm },
+  // 6 - Inbox with new email, highlight
+  { label:'// GMAIL · BANDEJA DE ENTRADA · NUEVO CORREO',
+    phase:2,
+    uni:'📥 ¡Mira! Llegó un <strong>nuevo correo</strong> de UNI Academy (en negrita). Haz clic sobre él para abrirlo — o pulsa el botón de abajo.',
+    actionText:'→ HACER CLIC EN EL CORREO (O PULSA AQUÍ)',
+    render:renderInboxNew },
+  // 7 - Open email
+  { label:'// GMAIL · CORREO ABIERTO',
+    phase:2,
+    uni:'📖 ¡Correo abierto! Puedes leer el mensaje completo. Así es como funciona la <strong>Bandeja de Entrada</strong>: como el buzón de tu casa, pero digital. ¡Actividad completada!',
+    actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+    render:renderOpenEmail },
+];
+
+function handleCompose(){if(stepIdx===0)doStep();}
+function handleInboxClick(i){if((stepIdx===6&&i===0)||(stepIdx===7))doStep();}
+function handleSend(){if(stepIdx===4)doStep();}
+
+function init(){
+  stepIdx=0;composeOpen=false;
+  document.getElementById('simWrap').style.display='block';
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('stepTotal').textContent=TOTAL;
+  buildDots();renderStep();
+}
+
+function buildDots(){
+  const r=document.getElementById('sdots');r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='sdot'+(i===0?' cur':'');d.id='sdot-'+i;r.appendChild(d);}
+}
+
+function renderStep(){
+  const s=STEP_CONFIG[stepIdx];
+  document.getElementById('uniMsg').innerHTML=s.uni;
+  document.getElementById('simLabel').textContent=s.label;
+  document.getElementById('stepNum').textContent=stepIdx+1;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('progFill').style.width=((stepIdx)/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');}
+  // Phase pills
+  const ph=s.phase;
+  document.getElementById('pp-1').className='ppill'+(ph===1?' active':ph>1?' done':' pending');
+  document.getElementById('pp-2').className='ppill'+(ph===2?' active':ph>2?' done':' pending');
+  // Btn
+  const btn=document.getElementById('btnAction');
+  btn.disabled=false; // always enabled — sim clicks are shortcuts, button always works
+  btn.textContent=s.actionText;
+  btn.onclick=doStep;
+  s.render(document.getElementById('simBody'));
+}
+
+function doStep(){
+  const ok=document.getElementById('stepOk');
+  const msgs=['¡Redactar abierto!','¡Destinatario añadido!','¡Asunto escrito!','¡Mensaje escrito!','¡Correo enviado! 🎉','¡Volviste a la bandeja!','¡Correo abierto!','¡Actividad completada! ⭐'];
+  ok.textContent='✅ '+(msgs[stepIdx]||'¡Muy bien!');
+  ok.classList.add('show');
+  document.getElementById('btnAction').disabled=true;
+  spawnConf();
+  setTimeout(()=>{
+    stepIdx++;ok.classList.remove('show');
+    if(stepIdx>=TOTAL)showFinal();else renderStep();
+  },850);
+}
+
+/* ── renders ── */
+function renderInbox(body){
+  body.innerHTML=gmailShell(`<div class="inbox-list">${inboxRows(-1)}</div>`,'');
+}
+function renderFillTo(body){
+  body.innerHTML=gmailShell(
+    `<div class="inbox-list" style="opacity:.4;">${inboxRows(-1)}</div>`,
+    composeBase('','true','','','',false,false)
+  );
+  const btn=document.getElementById('btnAction');
+  const inp=document.getElementById('cf-to');
+  // Allow manual typing OR button press
+  if(inp){
+    inp.placeholder='uni.academy@gmail.com';
+    inp.addEventListener('input',()=>{
+      if(inp.value.trim().length>=5) btn.textContent='→ CONFIRMAR Y CONTINUAR';
+    });
+  }
+  btn.disabled=false;
+  btn.onclick=()=>{if(inp&&!inp.value.trim())inp.value='uni.academy@gmail.com';doStep();};
+}
+function renderFillSubj(body){
+  body.innerHTML=gmailShell(
+    `<div class="inbox-list" style="opacity:.4;">${inboxRows(-1)}</div>`,
+    composeBase('uni.academy@gmail.com',false,'','true','',false,false)
+  );
+  const btn=document.getElementById('btnAction');
+  const inp=document.getElementById('cf-subj');
+  if(inp){
+    inp.placeholder='Saludos desde mi nueva cuenta';
+    inp.addEventListener('input',()=>{
+      if(inp.value.trim().length>=3) btn.textContent='→ CONFIRMAR Y CONTINUAR';
+    });
+  }
+  btn.disabled=false;
+  btn.onclick=()=>{if(inp&&!inp.value.trim())inp.value='Saludos desde mi nueva cuenta';doStep();};
+}
+function renderFillBody(body){
+  body.innerHTML=gmailShell(
+    `<div class="inbox-list" style="opacity:.4;">${inboxRows(-1)}</div>`,
+    composeBase('uni.academy@gmail.com',false,'Saludos desde mi nueva cuenta',false,'',true,false)
+  );
+  const btn=document.getElementById('btnAction');
+  const area=document.getElementById('cf-body');
+  btn.disabled=false;
+  btn.onclick=()=>{
+    if(area) area.innerHTML='¡Hola! Este es mi primer correo electrónico. Lo estoy enviando desde mi nueva cuenta de Gmail. ¡Saludos!';
+    doStep();
+  };
+}
+function renderReadySend(body){
+  body.innerHTML=gmailShell(
+    `<div class="inbox-list" style="opacity:.4;">${inboxRows(-1)}</div>`,
+    composeBase('uni.academy@gmail.com',false,'Saludos desde mi nueva cuenta',false,
+      '¡Hola! Este es mi primer correo electrónico. Lo estoy enviando desde mi nueva cuenta de Gmail. ¡Saludos!',false,true)
+  );
+}
+function renderSentConfirm(body){
+  body.innerHTML=`
+    <div class="gmail-shell" style="background:#f6f8fc;align-items:center;justify-content:center;min-height:300px;">
+      <div style="text-align:center;padding:32px;">
+        <div style="font-size:56px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);">📤</div>
+        <div style="font-size:16px;color:#202124;margin:10px 0 4px;font-weight:500;">Mensaje enviado</div>
+        <div style="font-size:13px;color:#5f6368;">Tu correo ha sido enviado a <strong>uni.academy@gmail.com</strong></div>
+        <div style="margin-top:16px;background:#e8f5e9;border-radius:8px;padding:10px 16px;display:inline-block;">
+          <div style="font-size:12px;color:#2e7d32;">✓ Asunto: "Saludos desde mi nueva cuenta"</div>
+          <div style="font-size:12px;color:#2e7d32;">✓ Entregado en segundos</div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnAction').disabled=false;
+}
+function renderInboxNew(body){
+  body.innerHTML=gmailShell(`<div class="inbox-list">${inboxRows(0)}</div>`,'');
+}
+function renderOpenEmail(body){
+  body.innerHTML=`
+    <div class="gmail-shell">
+      <div class="gmail-sidebar">
+        <button class="gmail-compose-btn" style="background:#c2e7ff;" onclick="">
+          <span style="font-size:20px;">✏️</span> <span>Redactar</span>
+        </button>
+        <div class="nav-item active"><span class="nav-icon">📥</span><span>Recibidos</span></div>
+        <div class="nav-item"><span class="nav-icon">⭐</span><span>Destacados</span></div>
+        <div class="nav-item"><span class="nav-icon">📤</span><span>Enviados</span></div>
+      </div>
+      <div class="email-view">
+        <div class="ev-subject">¡Bienvenido al Módulo 5!</div>
+        <div class="ev-meta">
+          <div class="ev-avatar" style="background:#f59e0b;">U</div>
+          <div>
+            <div class="ev-from">UNI Academy &lt;uni.academy@gmail.com&gt;</div>
+            <div class="ev-to">Para: mariagarcia2024@gmail.com</div>
+          </div>
+          <div class="ev-time">Hoy, 10:30</div>
+        </div>
+        <div class="ev-body">
+          <p>¡Hola, Exploradora! 🎉</p><br>
+          <p>¡Felicidades por llegar al <strong>Módulo 5</strong> de UNI Academy! Hoy aprenderás todo sobre el correo electrónico.</p><br>
+          <p>El correo electrónico te permite:</p>
+          <p>📨 Enviar mensajes a cualquier persona en el mundo</p>
+          <p>📎 Adjuntar archivos, fotos y documentos</p>
+          <p>📥 Recibir mensajes en tu bandeja de entrada</p>
+          <p>🔍 Buscar correos antiguos fácilmente</p><br>
+          <p>¡Sigue así, lo estás haciendo genial!</p><br>
+          <p>Con cariño,<br><strong>UNI 🤖</strong></p>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnAction').disabled=false;
+}
+
+function showFinal(){
+  document.getElementById('simWrap').style.display='none';
+  document.getElementById('finalResult').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Módulo 5 casi completo!</strong> Ya sabes enviar y recibir correos electrónicos. ¡Eres un Comunicador Digital! 📧🚀';
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('pp-1').className='ppill done';
+  document.getElementById('pp-2').className='ppill done';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  setTimeout(bigConf,200);
+}
+
+function spawnConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${25+Math.random()*50}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4','#a78bfa'];
+  for(let i=0;i<55;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('simWrap').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  init();
+}
+init();
+</script>
+</body>
+</html>
