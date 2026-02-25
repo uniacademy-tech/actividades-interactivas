@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear Cuenta de Correo · T3 · Módulo 5 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amber:#f59e0b;--orange:#f97316;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;--cyan:#00f5e4;--blue:#3b82f6;
+    --bg:#060b18;--card:#111820;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(245,158,11,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(249,115,22,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(245,158,11,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,158,11,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(245,158,11,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--amber);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-module{font-family:'Orbitron',monospace;font-size:10px;color:var(--amber);
+    letter-spacing:2px;border:1px solid var(--amber);padding:4px 14px;border-radius:2px;background:rgba(245,158,11,.06);}
+
+  .container{position:relative;z-index:5;max-width:840px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold),var(--amber));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(245,158,11,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:var(--gold);}
+
+  /* STEP BAR */
+  .step-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;transition:all .3s;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--amber);border-color:var(--amber);transform:scale(1.4);box-shadow:0 0 10px rgba(245,158,11,.6);}
+  .step-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+  .step-label span{color:var(--amber);font-weight:700;}
+  .prog-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amber),var(--orange));transition:width .5s ease;width:0%;}
+
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:10px;
+    padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--green);display:none;animation:fadeIn .3s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(245,158,11,.2);
+    border-radius:20px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:14px;}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--amber);
+    padding:7px 16px 5px;border-bottom:1px solid rgba(245,158,11,.1);}
+
+  .action-wrap{padding:12px 16px;border-top:1px solid rgba(245,158,11,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(245,158,11,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* PROVIDER CARDS */
+  .provider-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px;}
+  .prov-card{background:#fff;border:2px solid #e0e0e0;border-radius:14px;padding:16px;
+    text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+  .prov-card:hover{border-color:var(--amber);box-shadow:0 4px 18px rgba(245,158,11,.2);transform:translateY(-2px);}
+  .prov-card.selected{border-color:var(--green)!important;background:rgba(0,230,118,.06)!important;}
+  .prov-icon{font-size:36px;margin-bottom:8px;}
+  .prov-name{font-family:'Orbitron',monospace;font-size:10px;color:#333;letter-spacing:1px;margin-bottom:4px;}
+  .prov-url{font-size:10px;color:#888;}
+  .prov-card.pulse-card{animation:cardPulse 1s ease-in-out infinite;}
+  @keyframes cardPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 8px rgba(245,158,11,.15)}}
+
+  /* GOOGLE FORM */
+  .gform-wrap{background:#fff;min-height:300px;padding:0;}
+  .gform-header{background:#fff;padding:24px 28px 0;display:flex;align-items:center;gap:14px;}
+  .gform-logo{font-size:24px;font-weight:900;letter-spacing:-1px;}
+  .gform-title{font-size:20px;font-weight:400;color:#202124;}
+  .gform-sub{font-size:14px;color:#5f6368;padding:4px 28px 16px;}
+  .gform-body{padding:16px 28px 20px;}
+  .gform-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .gform-row.single{grid-template-columns:1fr;}
+  .gfield{display:flex;flex-direction:column;gap:4px;}
+  .gfield label{font-size:12px;color:#5f6368;}
+  .gfield input{border:1px solid #dadce0;border-radius:4px;padding:10px 12px;
+    font-size:14px;color:#202124;font-family:'Exo 2',sans-serif;outline:none;transition:border-color .15s;}
+  .gfield input:focus{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.15);}
+  .gfield input.highlight{border-color:var(--amber)!important;box-shadow:0 0 0 3px rgba(245,158,11,.2)!important;animation:fieldPulse 1s ease-in-out infinite;}
+  @keyframes fieldPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 5px rgba(245,158,11,.2)}}
+  .gfield .hint{font-size:11px;color:#5f6368;margin-top:2px;}
+  .gfield .hint.error{color:#d93025;}
+  .gfield .hint.ok{color:var(--green);}
+  .username-row{display:flex;align-items:center;gap:0;}
+  .username-prefix{background:#f8f9fa;border:1px solid #dadce0;border-right:none;
+    border-radius:4px 0 0 4px;padding:10px 10px;font-size:13px;color:#5f6368;white-space:nowrap;}
+  .username-row input{border-radius:0 4px 4px 0;flex:1;}
+  .gpass-meter{height:4px;border-radius:2px;margin-top:6px;transition:all .3s;background:#e0e0e0;}
+
+  /* SECURITY TIP */
+  .sec-tip{background:#fff8e1;border:1px solid #ffd54f;border-radius:8px;padding:10px 14px;
+    margin-bottom:12px;font-size:12px;color:#5f3c00;line-height:1.5;}
+  .sec-tip strong{color:#e65100;}
+
+  /* TERMS */
+  .terms-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:14px;
+    font-size:12px;color:#5f6368;line-height:1.7;max-height:100px;overflow-y:auto;margin-bottom:12px;}
+  .terms-check{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#202124;cursor:pointer;}
+  .terms-check input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--amber);flex-shrink:0;margin-top:1px;}
+
+  /* SUCCESS PAGE */
+  .success-page{background:#fff;padding:32px;text-align:center;}
+  .success-icon{font-size:56px;margin-bottom:12px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+  .success-title{font-size:22px;color:#202124;margin-bottom:6px;}
+  .success-sub{font-size:14px;color:#5f6368;margin-bottom:18px;}
+  .success-email{font-family:monospace;font-size:16px;background:#f8f9fa;
+    border:1px solid #e0e0e0;border-radius:8px;padding:10px 20px;
+    display:inline-block;color:#1a73e8;}
+
+  /* FINAL */
+  .final-result{display:none;background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.55);}
+  .final-result.visible{display:block;}
+  .fr-top{height:5px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .fr-body{padding:36px 24px;text-align:center;}
+  .fr-stars{font-size:48px;letter-spacing:8px;animation:starPop .6s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:10px;}
+  @keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fr-title{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+    background:linear-gradient(135deg,var(--amber),var(--orange));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:6px 0 4px;}
+  .fr-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:18px;}
+  .fr-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .fr-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:22px;}
+  .sk-card{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:8px;color:var(--amber);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;}
+  .btn-restart:hover{opacity:.88;transform:translateY(-2px);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .provider-grid{grid-template-columns:1fr 1fr;}
+    .gform-row{grid-template-columns:1fr;}
+    .gform-header,.gform-body,.gform-sub{padding-left:16px;padding-right:16px;}
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-module">MÓDULO 5 · TEMA 3</div>
+</header>
+
+<div class="container">
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(245,158,11,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#2a1e0f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#f59e0b"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <circle cx="10" cy="56" r="5" fill="#3d2510"/>
+      <circle cx="70" cy="56" r="5" fill="#3d2510"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#2a1a0a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#2a1e0f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#f59e0b"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#f97316"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#3d2510"/>
+      <circle cx="40" cy="3" r="3" fill="#f59e0b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📝 Vamos a simular cómo se <strong>crea una cuenta de correo electrónico</strong>. Sigue cada paso con cuidado. ¡Es más fácil de lo que parece!</p>
+    </div>
+  </div>
+
+  <div class="step-bar">
+    <div class="sdots" id="sdots"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="step-label">Paso <span id="stepNum">1</span> de <span id="stepTotal">7</span></div>
+  </div>
+
+  <div class="step-ok" id="stepOk">✅ ¡Muy bien! Continuando…</div>
+
+  <div class="sim-wrap" id="simWrap">
+    <div class="sim-topbar"></div>
+    <div class="sim-label" id="simLabel">// SIMULACIÓN · CREAR CUENTA DE EMAIL</div>
+    <div id="simBody"></div>
+    <div class="action-wrap">
+      <button class="btn-action" id="btnAction" disabled>SIGUIENTE PASO →</button>
+    </div>
+  </div>
+
+  <div class="final-result" id="finalResult">
+    <div class="fr-top"></div>
+    <div class="fr-body">
+      <div class="fr-stars">⭐⭐⭐</div>
+      <div class="fr-title">¡CUENTA CREADA!</div>
+      <div class="fr-sub">MÓDULO 5 · TEMA 3 · COMPLETADO</div>
+      <div class="fr-msg">¡Fantástico! 🚀 Ya sabes cómo <strong>crear una cuenta de correo electrónico</strong>. Recuerda siempre elegir una <strong>contraseña segura</strong> y nunca compartirla con nadie.</div>
+      <div class="skills-grid">
+        <div class="sk-card"><div class="sk-icon">📧</div><div class="sk-name">PROVEEDOR</div><div class="sk-desc">Gmail, Outlook y Yahoo son los más populares</div></div>
+        <div class="sk-card"><div class="sk-icon">👤</div><div class="sk-name">USUARIO</div><div class="sk-desc">Tu nombre único antes del @</div></div>
+        <div class="sk-card"><div class="sk-icon">🔒</div><div class="sk-name">CONTRASEÑA</div><div class="sk-desc">Secreta, larga y con letras + números</div></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">🔄 &nbsp;PRACTICAR DE NUEVO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { label:'// ELEGIR PROVEEDOR DE CORREO',
+    uni:'📧 Primero debemos <strong>elegir un proveedor</strong>. Son las empresas que ofrecen el servicio de correo gratis. <strong>Haz clic en Gmail</strong> para seleccionarlo.',
+    render: renderProviders, actionText:'→ SELECCIONAR GMAIL' },
+  { label:'// GMAIL · CREAR CUENTA · PASO 1',
+    uni:'👤 ¡Gmail seleccionado! Ahora escribe tu <strong>nombre y apellido</strong>. Haz clic en el botón para rellenarlos.',
+    render: renderStep1, actionText:'→ INGRESAR NOMBRE Y APELLIDO' },
+  { label:'// GMAIL · CREAR CUENTA · PASO 2',
+    uni:'📧 ¡Perfecto! Ahora elige tu <strong>nombre de usuario</strong>. Es la parte antes del @gmail.com. Debe ser único. Haz clic para escribirlo.',
+    render: renderStep2, actionText:'→ ELEGIR NOMBRE DE USUARIO' },
+  { label:'// GMAIL · CREAR CUENTA · PASO 3',
+    uni:'🔒 ¡Muy importante! Ahora crea una <strong>contraseña segura</strong>. Debe tener letras, números y ser difícil de adivinar. <strong>¡NUNCA la compartas!</strong>',
+    render: renderStep3, actionText:'→ CREAR CONTRASEÑA SEGURA' },
+  { label:'// GMAIL · CREAR CUENTA · PASO 4',
+    uni:'🔒 ¡Casi! Ahora <strong>confirma la contraseña</strong> escribiéndola de nuevo exactamente igual. Esto asegura que no cometiste errores.',
+    render: renderStep4, actionText:'→ CONFIRMAR CONTRASEÑA' },
+  { label:'// GMAIL · TÉRMINOS Y CONDICIONES',
+    uni:'📋 Antes de terminar debes <strong>aceptar los términos</strong> del servicio. Haz clic en la casilla para aceptar y luego en "Acepto".',
+    render: renderTerms, actionText:'→ ACEPTAR Y CONTINUAR' },
+  { label:'// GMAIL · ¡CUENTA CREADA!',
+    uni:'🎉 ¡<strong>FELICIDADES!</strong> Tu cuenta de Gmail ha sido creada. Ya tienes tu propia dirección de correo electrónico. ¡Es tuya!',
+    render: renderSuccess, actionText:'✅ ¡COMPLETAR ACTIVIDAD!' },
+];
+
+const TOTAL=STEPS.length;
+let stepIdx=0;
+
+function init(){
+  stepIdx=0;
+  document.getElementById('simWrap').style.display='block';
+  document.getElementById('finalResult').classList.remove('visible');
+  document.getElementById('stepTotal').textContent=TOTAL;
+  buildDots();renderStep();
+}
+
+function buildDots(){
+  const r=document.getElementById('sdots');r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='sdot'+(i===0?' cur':'');d.id='sdot-'+i;r.appendChild(d);}
+}
+
+function renderStep(){
+  const s=STEPS[stepIdx];
+  document.getElementById('uniMsg').innerHTML=s.uni;
+  document.getElementById('simLabel').textContent=s.label;
+  document.getElementById('stepNum').textContent=stepIdx+1;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('progFill').style.width=((stepIdx)/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');}
+  const btn=document.getElementById('btnAction');
+  btn.disabled=false;btn.textContent=s.actionText;btn.onclick=doStep;
+  s.render(document.getElementById('simBody'));
+}
+
+function doStep(){
+  const ok=document.getElementById('stepOk');
+  ok.textContent='✅ '+(stepIdx===0?'¡Gmail seleccionado!':stepIdx===TOTAL-1?'¡Actividad completada!':'¡Muy bien! Continuando…');
+  ok.classList.add('show');
+  document.getElementById('btnAction').disabled=true;
+  spawnConf();
+  setTimeout(()=>{
+    stepIdx++;ok.classList.remove('show');
+    if(stepIdx>=TOTAL)showFinal();else renderStep();
+  },800);
+}
+
+function renderProviders(body){
+  body.innerHTML=`
+    <div style="padding:16px 16px 8px;font-size:13px;color:rgba(255,255,255,.6);text-align:center;">
+      Elige tu proveedor de correo preferido:
+    </div>
+    <div class="provider-grid">
+      <div class="prov-card pulse-card" id="prov-gmail" onclick="selectProvider('gmail')">
+        <div class="prov-icon">
+          <svg viewBox="0 0 48 48" width="40" height="40">
+            <path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"/>
+            <path fill="#1e88e5" d="M3,16.2l3.819,1.807L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"/>
+            <polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"/>
+            <path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0 C4.924,8,3,9.924,3,12.298z"/>
+            <path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z"/>
+          </svg>
+        </div>
+        <div class="prov-name">GMAIL</div>
+        <div class="prov-url">gmail.com</div>
+      </div>
+      <div class="prov-card" onclick="selectProvider('outlook')">
+        <div class="prov-icon">
+          <svg viewBox="0 0 48 48" width="40" height="40">
+            <defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0078d4"/><stop offset="100%" stop-color="#50e6ff"/>
+            </linearGradient></defs>
+            <rect x="4" y="10" width="24" height="28" rx="4" fill="url(#og)"/>
+            <rect x="20" y="14" width="24" height="20" rx="3" fill="#fff" fill-opacity=".9"/>
+            <line x1="20" y1="14" x2="44" y2="28" stroke="#0078d4" stroke-width="1.5" opacity=".5"/>
+            <line x1="20" y1="34" x2="44" y2="20" stroke="#0078d4" stroke-width="1.5" opacity=".4"/>
+            <text x="16" y="29" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="700">O</text>
+          </svg>
+        </div>
+        <div class="prov-name">OUTLOOK</div>
+        <div class="prov-url">outlook.com</div>
+      </div>
+      <div class="prov-card" onclick="selectProvider('yahoo')">
+        <div class="prov-icon">
+          <svg viewBox="0 0 48 48" width="40" height="40">
+            <circle cx="24" cy="24" r="20" fill="#6001d2"/>
+            <text x="24" y="30" text-anchor="middle" fill="white" font-family="Arial" font-size="18" font-weight="900">Y!</text>
+          </svg>
+        </div>
+        <div class="prov-name">YAHOO MAIL</div>
+        <div class="prov-url">yahoo.com</div>
+      </div>
+    </div>
+    <div style="padding:0 16px 16px;font-size:11px;color:rgba(255,255,255,.35);text-align:center;">
+      💡 Todos son gratuitos. Usaremos Gmail para este ejemplo.
+    </div>`;
+}
+function selectProvider(id){
+  document.querySelectorAll('.prov-card').forEach(c=>c.classList.remove('selected','pulse-card'));
+  if(id==='gmail'){
+    document.getElementById('prov-gmail').classList.add('selected');
+    setTimeout(doStep,400);
+  }
+}
+
+function renderStep1(body){
+  body.innerHTML=`
+    <div class="gform-wrap">
+      <div class="gform-header">
+        <div class="gform-logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+        <div class="gform-title">Crear una cuenta de Google</div>
+      </div>
+      <div class="gform-sub">Para usar Gmail. ¡Es gratis!</div>
+      <div class="gform-body">
+        <div class="gform-row">
+          <div class="gfield">
+            <label>Nombre</label>
+            <input type="text" class="highlight" id="f-nombre" value="" placeholder="Tu nombre" autocomplete="off"/>
+          </div>
+          <div class="gfield">
+            <label>Apellido</label>
+            <input type="text" id="f-apellido" value="" placeholder="Tu apellido" autocomplete="off"/>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#5f6368;margin-top:4px;">💡 Usa tu nombre real para que tus contactos te reconozcan.</div>
+      </div>
+    </div>`;
+  const btn=document.getElementById('btnAction');
+  const n=document.getElementById('f-nombre'),a=document.getElementById('f-apellido');
+  n.addEventListener('input',()=>{btn.disabled=n.value.trim().length<2||a.value.trim().length<2;});
+  a.addEventListener('input',()=>{btn.disabled=n.value.trim().length<2||a.value.trim().length<2;btn.onclick=doStep;});
+  btn.onclick=()=>{n.value='María';a.value='García';btn.disabled=false;doStep();};
+}
+
+function renderStep2(body){
+  body.innerHTML=`
+    <div class="gform-wrap">
+      <div class="gform-header">
+        <div class="gform-logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+        <div class="gform-title">Elige tu nombre de usuario</div>
+      </div>
+      <div class="gform-sub">Este será tu dirección de Gmail: <strong>tunombre</strong>@gmail.com</div>
+      <div class="gform-body">
+        <div class="gform-row single">
+          <div class="gfield">
+            <label>Nombre de usuario</label>
+            <div class="username-row">
+              <div class="username-prefix">@gmail.com</div>
+              <input type="text" id="f-user" class="highlight" placeholder="ej: mariagarcia2024" autocomplete="off"/>
+            </div>
+            <div class="hint" id="user-hint">Solo letras, números y puntos. Sin espacios.</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#5f6368;margin-top:8px;">💡 Si ya está en uso, Google te sugerirá alternativas.</div>
+      </div>
+    </div>`;
+  const inp=document.getElementById('f-user'),hint=document.getElementById('user-hint');
+  const btn=document.getElementById('btnAction');
+  inp.addEventListener('input',()=>{
+    const v=inp.value.trim();
+    if(v.length>3){hint.textContent='✓ Disponible: '+v+'@gmail.com';hint.className='hint ok';btn.disabled=false;}
+    else{hint.textContent='Solo letras, números y puntos. Sin espacios.';hint.className='hint';btn.disabled=true;}
+  });
+  btn.onclick=()=>{inp.value='mariagarcia2024';hint.textContent='✓ Disponible: mariagarcia2024@gmail.com';hint.className='hint ok';btn.disabled=false;doStep();};
+}
+
+function renderStep3(body){
+  body.innerHTML=`
+    <div class="gform-wrap">
+      <div class="gform-header">
+        <div class="gform-logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+        <div class="gform-title">Crea una contraseña segura</div>
+      </div>
+      <div class="gform-sub">Mínimo 8 caracteres. Usa letras, números y símbolos.</div>
+      <div class="gform-body">
+        <div class="sec-tip">
+          🔒 <strong>¡IMPORTANTE!</strong> Tu contraseña debe ser:<br>
+          ✓ Larga (mínimo 8 caracteres)<br>
+          ✓ Con letras MAYÚSCULAS y minúsculas<br>
+          ✓ Con números y símbolos (!, @, #…)<br>
+          ✗ <strong>NUNCA</strong> uses "1234", tu nombre o tu fecha de nacimiento
+        </div>
+        <div class="gform-row single">
+          <div class="gfield">
+            <label>Contraseña</label>
+            <input type="password" id="f-pass" class="highlight" placeholder="Escribe tu contraseña" autocomplete="off"/>
+            <div class="gpass-meter" id="passMeter"></div>
+            <div class="hint" id="pass-hint">Mínimo 8 caracteres</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  const inp=document.getElementById('f-pass'),meter=document.getElementById('passMeter'),hint=document.getElementById('pass-hint');
+  const btn=document.getElementById('btnAction');
+  inp.addEventListener('input',()=>{
+    const v=inp.value,l=v.length;
+    let str=0;if(l>=8)str++;if(/[A-Z]/.test(v))str++;if(/[0-9]/.test(v))str++;if(/[^A-Za-z0-9]/.test(v))str++;
+    const colors=['#e0e0e0','#ef5350','#ff9800','#66bb6a','#00e676'];
+    const labels=['','Muy débil','Débil','Buena','¡Excelente!'];
+    meter.style.background=colors[str];meter.style.width=(str/4*100)+'%';
+    hint.textContent=l<8?'Mínimo 8 caracteres':labels[str]+' ('+l+' caracteres)';
+    hint.className='hint'+(str>=3?' ok':'');btn.disabled=str<2;
+  });
+  btn.onclick=()=>{inp.value='MiClave#2024!';inp.dispatchEvent(new Event('input'));setTimeout(doStep,300);};
+}
+
+function renderStep4(body){
+  body.innerHTML=`
+    <div class="gform-wrap">
+      <div class="gform-header">
+        <div class="gform-logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+        <div class="gform-title">Confirma tu contraseña</div>
+      </div>
+      <div class="gform-sub">Escríbela de nuevo exactamente igual para confirmar.</div>
+      <div class="gform-body">
+        <div class="gform-row single">
+          <div class="gfield">
+            <label>Confirmar contraseña</label>
+            <input type="password" id="f-pass2" class="highlight" placeholder="Repite tu contraseña" autocomplete="off"/>
+            <div class="hint" id="pass2-hint">Debe coincidir con la contraseña anterior</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  const inp=document.getElementById('f-pass2'),hint=document.getElementById('pass2-hint');
+  const btn=document.getElementById('btnAction');
+  inp.addEventListener('input',()=>{
+    const v=inp.value.trim();
+    if(v==='MiClave#2024!'){hint.textContent='✓ ¡Las contraseñas coinciden!';hint.className='hint ok';btn.disabled=false;}
+    else if(v.length>3){hint.textContent='✗ No coincide aún…';hint.className='hint error';btn.disabled=true;}
+  });
+  btn.onclick=()=>{inp.value='MiClave#2024!';inp.dispatchEvent(new Event('input'));setTimeout(doStep,300);};
+}
+
+function renderTerms(body){
+  body.innerHTML=`
+    <div class="gform-wrap">
+      <div class="gform-header">
+        <div class="gform-logo"><span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span></div>
+        <div class="gform-title">Términos y Condiciones</div>
+      </div>
+      <div class="gform-body">
+        <div class="terms-box">
+          Al crear esta cuenta aceptas que Google podrá usar tu información para ofrecerte servicios. Tu información personal estará protegida según las políticas de privacidad de Google. Puedes cancelar tu cuenta en cualquier momento. El servicio de Gmail es gratuito para uso personal. Google puede mostrarte anuncios relacionados con tus intereses. Tienes derecho a acceder y controlar tu información personal...
+        </div>
+        <label class="terms-check" id="termsCheck">
+          <input type="checkbox" id="termsBox" onchange="checkTerms()"/>
+          <span>He leído y acepto los Términos de Servicio y la Política de Privacidad de Google.</span>
+        </label>
+      </div>
+    </div>`;
+  document.getElementById('btnAction').disabled=true;
+  document.getElementById('btnAction').onclick=doStep;
+}
+function checkTerms(){
+  document.getElementById('btnAction').disabled=!document.getElementById('termsBox').checked;
+}
+
+function renderSuccess(body){
+  body.innerHTML=`
+    <div class="success-page">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">¡Cuenta de Gmail creada!</div>
+      <div class="success-sub">Tu nueva dirección de correo electrónico es:</div>
+      <div class="success-email">mariagarcia2024@gmail.com</div>
+      <div style="margin-top:16px;font-size:13px;color:#5f6368;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.7;">
+        🔒 Recuerda guardar tu contraseña en un lugar seguro.<br>
+        📧 Ya puedes enviar y recibir correos electrónicos.<br>
+        🚫 Nunca compartas tu contraseña con nadie.
+      </div>
+    </div>`;
+}
+
+function showFinal(){
+  document.getElementById('simWrap').style.display='none';
+  document.getElementById('finalResult').classList.add('visible');
+  document.getElementById('uniMsg').innerHTML='⭐⭐⭐ <strong>¡Actividad completada!</strong> Ya sabes crear una cuenta de correo. ¡Eres un Explorador Digital completo! 📧';
+  document.getElementById('progFill').style.width='100%';
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  setTimeout(bigConf,200);
+}
+
+function spawnConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${25+Math.random()*50}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*160}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#00e676','#00f5e4','#a78bfa'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+    },i*28);
+  }
+}
+function restart(){document.getElementById('finalResult').classList.remove('visible');document.getElementById('simWrap').style.display='block';window.scrollTo({top:0,behavior:'smooth'});init();}
+init();
+</script>
+</body>
+</html>
