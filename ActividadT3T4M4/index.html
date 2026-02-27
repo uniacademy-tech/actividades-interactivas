@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navegador Web · T3+T4 · Módulo 4 · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#3b82f6;--indigo:#6366f1;--sky:#0ea5e9;--cyan:#00f5e4;--gold:#ffd93d;
+    --green:#00e676;--red:#ff3d3d;
+    --bg:#060b18;--card:#0f1a2e;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 20% 40%,rgba(59,130,246,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 20%,rgba(99,102,241,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(59,130,246,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(59,130,246,.018) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(59,130,246,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-badge{font-family:'Orbitron',monospace;font-size:10px;color:var(--sky);
+    letter-spacing:2px;border:1px solid var(--sky);padding:4px 14px;border-radius:2px;background:rgba(14,165,233,.06);}
+
+  .container{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:22px 18px 60px;}
+
+  .uni-bar{display:flex;align-items:center;gap:16px;background:var(--card);
+    border:1px solid rgba(59,130,246,.22);border-radius:16px;padding:14px 18px;
+    margin-bottom:18px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--indigo),var(--cyan),var(--blue));}
+  .uni-svg{width:58px;height:58px;flex-shrink:0;}
+  .speech{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.22);
+    border-radius:12px;padding:10px 16px;flex:1;position:relative;}
+  .speech::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-right-color:rgba(59,130,246,.22);}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--sky);letter-spacing:2px;margin-bottom:4px;}
+  .speech p{font-size:14px;line-height:1.5;}
+  .speech strong{color:#93c5fd;}
+
+  .rtabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .rtab{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:6px 16px;
+    border-radius:10px;border:1px solid;cursor:default;transition:all .3s;}
+  .rtab.done   {color:var(--green);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+  .rtab.active {color:var(--sky);border-color:var(--sky);background:rgba(14,165,233,.1);box-shadow:0 0 14px rgba(14,165,233,.2);}
+  .rtab.pending{color:var(--muted);border-color:rgba(255,255,255,.08);}
+
+  .prog-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .prog-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);white-space:nowrap;}
+  .prog-label span{color:var(--sky);}
+  .prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--indigo));transition:width .5s ease;width:0%;}
+  .att-badge{font-family:'Orbitron',monospace;font-size:9px;padding:3px 12px;
+    border-radius:20px;border:1px solid rgba(255,255,255,.1);color:var(--muted);white-space:nowrap;}
+  .att-badge span{color:var(--sky);font-weight:700;}
+
+  .instr{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);
+    border-radius:12px;padding:11px 16px;margin-bottom:16px;
+    font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;}
+  .instr strong{color:#93c5fd;}
+
+  /* GAME GRID */
+  .game-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+
+  .panel{background:var(--card);border:1.5px solid rgba(59,130,246,.18);border-radius:16px;overflow:hidden;}
+  .panel-hdr{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;
+    color:var(--muted);padding:8px 14px;border-bottom:1px solid rgba(59,130,246,.1);}
+  .panel-body{padding:10px;display:flex;flex-direction:column;gap:7px;min-height:60px;}
+
+  /* BANK CARD */
+  .bcard{background:rgba(59,130,246,.07);border:1.5px solid rgba(59,130,246,.18);
+    border-radius:11px;padding:10px 13px;cursor:pointer;transition:all .18s;
+    display:flex;align-items:flex-start;gap:9px;}
+  .bcard:hover:not(.used){border-color:var(--blue);background:rgba(59,130,246,.18);
+    transform:translateX(3px);box-shadow:0 3px 14px rgba(59,130,246,.2);}
+  .bcard.used{opacity:.28;cursor:default;pointer-events:none;}
+  .bc-icon{font-size:20px;flex-shrink:0;line-height:1;}
+  .bc-body .bc-lbl{font-family:'Orbitron',monospace;font-size:7px;color:var(--sky);letter-spacing:1px;margin-bottom:2px;}
+  .bc-body .bc-txt{font-size:12px;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:2px;}
+  .bc-body .bc-det{font-size:10px;color:var(--muted);line-height:1.35;}
+
+  /* SLOT */
+  .slot{border:1.5px dashed rgba(59,130,246,.22);border-radius:11px;
+    padding:10px 13px;min-height:50px;display:flex;align-items:center;gap:9px;
+    transition:all .2s;position:relative;}
+  .slot-n{font-family:'Orbitron',monospace;font-size:15px;font-weight:900;
+    color:rgba(59,130,246,.28);width:22px;flex-shrink:0;text-align:center;}
+  .slot-ph{font-size:11px;color:rgba(255,255,255,.18);flex:1;}
+
+  .slot.filled{border-style:solid;border-color:rgba(59,130,246,.38);background:rgba(59,130,246,.08);}
+  .slot.filled .slot-n{color:var(--sky);}
+
+  .slot.ok{border-color:var(--green)!important;background:rgba(0,230,118,.1)!important;}
+  .slot.ok .slot-n{color:var(--green)!important;}
+  .slot.ok .bc-txt{color:var(--green)!important;}
+
+  .slot.err{border-color:var(--red)!important;background:rgba(255,61,61,.09)!important;}
+  .slot.err .slot-n{color:var(--red)!important;}
+  .slot.err .bc-txt{color:var(--red)!important;}
+
+  .slot-verdict{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:16px;}
+  .slot-inner{display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0;}
+  .rm-btn{font-size:13px;color:var(--muted);cursor:pointer;flex-shrink:0;padding:1px 4px;
+    border-radius:4px;transition:all .12s;line-height:1;}
+  .rm-btn:hover{color:var(--red);background:rgba(255,61,61,.12);}
+
+  /* BTNS */
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+  .btn-verify{padding:11px 28px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .2s,transform .2s;
+    box-shadow:0 4px 18px rgba(59,130,246,.3);}
+  .btn-verify:hover:not(:disabled){opacity:.85;transform:translateY(-1px);}
+  .btn-verify:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+  .btn-reset{padding:11px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.55);border-radius:12px;font-family:'Orbitron',monospace;font-size:10px;
+    cursor:pointer;transition:all .15s;}
+  .btn-reset:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
+
+  /* FEEDBACK */
+  .fb{background:var(--card);border:1.5px solid rgba(59,130,246,.2);border-radius:14px;
+    padding:14px 16px;display:none;margin-bottom:12px;}
+  .fb.show{display:block;animation:fadeUp .3s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .fb-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;margin-bottom:9px;}
+  .fb-title.ok{color:var(--green);}
+  .fb-title.err{color:var(--red);}
+  .fb-list{display:flex;flex-direction:column;gap:5px;}
+  .fb-row{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.5;
+    padding:6px 10px;border-radius:8px;}
+  .fb-row.ok {background:rgba(0,230,118,.07);color:rgba(255,255,255,.8);}
+  .fb-row.err{background:rgba(255,61,61,.07); color:rgba(255,255,255,.8);}
+  .fb-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+  .btn-next{margin-top:10px;padding:9px 22px;
+    background:linear-gradient(135deg,var(--sky),var(--blue));color:#fff;
+    border:none;border-radius:10px;font-family:'Orbitron',monospace;font-size:11px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;
+    box-shadow:0 3px 14px rgba(14,165,233,.3);}
+
+  /* RESULT */
+  .result{display:none;background:var(--card);border-radius:22px;overflow:hidden;
+    box-shadow:0 28px 70px rgba(0,0,0,.6);}
+  .result.show{display:block;}
+  .r-top{height:5px;background:linear-gradient(90deg,var(--blue),var(--indigo),var(--sky));}
+  .r-body{padding:36px 26px;text-align:center;}
+  .r-stars{font-size:46px;letter-spacing:8px;margin-bottom:10px;animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .r-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--blue),var(--sky));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px;}
+  .r-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}
+  .r-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .r-msg strong{color:#93c5fd;}
+  .recap-lbl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
+  .recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;text-align:left;}
+  .ri{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.18);
+    border-radius:11px;padding:11px 13px;display:flex;gap:9px;align-items:flex-start;}
+  .ri-num{font-family:'Orbitron',monospace;font-size:11px;color:var(--sky);font-weight:700;flex-shrink:0;}
+  .ri-body{font-size:11px;line-height:1.5;color:rgba(255,255,255,.8);}
+  .ri-body strong{color:var(--gold);}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--blue),var(--indigo));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.3);}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  @media(max-width:700px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .speech::before{display:none;}
+    .game-grid{grid-template-columns:1fr;}
+    .recap-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-badge">MÓDULO 4 · T3 + T4</div>
+</header>
+
+<div class="container">
+
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(59,130,246,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#1a2a4a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#243355"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#1e2d4f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#3b82f6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#1a2a4a"/>
+      <circle cx="10" cy="56" r="5" fill="#243355"/>
+      <circle cx="70" cy="56" r="5" fill="#243355"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#1a2a4a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#1e2d4f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#3b82f6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#3b82f6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#6366f1"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#243355"/>
+      <circle cx="40" cy="3" r="3" fill="#3b82f6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#243355"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#243355"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 🌐 Vamos a practicar dos cosas: cómo <strong>abrir un navegador</strong> y reconocer las <strong>partes de su ventana</strong>. ¡Haz clic en las tarjetas para ordenarlas!</p>
+    </div>
+  </div>
+
+  <div class="rtabs">
+    <div class="rtab active" id="rtab-1">🖱️ RONDA 1 · ABRIR EL NAVEGADOR</div>
+    <div class="rtab pending" id="rtab-2">🪟 RONDA 2 · PARTES DE LA VENTANA</div>
+  </div>
+
+  <div class="prog-row">
+    <div class="prog-label">RONDA <span id="rNum">1</span>/2</div>
+    <div class="prog-track"><div class="prog-fill" id="pFill"></div></div>
+    <div class="att-badge">Intentos: <span id="attNum">0</span></div>
+  </div>
+
+  <div class="instr" id="instr">
+    📋 <strong>¿Cómo jugar?</strong> Haz clic en una tarjeta del banco (izquierda) → se coloca automáticamente en el siguiente espacio libre (derecha). Para quitarla, pulsa la <strong>✕</strong>. Cuando llenes todos los espacios pulsa <strong>VERIFICAR</strong>.
+  </div>
+
+  <!-- GAME AREA -->
+  <div id="gameArea">
+    <div class="game-grid">
+      <div class="panel">
+        <div class="panel-hdr">// TARJETAS — HAZ CLIC PARA COLOCAR</div>
+        <div class="panel-body" id="bankBody"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr">// COLOCA EN EL ORDEN CORRECTO</div>
+        <div class="panel-body" id="slotsBody"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-verify" id="btnVerify" onclick="verify()" disabled>✅ VERIFICAR ORDEN</button>
+      <button class="btn-reset" onclick="resetRound()">🔄 Reiniciar ronda</button>
+    </div>
+
+    <div class="fb" id="fbPanel">
+      <div class="fb-title" id="fbTitle"></div>
+      <div class="fb-list" id="fbList"></div>
+      <button class="btn-next" id="btnNext" onclick="nextRound()" style="display:none;"></button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="resultCard">
+    <div class="r-top"></div>
+    <div class="r-body">
+      <div class="r-stars" id="rStars">⭐⭐⭐</div>
+      <div class="r-title">¡ACTIVIDAD COMPLETADA!</div>
+      <div class="r-sub">MÓDULO 4 · T3+T4 · NAVEGADOR WEB</div>
+      <div class="r-msg" id="rMsg"></div>
+      <div class="recap-lbl">// LAS 6 PARTES DE LA VENTANA DEL NAVEGADOR</div>
+      <div class="recap-grid" id="recapGrid"></div>
+      <button class="btn-restart" onclick="restartAll()">🔄 &nbsp;INTENTAR DE NUEVO</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ─── DATA ─── */
+const ROUNDS = [
+  {
+    label: 'RONDA 1 · Pasos para abrir el navegador',
+    uni:   '🖱️ Ordena los <strong>5 pasos</strong> para abrir un navegador. Haz clic en cada tarjeta en el orden correcto.',
+    correct: ['s1','s2','s3','s4','s5'],
+    items: [
+      { id:'s1', icon:'🖥️', lbl:'PASO 1', txt:'Enciende la computadora',      det:'Espera a que aparezca el escritorio completo.' },
+      { id:'s2', icon:'🔍', lbl:'PASO 2', txt:'Busca el ícono del navegador',  det:'Puede estar en el escritorio o en la barra de tareas.' },
+      { id:'s3', icon:'🖱️', lbl:'PASO 3', txt:'Haz doble clic en el ícono',    det:'Dos clics rápidos para abrir el programa.' },
+      { id:'s4', icon:'⏳', lbl:'PASO 4', txt:'Espera que cargue el navegador', det:'Verás la pantalla de inicio aparecer.' },
+      { id:'s5', icon:'🌐', lbl:'PASO 5', txt:'¡El navegador está abierto!',   det:'Ya puedes escribir una dirección o hacer una búsqueda.' },
+    ]
+  },
+  {
+    label: 'RONDA 2 · Partes de la ventana del navegador',
+    uni:   '🪟 Ordena las <strong>6 partes</strong> de la ventana del navegador de arriba hacia abajo, tal como aparecen en pantalla.',
+    correct: ['p1','p2','p3','p4','p5','p6'],
+    items: [
+      { id:'p1', icon:'📑', lbl:'PARTE 1', txt:'Pestañas',                det:'Como pequeñas ventanas dentro del navegador; permiten tener varias páginas abiertas.' },
+      { id:'p2', icon:'🔗', lbl:'PARTE 2', txt:'Barra de direcciones',    det:'Donde escribimos la URL. También sirve como barra de búsqueda.' },
+      { id:'p3', icon:'◀▶', lbl:'PARTE 3', txt:'Botones de navegación',   det:'Atrás, Adelante y Recargar: para movernos entre páginas visitadas.' },
+      { id:'p4', icon:'🖼️', lbl:'PARTE 4', txt:'Área de visualización',   det:'El espacio principal donde se muestra el contenido: textos, imágenes y videos.' },
+      { id:'p5', icon:'⭐', lbl:'PARTE 5', txt:'Barra de marcadores',     det:'Accesos rápidos a nuestras páginas favoritas guardadas.' },
+      { id:'p6', icon:'⋮',  lbl:'PARTE 6', txt:'Menú del navegador',      det:'Tres puntos o líneas: acceso a configuración, historial, descargas y más.' },
+    ]
+  }
+];
+
+/* ─── STATE ─── */
+let round = 0;
+let slots = [];           // filled item ids, null = vacío
+let attempts = [0, 0];   // intentos por ronda
+
+/* ─── INIT ─── */
+function init() {
+  round = 0;
+  attempts = [0, 0];
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('gameArea').style.display = 'block';
+  document.getElementById('rtab-1').className = 'rtab active';
+  document.getElementById('rtab-2').className = 'rtab pending';
+  loadRound();
+}
+
+function loadRound() {
+  const R = ROUNDS[round];
+  slots = new Array(R.items.length).fill(null);
+
+  document.getElementById('rNum').textContent  = round + 1;
+  document.getElementById('attNum').textContent = attempts[round];
+  document.getElementById('pFill').style.width  = (round * 50) + '%';
+  document.getElementById('uniMsg').innerHTML   = R.uni;
+  document.getElementById('fbPanel').classList.remove('show');
+  document.getElementById('btnVerify').disabled = true;
+  document.getElementById('instr').innerHTML =
+    '📋 <strong>¿Cómo jugar?</strong> Haz clic en una tarjeta (izquierda) → se coloca en el siguiente espacio libre (derecha). Pulsa <strong>✕</strong> para quitarla. Cuando llenes todos los espacios pulsa <strong>VERIFICAR</strong>.';
+
+  renderBank();
+  renderSlots();
+}
+
+/* ─── RENDER BANK ─── */
+function renderBank() {
+  const R   = ROUNDS[round];
+  const body = document.getElementById('bankBody');
+  const shuffled = shuffle([...R.items]);
+  body.innerHTML = '';
+  shuffled.forEach(item => {
+    const used = slots.includes(item.id);
+    const d = document.createElement('div');
+    d.className = 'bcard' + (used ? ' used' : '');
+    d.id = 'bc-' + item.id;
+    d.innerHTML = `
+      <div class="bc-icon">${item.icon}</div>
+      <div class="bc-body">
+        <div class="bc-lbl">${item.lbl}</div>
+        <div class="bc-txt">${item.txt}</div>
+        <div class="bc-det">${item.det}</div>
+      </div>`;
+    if (!used) d.onclick = () => place(item.id);
+    body.appendChild(d);
+  });
+}
+
+/* ─── RENDER SLOTS ─── */
+function renderSlots() {
+  const R    = ROUNDS[round];
+  const body = document.getElementById('slotsBody');
+  body.innerHTML = '';
+  slots.forEach((id, i) => {
+    const div = document.createElement('div');
+    div.id = 'slot-' + i;
+    if (id) {
+      const item = R.items.find(x => x.id === id);
+      div.className = 'slot filled';
+      div.innerHTML = `
+        <div class="slot-n">${i + 1}</div>
+        <div class="slot-inner">
+          <div class="bc-icon" style="font-size:17px">${item.icon}</div>
+          <div class="bc-body">
+            <div class="bc-txt">${item.txt}</div>
+            <div class="bc-det">${item.det}</div>
+          </div>
+        </div>
+        <span class="rm-btn" title="Quitar" onclick="remove(${i})">✕</span>`;
+    } else {
+      div.className = 'slot';
+      div.innerHTML = `
+        <div class="slot-n">${i + 1}</div>
+        <div class="slot-ph">Haz clic en una tarjeta para colocarla aquí…</div>`;
+    }
+    body.appendChild(div);
+  });
+
+  const full = slots.every(s => s !== null);
+  document.getElementById('btnVerify').disabled = !full;
+}
+
+/* ─── PLACE / REMOVE ─── */
+function place(id) {
+  if (slots.includes(id)) return;
+  const firstEmpty = slots.indexOf(null);
+  if (firstEmpty === -1) return;
+  slots[firstEmpty] = id;
+
+  // mark bank card as used
+  const bc = document.getElementById('bc-' + id);
+  if (bc) { bc.classList.add('used'); bc.onclick = null; }
+
+  renderSlots();
+
+  // brief flash on placed slot
+  const slotEl = document.getElementById('slot-' + firstEmpty);
+  if (slotEl) {
+    slotEl.style.borderColor = 'var(--sky)';
+    setTimeout(() => { slotEl.style.borderColor = ''; }, 300);
+  }
+}
+
+function remove(i) {
+  const id = slots[i];
+  if (!id) return;
+  slots[i] = null;
+
+  // compact upward
+  const compact = slots.filter(s => s !== null);
+  while (compact.length < slots.length) compact.push(null);
+  slots = compact;
+
+  renderBank();
+  renderSlots();
+
+  // hide feedback if it was shown
+  document.getElementById('fbPanel').classList.remove('show');
+  // clear slot colors
+  ROUNDS[round].items.forEach((_, j) => {
+    const el = document.getElementById('slot-' + j);
+    if (el) el.className = slots[j] ? 'slot filled' : 'slot';
+  });
+}
+
+/* ─── VERIFY ─── */
+function verify() {
+  const R = ROUNDS[round];
+  attempts[round]++;
+  document.getElementById('attNum').textContent = attempts[round];
+
+  const res = slots.map((id, i) => {
+    const correctId  = R.correct[i];
+    const item       = R.items.find(x => x.id === id);
+    const correctItem= R.items.find(x => x.id === correctId);
+    return { i, id, item, correctId, correctItem, ok: id === correctId };
+  });
+
+  const allOk = res.every(r => r.ok);
+
+  // Color slots
+  res.forEach(r => {
+    const el = document.getElementById('slot-' + r.i);
+    if (!el) return;
+    el.className = 'slot filled ' + (r.ok ? 'ok' : 'err');
+    // remove old verdict badge if exists
+    const old = el.querySelector('.slot-verdict');
+    if (old) old.remove();
+    const badge = document.createElement('span');
+    badge.className = 'slot-verdict';
+    badge.textContent = r.ok ? '✅' : '❌';
+    el.appendChild(badge);
+  });
+
+  // Build feedback
+  const fbPanel = document.getElementById('fbPanel');
+  const fbTitle = document.getElementById('fbTitle');
+  const fbList  = document.getElementById('fbList');
+  const btnNext = document.getElementById('btnNext');
+
+  fbPanel.classList.add('show');
+
+  if (allOk) {
+    fbTitle.className = 'fb-title ok';
+    fbTitle.textContent = attempts[round] === 1
+      ? '🏆 ¡PERFECTO! ¡Lo ordenaste a la primera!'
+      : '✅ ¡CORRECTO! ¡Muy bien!';
+    fbList.innerHTML = res.map(r => `
+      <div class="fb-row ok">
+        <span class="fb-icon">✅</span>
+        <span><strong>${r.i + 1}. ${r.item.txt}</strong> — ${r.item.det}</span>
+      </div>`).join('');
+    btnNext.style.display = 'inline-block';
+    btnNext.textContent   = round === 0 ? 'SIGUIENTE RONDA →' : '🏆 VER RESULTADO FINAL';
+    document.getElementById('btnVerify').disabled = true;
+    document.getElementById('uniMsg').innerHTML = attempts[round] === 1
+      ? '🏆 ¡<strong>PERFECTO</strong>! ¡A la primera! ¡Eres increíble!'
+      : '✅ ¡<strong>Correcto</strong>! ¡Muy bien, Explorador!';
+    spawnConf();
+  } else {
+    fbTitle.className = 'fb-title err';
+    fbTitle.textContent = '❌ Hay errores — revisa los marcados en rojo y corrígelos';
+    fbList.innerHTML = res.map(r => `
+      <div class="fb-row ${r.ok ? 'ok' : 'err'}">
+        <span class="fb-icon">${r.ok ? '✅' : '❌'}</span>
+        <span>${r.ok
+          ? `<strong>${r.i + 1}. ${r.item.txt}</strong> ✓ correcto`
+          : `Posición <strong>${r.i + 1}</strong>: pusiste "<em>${r.item.txt}</em>" — aquí va "<strong>${r.correctItem.txt}</strong>"`
+        }</span>
+      </div>`).join('');
+    btnNext.style.display = 'none';
+    document.getElementById('uniMsg').innerHTML = '🤔 Algunos están en el orden incorrecto. Lee los rojos, quítalos con <strong>✕</strong> y vuélvelos a colocar. ¡Tú puedes!';
+    // shake wrong slots
+    res.filter(r => !r.ok).forEach(r => {
+      const el = document.getElementById('slot-' + r.i);
+      if (el) { el.style.animation = 'shake .35s ease'; setTimeout(() => { el.style.animation = ''; }, 400); }
+    });
+  }
+}
+
+/* ─── NEXT ROUND ─── */
+function nextRound() {
+  if (round === 0) {
+    round = 1;
+    document.getElementById('rtab-1').className = 'rtab done';
+    document.getElementById('rtab-2').className = 'rtab active';
+    document.getElementById('pFill').style.width = '50%';
+    loadRound();
+  } else {
+    showResult();
+  }
+}
+
+/* ─── RESET ─── */
+function resetRound() {
+  slots = new Array(ROUNDS[round].items.length).fill(null);
+  document.getElementById('fbPanel').classList.remove('show');
+  renderBank();
+  renderSlots();
+  document.getElementById('uniMsg').innerHTML = ROUNDS[round].uni;
+}
+
+/* ─── RESULT ─── */
+function showResult() {
+  document.getElementById('gameArea').style.display = 'none';
+  document.getElementById('resultCard').classList.add('show');
+  document.getElementById('rtab-1').className = 'rtab done';
+  document.getElementById('rtab-2').className = 'rtab done';
+  document.getElementById('pFill').style.width = '100%';
+
+  const a1 = attempts[0], a2 = attempts[1];
+  const stars = (a1 === 1 && a2 === 1) ? '⭐⭐⭐' : (a1 <= 2 && a2 <= 2) ? '⭐⭐' : '⭐';
+  document.getElementById('rStars').textContent = stars;
+  document.getElementById('rMsg').innerHTML = (a1 === 1 && a2 === 1)
+    ? '¡<strong>Increíble!</strong> 🚀 ¡Todo perfecto a la primera! Ya dominas cómo abrir un navegador y conoces sus 6 partes principales.'
+    : (a1 <= 2 && a2 <= 2)
+    ? '¡<strong>Muy bien!</strong> 💪 Dominas el navegador y sus partes. ¡Sigue practicando!'
+    : '¡<strong>Buen esfuerzo!</strong> 🌱 Repasa las partes del navegador y vuelve a intentarlo.';
+
+  document.getElementById('uniMsg').innerHTML = stars + ' ¡<strong>Actividad completada</strong>! Ronda 1: ' + a1 + ' intento(s) · Ronda 2: ' + a2 + ' intento(s).';
+
+  // Recap partes del navegador (ronda 2)
+  const R2 = ROUNDS[1];
+  document.getElementById('recapGrid').innerHTML = R2.correct.map(id => {
+    const item = R2.items.find(x => x.id === id);
+    return `<div class="ri">
+      <div class="ri-num">${item.lbl.split(' ')[1]}</div>
+      <div class="ri-body"><strong>${item.icon} ${item.txt}</strong><br>${item.det}</div>
+    </div>`;
+  }).join('');
+
+  if (stars !== '⭐') setTimeout(bigConf, 200);
+}
+
+function restartAll() {
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('gameArea').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  init();
+}
+
+/* ─── HELPERS ─── */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function spawnConf() {
+  const colors = ['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div'); p.className = 'conf';
+    p.style.cssText = `background:${colors[i%colors.length]};left:${15+Math.random()*70}vw;top:${10+Math.random()*30}vh;
+      --tx:${(Math.random()-.5)*200}px;--ty:${(Math.random()-.7)*160}px;--r:${Math.random()*360}deg;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p); setTimeout(() => p.remove(), 950);
+  }
+}
+function bigConf() {
+  const colors = ['#3b82f6','#6366f1','#00e676','#ffd93d','#0ea5e9','#00f5e4'];
+  for (let i = 0; i < 55; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div'); p.className = 'conf';
+      p.style.cssText = `background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;animation-duration:.9s;
+        border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p); setTimeout(() => p.remove(), 1000);
+    }, i * 28);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
