@@ -1,1 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorador de Archivos · Actividad Universal · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#14b8a6;--cyan:#06b6d4;--emerald:#10b981;--sky:#0ea5e9;
+    --win:#0ea5e9;--lin:#f97316;--mac:#a78bfa;
+    --green:#00e676;--red:#ff3d3d;--gold:#ffd93d;
+    --bg:#060b18;--card:#0d1f2d;--text:#e8f4ff;--muted:#5a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 15% 40%,rgba(20,184,166,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 85% 20%,rgba(6,182,212,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(20,184,166,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(20,184,166,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(20,184,166,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--cyan));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--teal);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-badge{font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);
+    letter-spacing:2px;border:1px solid var(--cyan);padding:4px 14px;border-radius:2px;
+    background:rgba(6,182,212,.06);}
+
+  .container{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:24px 18px 60px;}
+
+  /* UNI BAR */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(20,184,166,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--teal),var(--cyan),var(--emerald),var(--teal));}
+  .uni-svg{width:62px;height:62px;flex-shrink:0;}
+  .speech{background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.22);
+    border-radius:12px;padding:10px 16px;flex:1;}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:4px;}
+  #uniMsg{font-size:14px;line-height:1.55;}
+  #uniMsg strong{color:var(--gold);}
+
+  /* PHASE PILLS */
+  .phase-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .ph{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    padding:6px 14px;border-radius:8px;border:1px solid;transition:all .3s;}
+  .ph.active {color:var(--teal);border-color:var(--teal);background:rgba(20,184,166,.1);box-shadow:0 0 12px rgba(20,184,166,.2);}
+  .ph.pending{color:var(--muted);border-color:rgba(255,255,255,.08);}
+  .ph.done   {color:var(--green);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+
+  /* CARD BASE */
+  .sec-card{background:var(--card);border:1.5px solid rgba(20,184,166,.18);
+    border-radius:22px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);
+    margin-bottom:18px;}
+  .sec-topbar{height:4px;background:linear-gradient(90deg,var(--teal),var(--cyan),var(--emerald));}
+  .sec-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--teal);
+    padding:8px 18px 6px;border-bottom:1px solid rgba(20,184,166,.1);}
+  .sec-body{padding:24px 22px;}
+
+  /* INTRO SECTION */
+  .intro-hero{text-align:center;margin-bottom:22px;}
+  .intro-icon{font-size:56px;margin-bottom:10px;filter:drop-shadow(0 4px 16px rgba(20,184,166,.4));}
+  .intro-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    color:var(--teal);letter-spacing:3px;margin-bottom:8px;}
+  .intro-desc{font-size:15px;line-height:1.75;max-width:640px;margin:0 auto;color:rgba(255,255,255,.85);}
+  .intro-desc strong{color:var(--gold);}
+
+  .so-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
+  .so-card{border-radius:14px;padding:16px 14px;text-align:center;border:1.5px solid;}
+  .so-card.win{background:rgba(14,165,233,.07);border-color:rgba(14,165,233,.25);}
+  .so-card.lin{background:rgba(249,115,22,.07);border-color:rgba(249,115,22,.25);}
+  .so-card.mac{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.25);}
+  .so-icon{font-size:32px;margin-bottom:6px;}
+  .so-os{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;margin-bottom:4px;}
+  .so-card.win .so-os{color:var(--win);}
+  .so-card.lin .so-os{color:var(--lin);}
+  .so-card.mac .so-os{color:var(--mac);}
+  .so-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+  .so-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+
+  .uses-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+  .use-chip{background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.2);
+    border-radius:10px;padding:9px 14px;text-align:center;font-size:12px;color:rgba(255,255,255,.8);}
+  .use-chip .ui{font-size:20px;margin-bottom:3px;}
+
+  .btn-primary{display:block;margin:0 auto;padding:13px 36px;
+    background:linear-gradient(135deg,var(--teal),var(--cyan));
+    color:#fff;border:none;border-radius:13px;font-family:'Orbitron',monospace;font-size:13px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;
+    box-shadow:0 6px 22px rgba(20,184,166,.35);transition:opacity .18s,transform .18s;}
+  .btn-primary:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* OS SELECTOR */
+  .os-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+  .os-btn{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .22s;}
+  .os-btn:hover{transform:translateY(-3px);}
+  .os-btn.win:hover,.os-btn.win.chosen{border-color:var(--win);background:rgba(14,165,233,.12);box-shadow:0 8px 24px rgba(14,165,233,.2);}
+  .os-btn.lin:hover,.os-btn.lin.chosen{border-color:var(--lin);background:rgba(249,115,22,.12);box-shadow:0 8px 24px rgba(249,115,22,.2);}
+  .os-btn.mac:hover,.os-btn.mac.chosen{border-color:var(--mac);background:rgba(167,139,250,.12);box-shadow:0 8px 24px rgba(167,139,250,.2);}
+  .os-btn-icon{font-size:38px;margin-bottom:8px;}
+  .os-btn-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+  .os-btn.win .os-btn-name{color:var(--win);}
+  .os-btn.lin .os-btn-name{color:var(--lin);}
+  .os-btn.mac .os-btn-name{color:var(--mac);}
+  .os-btn-app{font-size:12px;color:var(--muted);}
+
+  /* STEPS PANEL */
+  .steps-panel{display:none;}
+  .steps-panel.show{display:block;animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .steps-intro{display:flex;align-items:center;gap:14px;padding:12px 16px;
+    border-radius:12px;margin-bottom:16px;border:1px solid;}
+  .steps-intro.win{background:rgba(14,165,233,.07); border-color:rgba(14,165,233,.2);}
+  .steps-intro.lin{background:rgba(249,115,22,.07);  border-color:rgba(249,115,22,.2);}
+  .steps-intro.mac{background:rgba(167,139,250,.07); border-color:rgba(167,139,250,.2);}
+  .si-icon{font-size:32px;flex-shrink:0;}
+  .si-text{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;}
+  .si-text strong{color:var(--gold);}
+
+  .step-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+  .step-row{display:flex;gap:12px;align-items:flex-start;padding:11px 15px;
+    background:rgba(255,255,255,.03);border-radius:11px;border:1px solid rgba(255,255,255,.06);
+    position:relative;overflow:hidden;}
+  .step-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+  .step-row.win::before{background:var(--win);}
+  .step-row.lin::before{background:var(--lin);}
+  .step-row.mac::before{background:var(--mac);}
+  .step-n{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;width:26px;flex-shrink:0;margin-top:2px;}
+  .step-row.win .step-n{color:var(--win);}
+  .step-row.lin .step-n{color:var(--lin);}
+  .step-row.mac .step-n{color:var(--mac);}
+  .step-action{font-size:13px;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:2px;}
+  .step-detail{font-size:11px;color:var(--muted);line-height:1.5;}
+  kbd{background:rgba(255,255,255,.1);padding:1px 7px;border-radius:4px;
+    border:1px solid rgba(255,255,255,.2);font-size:11px;font-family:monospace;}
+
+  /* PARTS GRID */
+  .parts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+  .part-card{background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.2);
+    border-radius:11px;padding:11px 10px;text-align:center;}
+  .part-icon{font-size:22px;margin-bottom:4px;}
+  .part-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--teal);letter-spacing:1px;margin-bottom:3px;}
+  .part-desc{font-size:10px;color:var(--muted);line-height:1.35;}
+
+  /* ── SIMULATION ── */
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(20,184,166,.18);
+    border-radius:22px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);}
+  .sim-topbar{height:4px;background:linear-gradient(90deg,var(--teal),var(--cyan),var(--emerald));}
+  .sim-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--teal);
+    padding:8px 18px 6px;border-bottom:1px solid rgba(20,184,166,.1);}
+
+  /* STEP BAR */
+  .sbar{display:flex;align-items:center;gap:10px;padding:10px 18px 6px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.15);transition:all .3s;}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--teal);border-color:var(--teal);transform:scale(1.4);box-shadow:0 0 8px rgba(20,184,166,.6);}
+  .sprog-track{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+  .sprog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .45s ease;}
+  .slbl{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);white-space:nowrap;}
+  .slbl span{color:var(--teal);}
+
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+    margin:0 18px 8px;border-radius:9px;padding:8px 14px;font-size:12px;
+    color:var(--green);display:none;animation:fadeUp .25s ease;}
+  .step-ok.show{display:block;}
+
+  /* DESKTOP SIMULATIONS */
+  .desktop-sim{min-height:300px;position:relative;}
+
+  /* Windows 11 desktop */
+  .win11{background:linear-gradient(135deg,#1a3a6b 0%,#0d2240 40%,#0a1628 100%);
+    padding:10px;display:flex;flex-direction:column;}
+  .win11-screen{flex:1;position:relative;min-height:220px;
+    background:radial-gradient(ellipse at 30% 40%,#1e4a9e 0%,#0d2a5e 50%,#061428 100%);
+    border-radius:6px;overflow:hidden;}
+  .win11-wallpaper-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);
+    font-family:'Orbitron',monospace;font-size:28px;font-weight:900;
+    color:rgba(255,255,255,.06);letter-spacing:8px;white-space:nowrap;}
+  .win11-taskbar{background:rgba(0,0,0,.6);backdrop-filter:blur(20px);
+    height:46px;display:flex;align-items:center;justify-content:center;
+    gap:6px;border-radius:14px;margin-top:6px;border:1px solid rgba(255,255,255,.08);}
+  .tb-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:20px;cursor:pointer;transition:all .18s;
+    background:rgba(255,255,255,.05);}
+  .tb-icon:hover{background:rgba(255,255,255,.12);transform:scale(1.12);}
+  .tb-icon.highlight{background:rgba(14,165,233,.25);border:1.5px solid rgba(14,165,233,.6);
+    animation:pulse .9s ease-in-out infinite;}
+  .tb-icon.active{background:rgba(14,165,233,.3);border:2px solid var(--win);}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(20,184,166,0)}50%{box-shadow:0 0 0 6px rgba(20,184,166,.2)}}
+
+  /* Taskbar start button */
+  .tb-start{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:18px;cursor:pointer;transition:all .18s;
+    background:rgba(255,255,255,.05);}
+  .tb-start.highlight{background:rgba(14,165,233,.25);border:1.5px solid rgba(14,165,233,.6);
+    animation:pulse .9s ease-in-out infinite;}
+
+  /* Windows search popup */
+  .win-search-popup{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);
+    background:rgba(30,30,40,.97);border:1px solid rgba(255,255,255,.15);
+    border-radius:14px;padding:12px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+    display:none;}
+  .win-search-popup.show{display:block;animation:fadeUp .2s ease;}
+  .wsp-bar{background:rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;
+    font-size:12px;color:#aaa;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .wsp-result{display:flex;align-items:center;gap:10px;padding:7px 10px;
+    border-radius:8px;cursor:pointer;transition:background .15s;}
+  .wsp-result:hover{background:rgba(255,255,255,.07);}
+  .wsp-result.highlight{background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.3);
+    animation:pulse .9s ease-in-out infinite;}
+  .wsp-icon{font-size:24px;flex-shrink:0;}
+  .wsp-name{font-size:12px;color:rgba(255,255,255,.9);}
+  .wsp-type{font-size:10px;color:var(--muted);}
+
+  /* File Explorer window */
+  .fe-window{position:absolute;top:10px;left:10px;right:10px;bottom:10px;
+    background:#1e1e2e;border-radius:10px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.1);box-shadow:0 16px 48px rgba(0,0,0,.6);
+    display:none;}
+  .fe-window.show{display:flex;flex-direction:column;animation:fadeUp .3s ease;}
+  .fe-titlebar{background:#2d2d3d;padding:8px 12px;display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid rgba(255,255,255,.07);}
+  .fe-dots{display:flex;gap:5px;}
+  .fe-dot{width:11px;height:11px;border-radius:50%;}
+  .fe-title{font-size:12px;color:rgba(255,255,255,.7);flex:1;text-align:center;}
+  .fe-toolbar{background:#252535;padding:5px 10px;display:flex;align-items:center;gap:6px;
+    border-bottom:1px solid rgba(255,255,255,.06);}
+  .fe-nav-btn{font-size:14px;color:rgba(255,255,255,.4);cursor:default;padding:2px 5px;}
+  .fe-addr{flex:1;background:rgba(255,255,255,.06);border-radius:5px;padding:3px 10px;
+    font-size:11px;color:rgba(255,255,255,.6);font-family:monospace;}
+  .fe-body{display:flex;flex:1;overflow:hidden;}
+  .fe-sidebar{width:110px;background:#1a1a28;border-right:1px solid rgba(255,255,255,.06);
+    padding:8px 6px;flex-shrink:0;}
+  .fe-sidebar-item{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:6px;
+    font-size:10px;color:rgba(255,255,255,.55);cursor:default;margin-bottom:2px;}
+  .fe-sidebar-item:hover{background:rgba(255,255,255,.06);}
+  .fe-sidebar-item.active{background:rgba(14,165,233,.15);color:rgba(255,255,255,.9);}
+  .fe-content{flex:1;padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-content:start;}
+  .fe-item{text-align:center;padding:8px 4px;border-radius:7px;cursor:default;}
+  .fe-item:hover{background:rgba(255,255,255,.06);}
+  .fe-item-icon{font-size:26px;margin-bottom:3px;}
+  .fe-item-name{font-size:9px;color:rgba(255,255,255,.7);line-height:1.3;}
+
+  /* HOTSPOT LABELS for parts */
+  .hs-label-tag{position:absolute;background:rgba(20,184,166,.9);color:#fff;
+    font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 7px;
+    border-radius:4px;white-space:nowrap;pointer-events:none;display:none;z-index:20;}
+  .hs-label-tag.show{display:block;animation:fadeUp .2s ease;}
+
+  /* Linux desktop (Xfce/GNOME style) */
+  .linux-desk{background:linear-gradient(160deg,#1a2a1a 0%,#0d1f0d 50%,#0a1208 100%);
+    min-height:300px;position:relative;display:flex;flex-direction:column;}
+  .linux-topbar{background:rgba(0,0,0,.7);height:28px;display:flex;align-items:center;
+    padding:0 10px;gap:8px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .ltb-apps{font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;padding:2px 8px;border-radius:3px;}
+  .ltb-apps:hover{background:rgba(255,255,255,.1);}
+  .ltb-apps.highlight{background:rgba(249,115,22,.25);border:1px solid rgba(249,115,22,.5);
+    animation:pulse .9s ease-in-out infinite;}
+  .ltb-sep{width:1px;height:16px;background:rgba(255,255,255,.15);}
+  .ltb-time{margin-left:auto;font-size:11px;color:rgba(255,255,255,.6);}
+  .linux-content{flex:1;padding:10px;position:relative;}
+  .linux-desktop-icon{position:absolute;text-align:center;cursor:pointer;padding:6px;border-radius:6px;transition:background .15s;}
+  .linux-desktop-icon:hover{background:rgba(255,255,255,.08);}
+  .linux-desktop-icon.highlight{background:rgba(249,115,22,.2);border:1.5px solid rgba(249,115,22,.5);
+    animation:pulse .9s ease-in-out infinite;}
+  .ldi-icon{font-size:32px;margin-bottom:3px;}
+  .ldi-name{font-size:9px;color:rgba(255,255,255,.8);text-shadow:0 1px 3px rgba(0,0,0,.8);}
+
+  /* App menu linux */
+  .linux-appmenu{position:absolute;top:28px;left:0;
+    background:rgba(20,25,20,.97);border:1px solid rgba(255,255,255,.12);
+    border-radius:0 0 10px 0;padding:10px;width:220px;display:none;z-index:20;}
+  .linux-appmenu.show{display:block;animation:fadeUp .2s ease;}
+  .lam-search{background:rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;
+    font-size:11px;color:#aaa;margin-bottom:8px;display:flex;gap:6px;}
+  .lam-cat{font-family:'Orbitron',monospace;font-size:7px;color:var(--lin);letter-spacing:1px;
+    margin:6px 0 4px;}
+  .lam-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;
+    cursor:pointer;font-size:11px;color:rgba(255,255,255,.8);}
+  .lam-item:hover{background:rgba(255,255,255,.07);}
+  .lam-item.highlight{background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);
+    animation:pulse .9s ease-in-out infinite;}
+
+  /* macOS desktop */
+  .macos-desk{background:linear-gradient(160deg,#1a1040 0%,#2d0a4a 40%,#0a0820 100%);
+    min-height:300px;position:relative;display:flex;flex-direction:column;}
+  .mac-menubar{background:rgba(255,255,255,.12);backdrop-filter:blur(20px);
+    height:26px;display:flex;align-items:center;padding:0 12px;gap:14px;
+    border-bottom:1px solid rgba(255,255,255,.08);}
+  .mmb-item{font-size:11px;color:rgba(255,255,255,.85);cursor:pointer;}
+  .mmb-item:first-child{font-weight:700;}
+  .mac-content{flex:1;padding:10px;position:relative;}
+  .mac-dock{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    background:rgba(255,255,255,.15);backdrop-filter:blur(20px);
+    border-radius:16px;padding:6px 10px;display:flex;gap:6px;
+    border:1px solid rgba(255,255,255,.2);}
+  .dock-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;font-size:24px;cursor:pointer;transition:all .18s;
+    background:rgba(255,255,255,.1);}
+  .dock-icon:hover{transform:scale(1.2) translateY(-4px);}
+  .dock-icon.highlight{background:rgba(167,139,250,.3);border:1.5px solid rgba(167,139,250,.7);
+    animation:pulse .9s ease-in-out infinite;}
+  .dock-icon.active{background:rgba(167,139,250,.3);border:2px solid var(--mac);}
+
+  /* Finder window */
+  .finder-window{position:absolute;top:10px;left:10px;right:10px;bottom:56px;
+    background:#fff;border-radius:10px;overflow:hidden;
+    box-shadow:0 16px 48px rgba(0,0,0,.6);display:none;}
+  .finder-window.show{display:flex;flex-direction:column;animation:fadeUp .3s ease;}
+  .finder-titlebar{background:#e8e8e8;padding:8px 12px;display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid #ccc;}
+  .finder-dots{display:flex;gap:5px;}
+  .finder-title{font-size:12px;color:#555;flex:1;text-align:center;font-weight:600;}
+  .finder-toolbar{background:#f0f0f0;padding:5px 10px;display:flex;align-items:center;gap:6px;
+    border-bottom:1px solid #ddd;}
+  .ft-btn{font-size:13px;color:#666;cursor:default;padding:2px 5px;}
+  .finder-body{display:flex;flex:1;overflow:hidden;}
+  .finder-sidebar{width:110px;background:#f5f5f5;border-right:1px solid #ddd;padding:8px 6px;}
+  .fsi{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:5px;
+    font-size:10px;color:#555;cursor:default;margin-bottom:2px;}
+  .fsi:hover{background:rgba(0,0,0,.06);}
+  .fsi.active{background:rgba(167,139,250,.2);color:#5b21b6;}
+  .finder-content{flex:1;padding:10px;display:grid;grid-template-columns:repeat(4,1fr);
+    gap:8px;align-content:start;background:#fff;}
+  .finder-item{text-align:center;padding:8px 4px;border-radius:6px;cursor:default;}
+  .finder-item:hover{background:rgba(0,0,0,.05);}
+  .finder-item-icon{font-size:26px;margin-bottom:3px;}
+  .finder-item-name{font-size:9px;color:#333;line-height:1.3;}
+
+  /* ACTION WRAP */
+  .action-wrap{padding:12px 18px;border-top:1px solid rgba(20,184,166,.1);}
+  .btn-action{width:100%;padding:12px;background:linear-gradient(135deg,var(--teal),var(--cyan));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(20,184,166,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* FINAL */
+  .final-card{background:var(--card);border-radius:22px;overflow:hidden;
+    box-shadow:0 28px 70px rgba(0,0,0,.6);display:none;}
+  .final-card.show{display:block;}
+  .fc-top{height:5px;background:linear-gradient(90deg,var(--teal),var(--cyan),var(--emerald));}
+  .fc-body{padding:36px 26px;text-align:center;}
+  .fc-stars{font-size:48px;letter-spacing:8px;margin-bottom:10px;
+    animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fc-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--teal),var(--cyan));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+  .fc-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:18px;}
+  .fc-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .fc-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+  .sk{background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.2);
+    border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--teal);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--teal),var(--cyan));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+
+  @media(max-width:640px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .so-cards,.os-selector{grid-template-columns:1fr;}
+    .parts-grid{grid-template-columns:1fr 1fr;}
+    .skills-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-badge">📁 EXPLORADOR DE ARCHIVOS</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(20,184,166,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#0a2020"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#0a2020"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#103030"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#103030"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#0d2020"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#14b8a6"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#0a2020"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#0a2020"/>
+      <circle cx="10" cy="56" r="5" fill="#103030"/>
+      <circle cx="70" cy="56" r="5" fill="#103030"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#0a2020"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#0d2020"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#14b8a6" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#14b8a6"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#06b6d4"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#103030"/>
+      <circle cx="40" cy="3" r="3" fill="#14b8a6"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#103030"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#103030"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📁 Hoy aprenderemos una herramienta fundamental: el <strong>Explorador de Archivos</strong>. ¡Existe en Windows, Linux y macOS! ¿Listo para conocerlo?</p>
+    </div>
+  </div>
+
+  <!-- PHASE PILLS -->
+  <div class="phase-row">
+    <div class="ph active"  id="ph-1">📖 1 · ¿QUÉ ES?</div>
+    <div class="ph pending" id="ph-2">🖥️ 2 · ELIGE TU SO</div>
+    <div class="ph pending" id="ph-3">🎮 3 · SIMULACIÓN</div>
+  </div>
+
+  <!-- ══ SECCIÓN 1: INTRO UNIVERSAL ══ -->
+  <div class="sec-card" id="sec1">
+    <div class="sec-topbar"></div>
+    <div class="sec-label">// SECCIÓN 1 · ¿QUÉ ES EL EXPLORADOR DE ARCHIVOS?</div>
+    <div class="sec-body">
+
+      <div class="intro-hero">
+        <div class="intro-icon">📁</div>
+        <div class="intro-title">EL EXPLORADOR DE ARCHIVOS</div>
+        <div class="intro-desc">
+          Es el programa que nos permite <strong>ver, organizar y encontrar</strong> todos los archivos y carpetas de nuestra computadora. Es como un <strong>armario digital</strong>: todo tiene su lugar y lo podemos buscar fácilmente.
+        </div>
+      </div>
+
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:12px;text-align:center;">// ¿CÓMO SE LLAMA EN CADA SISTEMA OPERATIVO?</div>
+      <div class="so-cards">
+        <div class="so-card win">
+          <div class="so-icon">🪟</div>
+          <div class="so-os">WINDOWS 11</div>
+          <div class="so-name">Explorador de archivos</div>
+          <div class="so-desc">Ícono de carpeta amarilla en la barra de tareas</div>
+        </div>
+        <div class="so-card lin">
+          <div class="so-icon">🐧</div>
+          <div class="so-os">LINUX</div>
+          <div class="so-name">Gestor de archivos</div>
+          <div class="so-desc">Nautilus (GNOME), Dolphin (KDE), Thunar (Xfce)</div>
+        </div>
+        <div class="so-card mac">
+          <div class="so-icon">🍎</div>
+          <div class="so-os">macOS</div>
+          <div class="so-name">Finder</div>
+          <div class="so-desc">Ícono de carita en el Dock, siempre visible</div>
+        </div>
+      </div>
+
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;margin-bottom:12px;text-align:center;">// ¿PARA QUÉ LO USAMOS?</div>
+      <div class="uses-grid">
+        <div class="use-chip"><div class="ui">🔍</div>Buscar archivos</div>
+        <div class="use-chip"><div class="ui">📂</div>Abrir carpetas</div>
+        <div class="use-chip"><div class="ui">✂️</div>Mover y copiar</div>
+        <div class="use-chip"><div class="ui">🗑️</div>Eliminar archivos</div>
+        <div class="use-chip"><div class="ui">🏷️</div>Renombrar</div>
+        <div class="use-chip"><div class="ui">💾</div>Ver el disco duro</div>
+      </div>
+
+      <button class="btn-primary" id="btnSec1">ENTENDIDO → ELEGIR MI SISTEMA OPERATIVO 🖥️</button>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 2: ELIGE SO + PASOS ══ -->
+  <div class="sec-card" id="sec2" style="display:none;">
+    <div class="sec-topbar"></div>
+    <div class="sec-label">// SECCIÓN 2 · ELIGE TU SISTEMA OPERATIVO</div>
+    <div class="sec-body">
+
+      <div style="text-align:center;font-size:14px;color:rgba(255,255,255,.7);margin-bottom:18px;line-height:1.6;">
+        ¿Cuál es el sistema operativo de tu computadora?<br>
+        <span style="font-size:12px;color:var(--muted);">Elige el tuyo para ver los pasos específicos.</span>
+      </div>
+
+      <div class="os-selector">
+        <div class="os-btn win" id="osbtn-win">
+          <div class="os-btn-icon">🪟</div>
+          <div class="os-btn-name">WINDOWS 11</div>
+          <div class="os-btn-app">Explorador de archivos</div>
+        </div>
+        <div class="os-btn lin" id="osbtn-lin">
+          <div class="os-btn-icon">🐧</div>
+          <div class="os-btn-name">LINUX</div>
+          <div class="os-btn-app">Gestor de archivos</div>
+        </div>
+        <div class="os-btn mac" id="osbtn-mac">
+          <div class="os-btn-icon">🍎</div>
+          <div class="os-btn-name">macOS</div>
+          <div class="os-btn-app">Finder</div>
+        </div>
+      </div>
+
+      <!-- WINDOWS STEPS -->
+      <div class="steps-panel" id="steps-win">
+        <div class="steps-intro win">
+          <div class="si-icon">🪟</div>
+          <div class="si-text">En <strong>Windows 11</strong> el Explorador de archivos está siempre disponible desde la barra de tareas.</div>
+        </div>
+        <div class="step-list">
+          <div class="step-row win"><div class="step-n">1</div><div><div class="step-action">Busca el ícono de carpeta 📁 en la barra de tareas</div><div class="step-detail">Está en la barra inferior, normalmente al lado del botón de Inicio.</div></div></div>
+          <div class="step-row win"><div class="step-n">2</div><div><div class="step-action">Haz clic sobre él</div><div class="step-detail">Un solo clic y se abre la ventana del Explorador de archivos.</div></div></div>
+          <div class="step-row win"><div class="step-n">3</div><div><div class="step-action">También puedes usar el atajo de teclado</div><div class="step-detail">Presiona <kbd>⊞ Win</kbd> + <kbd>E</kbd> para abrirlo directamente desde cualquier lugar.</div></div></div>
+          <div class="step-row win"><div class="step-n">💡</div><div><div class="step-action">O búscalo en el menú Inicio</div><div class="step-detail">Clic en Inicio → escribe "Explorador de archivos" → Enter.</div></div></div>
+        </div>
+        <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--win);letter-spacing:2px;margin-bottom:10px;">// PARTES DE LA VENTANA</div>
+        <div class="parts-grid">
+          <div class="part-card"><div class="part-icon">🧭</div><div class="part-name">PANEL DE NAVEGACIÓN</div><div class="part-desc">Lado izquierdo: acceso rápido, disco duro, red</div></div>
+          <div class="part-card"><div class="part-icon">🔗</div><div class="part-name">BARRA DE DIRECCIONES</div><div class="part-desc">Muestra dónde estás y puedes escribir rutas</div></div>
+          <div class="part-card"><div class="part-icon">🖼️</div><div class="part-name">ÁREA DE CONTENIDO</div><div class="part-desc">Muestra los archivos y carpetas de la ubicación actual</div></div>
+          <div class="part-card"><div class="part-icon">🔍</div><div class="part-name">BARRA DE BÚSQUEDA</div><div class="part-desc">Para encontrar archivos por nombre</div></div>
+          <div class="part-card"><div class="part-icon">🛠️</div><div class="part-name">BARRA DE HERRAMIENTAS</div><div class="part-desc">Botones para cortar, copiar, pegar, eliminar</div></div>
+          <div class="part-card"><div class="part-icon">📊</div><div class="part-name">BARRA DE ESTADO</div><div class="part-desc">Abajo: muestra cuántos elementos hay seleccionados</div></div>
+        </div>
+      </div>
+
+      <!-- LINUX STEPS -->
+      <div class="steps-panel" id="steps-lin">
+        <div class="steps-intro lin">
+          <div class="si-icon">🐧</div>
+          <div class="si-text">En <strong>Linux</strong> el nombre cambia según tu entorno de escritorio, pero siempre está en el menú de aplicaciones.</div>
+        </div>
+        <div class="step-list">
+          <div class="step-row lin"><div class="step-n">1</div><div><div class="step-action">Haz clic en el menú de Aplicaciones</div><div class="step-detail">Busca en la barra superior o en el menú del sistema (depende de tu distribución: GNOME, KDE, Xfce…).</div></div></div>
+          <div class="step-row lin"><div class="step-n">2</div><div><div class="step-action">Busca "Archivos", "Gestor de archivos" o "Nautilus"</div><div class="step-detail">En GNOME se llama "Archivos" (Nautilus). En KDE: "Dolphin". En Xfce: "Thunar". ¡Todos hacen lo mismo!</div></div></div>
+          <div class="step-row lin"><div class="step-n">3</div><div><div class="step-action">O haz doble clic en el ícono del escritorio</div><div class="step-detail">Muchas distribuciones tienen un ícono de carpeta en el escritorio. Doble clic y se abre.</div></div></div>
+          <div class="step-row lin"><div class="step-n">💡</div><div><div class="step-action">Desde la terminal (cualquier distribución)</div><div class="step-detail">Escribe <kbd>nautilus .</kbd> o <kbd>thunar .</kbd> o <kbd>dolphin .</kbd> según tu gestor.</div></div></div>
+        </div>
+        <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--lin);letter-spacing:2px;margin-bottom:10px;">// PARTES DEL GESTOR DE ARCHIVOS</div>
+        <div class="parts-grid">
+          <div class="part-card"><div class="part-icon">🧭</div><div class="part-name">PANEL LATERAL</div><div class="part-desc">Acceso rápido a carpetas frecuentes y dispositivos</div></div>
+          <div class="part-card"><div class="part-icon">🔗</div><div class="part-name">BARRA DE RUTA</div><div class="part-desc">Muestra la ubicación actual en forma de botones</div></div>
+          <div class="part-card"><div class="part-icon">🖼️</div><div class="part-name">ÁREA PRINCIPAL</div><div class="part-desc">Muestra el contenido de la carpeta actual</div></div>
+          <div class="part-card"><div class="part-icon">🔍</div><div class="part-name">BÚSQUEDA</div><div class="part-desc">Para encontrar archivos rápidamente</div></div>
+          <div class="part-card"><div class="part-icon">🛠️</div><div class="part-name">MENÚ DE OPCIONES</div><div class="part-desc">Para cambiar la vista, ordenar y más acciones</div></div>
+          <div class="part-card"><div class="part-icon">◀▶</div><div class="part-name">BOTONES ATRÁS/ADELANTE</div><div class="part-desc">Para navegar entre carpetas visitadas</div></div>
+        </div>
+      </div>
+
+      <!-- macOS STEPS -->
+      <div class="steps-panel" id="steps-mac">
+        <div class="steps-intro mac">
+          <div class="si-icon">🍎</div>
+          <div class="si-text">En <strong>macOS</strong> el Finder siempre está activo — es imposible cerrarlo completamente. Siempre verás su ícono en el Dock.</div>
+        </div>
+        <div class="step-list">
+          <div class="step-row mac"><div class="step-n">1</div><div><div class="step-action">Busca el ícono de carita en el Dock 😊</div><div class="step-detail">El Finder tiene un ícono de carita azul y blanca. Siempre está al inicio del Dock (barra inferior).</div></div></div>
+          <div class="step-row mac"><div class="step-n">2</div><div><div class="step-action">Haz clic sobre él</div><div class="step-detail">Un solo clic abre una ventana del Finder mostrando tu carpeta de inicio o la última ubicación visitada.</div></div></div>
+          <div class="step-row mac"><div class="step-n">3</div><div><div class="step-action">También desde el menú Apple</div><div class="step-detail">Haz clic en el logo  → "Finder" siempre aparece en la barra de menú cuando está activo.</div></div></div>
+          <div class="step-row mac"><div class="step-n">💡</div><div><div class="step-action">Atajo de teclado rápido</div><div class="step-detail">Presiona <kbd>⌘ Cmd</kbd> + <kbd>N</kbd> estando en Finder para abrir una nueva ventana.</div></div></div>
+        </div>
+        <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--mac);letter-spacing:2px;margin-bottom:10px;">// PARTES DEL FINDER</div>
+        <div class="parts-grid">
+          <div class="part-card"><div class="part-icon">🧭</div><div class="part-name">BARRA LATERAL</div><div class="part-desc">Favoritos, iCloud, dispositivos y ubicaciones</div></div>
+          <div class="part-card"><div class="part-icon">🔗</div><div class="part-name">BARRA DE RUTA</div><div class="part-desc">Muestra la ruta de la carpeta actual</div></div>
+          <div class="part-card"><div class="part-icon">🖼️</div><div class="part-name">ÁREA DE CONTENIDO</div><div class="part-desc">Iconos, lista, columnas o galería — tú eliges</div></div>
+          <div class="part-card"><div class="part-icon">🔍</div><div class="part-name">BÚSQUEDA SPOTLIGHT</div><div class="part-desc">Busca en toda la Mac desde el Finder</div></div>
+          <div class="part-card"><div class="part-icon">🛠️</div><div class="part-name">BARRA DE HERRAMIENTAS</div><div class="part-desc">Botones de vista, acciones y ordenación</div></div>
+          <div class="part-card"><div class="part-icon">ℹ️</div><div class="part-name">PANEL DE INFORMACIÓN</div><div class="part-desc">Muestra detalles y vista previa del archivo seleccionado</div></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btnSec2" style="display:none;margin-top:20px;">
+        ¡ENTENDIDO! → IR A LA SIMULACIÓN 🎮
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 3: SIMULACIÓN ══ -->
+  <div id="sec3" style="display:none;">
+    <div class="sim-wrap">
+      <div class="sim-topbar"></div>
+      <div class="sim-label" id="simLabel">// SIMULACIÓN · ESCRITORIO</div>
+      <div class="sbar">
+        <div class="sdots" id="sdots"></div>
+        <div class="sprog-track"><div class="sprog-fill" id="sprogFill" style="width:0%"></div></div>
+        <div class="slbl">Paso <span id="stepNum">1</span>/<span id="stepTotal">6</span></div>
+      </div>
+      <div class="step-ok" id="stepOk">✅ ¡Muy bien!</div>
+      <div id="simBody"></div>
+      <div class="action-wrap">
+        <button class="btn-action" id="btnAction">→ SIGUIENTE PASO</button>
+      </div>
+    </div>
+
+    <div class="final-card" id="finalCard">
+      <div class="fc-top"></div>
+      <div class="fc-body">
+        <div class="fc-stars">⭐⭐⭐</div>
+        <div class="fc-title">¡EXPLORADOR DOMINADO!</div>
+        <div class="fc-sub" id="fcSub">ACTIVIDAD UNIVERSAL · COMPLETADA</div>
+        <div class="fc-msg" id="fcMsg"></div>
+        <div class="skills-grid">
+          <div class="sk"><div class="sk-icon">📍</div><div class="sk-name">UBICACIÓN</div><div class="sk-desc">Sabes dónde encontrar el explorador en tu SO</div></div>
+          <div class="sk"><div class="sk-icon">🖱️</div><div class="sk-name">ABRIR</div><div class="sk-desc">Conoces cómo abrirlo paso a paso</div></div>
+          <div class="sk"><div class="sk-icon">🪟</div><div class="sk-name">PARTES</div><div class="sk-desc">Identificas las partes principales de la ventana</div></div>
+        </div>
+        <button class="btn-restart" id="btnRestart">🔄 &nbsp;VOLVER AL INICIO</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let chosenOS = null;
+let stepIdx  = 0;
+
+/* ── STEP CONFIGS por SO ── */
+const STEPS = {
+  win:[
+    { label:'// WINDOWS 11 · ESCRITORIO',
+      uni:'🖥️ Este es el <strong>escritorio de Windows 11</strong>. Abajo ves la barra de tareas. ¿Ves el ícono de carpeta 📁? Ese es el Explorador de archivos. Pulsa el botón para hacer clic en él.',
+      actionText:'→ HACER CLIC EN EL ÍCONO DE CARPETA 📁',
+      okMsg:'¡Clic en el ícono de carpeta! El explorador está abriendo…',
+      render: renderWinDesktop },
+    { label:'// WINDOWS 11 · EXPLORADOR ABIERTO',
+      uni:'🎉 ¡El <strong>Explorador de archivos</strong> se abrió! Observa sus partes. A la izquierda está el <strong>Panel de navegación</strong>. Pulsa el botón para conocer la barra de direcciones.',
+      actionText:'→ VER LA BARRA DE DIRECCIONES',
+      okMsg:'¡Barra de direcciones identificada! Muestra dónde estás.',
+      render: renderWinExplorer1 },
+    { label:'// WINDOWS 11 · PANEL DE NAVEGACIÓN',
+      uni:'🧭 El <strong>Panel de navegación</strong> (izquierda) te da acceso rápido a Escritorio, Documentos, Descargas y más. Pulsa para ver el área de contenido.',
+      actionText:'→ VER EL ÁREA DE CONTENIDO',
+      okMsg:'¡Área de contenido identificada! Aquí se ven los archivos.',
+      render: renderWinExplorer2 },
+    { label:'// WINDOWS 11 · BARRA DE BÚSQUEDA',
+      uni:'🔍 La <strong>barra de búsqueda</strong> está en la parte superior derecha. Escribe el nombre de un archivo y Windows lo encuentra al instante. Pulsa para continuar.',
+      actionText:'→ IDENTIFICAR LA BARRA DE BÚSQUEDA',
+      okMsg:'¡Barra de búsqueda vista! Con ella encontramos cualquier archivo.',
+      render: renderWinExplorer3 },
+    { label:'// WINDOWS 11 · ATAJO DE TECLADO',
+      uni:'⌨️ ¡Dato extra! El atajo <strong>Win + E</strong> abre el explorador desde cualquier lugar. Es el acceso más rápido. Pulsa para terminar.',
+      actionText:'→ USAR EL ATAJO Win + E',
+      okMsg:'¡Atajo aprendido! Win + E = Explorador de archivos.',
+      render: renderWinShortcut },
+    { label:'// WINDOWS 11 · ¡COMPLETADO!',
+      uni:'⭐ ¡<strong>Perfecto!</strong> Ya sabes dónde está el Explorador de archivos en Windows 11, cómo abrirlo y cuáles son sus partes principales. ¡Eres un experto!',
+      actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+      okMsg:'¡Actividad completada! ⭐',
+      render: renderWinFinal },
+  ],
+  lin:[
+    { label:'// LINUX · ESCRITORIO (XFCE)',
+      uni:'🐧 Este es un <strong>escritorio Linux</strong> (estilo Xfce/GNOME). Arriba ves la barra de menú. Haz clic en <strong>Aplicaciones</strong> para encontrar el gestor de archivos.',
+      actionText:'→ HACER CLIC EN "APLICACIONES"',
+      okMsg:'¡Menú de aplicaciones abierto!',
+      render: renderLinDesktop },
+    { label:'// LINUX · MENÚ DE APLICACIONES',
+      uni:'📂 ¡El menú está abierto! Busca <strong>"Gestor de archivos"</strong> o <strong>"Archivos"</strong>. En Xfce se llama Thunar, en GNOME se llama Nautilus. Pulsa para seleccionarlo.',
+      actionText:'→ HACER CLIC EN "GESTOR DE ARCHIVOS"',
+      okMsg:'¡Gestor de archivos seleccionado!',
+      render: renderLinMenu },
+    { label:'// LINUX · GESTOR DE ARCHIVOS ABIERTO',
+      uni:'🎉 ¡El <strong>Gestor de archivos</strong> se abrió! Observa el <strong>Panel lateral</strong> a la izquierda con accesos rápidos. Pulsa para identificar la barra de ruta.',
+      actionText:'→ IDENTIFICAR EL PANEL LATERAL',
+      okMsg:'¡Panel lateral identificado! Tiene accesos rápidos.',
+      render: renderLinExplorer1 },
+    { label:'// LINUX · BARRA DE RUTA Y BÚSQUEDA',
+      uni:'🔗 La <strong>barra de ruta</strong> muestra la ubicación actual. La <strong>búsqueda</strong> encuentra archivos al instante. Pulsa para continuar.',
+      actionText:'→ IDENTIFICAR BARRA DE RUTA',
+      okMsg:'¡Barra de ruta vista! Muestra dónde estás en el sistema.',
+      render: renderLinExplorer2 },
+    { label:'// LINUX · TAMBIÉN DESDE EL ESCRITORIO',
+      uni:'🖥️ También puedes abrir el gestor haciendo <strong>doble clic en el ícono de carpeta</strong> del escritorio (si existe). O desde la terminal con: <em>thunar .</em>',
+      actionText:'→ ABRIR DESDE EL ESCRITORIO',
+      okMsg:'¡Perfecto! También desde el escritorio o la terminal.',
+      render: renderLinDesktop2 },
+    { label:'// LINUX · ¡COMPLETADO!',
+      uni:'⭐ ¡<strong>Excelente!</strong> Ya sabes dónde está el Gestor de archivos en Linux, cómo abrirlo desde el menú y cuáles son sus partes principales.',
+      actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+      okMsg:'¡Actividad completada! ⭐',
+      render: renderLinFinal },
+  ],
+  mac:[
+    { label:'// macOS · ESCRITORIO',
+      uni:'🍎 Este es el <strong>escritorio de macOS</strong>. Abajo ves el Dock. El primer ícono (carita 😊) es el <strong>Finder</strong>. ¡Siempre está ahí! Pulsa para hacer clic en él.',
+      actionText:'→ HACER CLIC EN EL FINDER (😊)',
+      okMsg:'¡Clic en el Finder! La ventana se está abriendo…',
+      render: renderMacDesktop },
+    { label:'// macOS · FINDER ABIERTO',
+      uni:'🎉 ¡El <strong>Finder</strong> se abrió! Observa la <strong>Barra lateral</strong> izquierda con Favoritos, iCloud y dispositivos. Pulsa para identificarla.',
+      actionText:'→ IDENTIFICAR LA BARRA LATERAL',
+      okMsg:'¡Barra lateral identificada! Tiene accesos rápidos.',
+      render: renderMacFinder1 },
+    { label:'// macOS · ÁREA DE CONTENIDO',
+      uni:'🖼️ El <strong>Área de contenido</strong> muestra tus archivos y carpetas. Puedes ver en iconos, lista, columnas o galería. Pulsa para ver la barra de herramientas.',
+      actionText:'→ IDENTIFICAR EL ÁREA DE CONTENIDO',
+      okMsg:'¡Área de contenido vista! Aquí están todos tus archivos.',
+      render: renderMacFinder2 },
+    { label:'// macOS · BARRA DE HERRAMIENTAS',
+      uni:'🛠️ La <strong>barra de herramientas</strong> tiene botones para cambiar la vista, ordenar y más. La búsqueda está en la esquina superior derecha. Pulsa para continuar.',
+      actionText:'→ IDENTIFICAR LA BARRA DE HERRAMIENTAS',
+      okMsg:'¡Barra de herramientas identificada!',
+      render: renderMacFinder3 },
+    { label:'// macOS · ATAJO DE TECLADO',
+      uni:'⌨️ ¡Dato extra! Estando en el Finder, presiona <strong>⌘ Cmd + N</strong> para abrir una nueva ventana. ¡Muy útil para trabajar con dos carpetas a la vez!',
+      actionText:'→ APRENDER EL ATAJO ⌘ + N',
+      okMsg:'¡Atajo aprendido! ⌘ + N = nueva ventana del Finder.',
+      render: renderMacShortcut },
+    { label:'// macOS · ¡COMPLETADO!',
+      uni:'⭐ ¡<strong>Fantástico!</strong> Ya sabes dónde está el Finder en macOS, cómo abrirlo desde el Dock y cuáles son sus partes principales.',
+      actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+      okMsg:'¡Actividad completada! ⭐',
+      render: renderMacFinal },
+  ]
+};
+
+/* ── WINDOWS RENDERS ── */
+function renderWinDesktop(body){
+  body.innerHTML=`<div class="desktop-sim win11">
+    <div class="win11-screen">
+      <div class="win11-wallpaper-text">WINDOWS 11</div>
+    </div>
+    <div class="win11-taskbar">
+      <div class="tb-start" id="tbStart">🪟</div>
+      <div class="tb-icon highlight" id="tbFolder" title="Explorador de archivos">📁</div>
+      <div class="tb-icon">🌐</div>
+      <div class="tb-icon">⚙️</div>
+      <div class="tb-icon">🔔</div>
+    </div>
+  </div>`;
+  document.getElementById('tbFolder').addEventListener('click', doStep);
+}
+function winExplorerHTML(highlightPart){
+  const addrStyle  = highlightPart==='addr'  ? 'background:rgba(14,165,233,.25);border:1.5px solid var(--win);' : '';
+  const sideStyle  = highlightPart==='side'  ? 'background:rgba(14,165,233,.15);' : '';
+  const contStyle  = highlightPart==='cont'  ? 'background:rgba(14,165,233,.08);' : '';
+  const searchStyle= highlightPart==='search'? 'background:rgba(14,165,233,.25);border:1.5px solid var(--win);' : '';
+  return `<div class="desktop-sim" style="padding:8px;background:#1a1a2e;">
+    <div class="fe-window show" style="position:relative;top:0;left:0;right:0;bottom:0;height:260px;">
+      <div class="fe-titlebar">
+        <div class="fe-dots"><div class="fe-dot" style="background:#ff5f57"></div><div class="fe-dot" style="background:#ffbd2e"></div><div class="fe-dot" style="background:#28ca41"></div></div>
+        <div class="fe-title">Explorador de archivos</div>
+        <div style="font-size:18px;background:rgba(14,165,233,.2);border-radius:5px;padding:2px 8px;${searchStyle}">🔍</div>
+      </div>
+      <div class="fe-toolbar">
+        <div class="fe-nav-btn">◀</div><div class="fe-nav-btn">▶</div><div class="fe-nav-btn">↑</div>
+        <div class="fe-addr" style="${addrStyle}">📁 Este equipo › Documentos</div>
+      </div>
+      <div class="fe-body">
+        <div class="fe-sidebar" style="${sideStyle}">
+          <div class="fe-sidebar-item active">⭐ Acceso rápido</div>
+          <div class="fe-sidebar-item">🖥️ Escritorio</div>
+          <div class="fe-sidebar-item">📥 Descargas</div>
+          <div class="fe-sidebar-item">📄 Documentos</div>
+          <div class="fe-sidebar-item">🖼️ Imágenes</div>
+          <div class="fe-sidebar-item">💾 Este equipo</div>
+        </div>
+        <div class="fe-content" style="${contStyle}">
+          <div class="fe-item"><div class="fe-item-icon">📁</div><div class="fe-item-name">Documentos</div></div>
+          <div class="fe-item"><div class="fe-item-icon">🖼️</div><div class="fe-item-name">Imágenes</div></div>
+          <div class="fe-item"><div class="fe-item-icon">📥</div><div class="fe-item-name">Descargas</div></div>
+          <div class="fe-item"><div class="fe-item-icon">🎵</div><div class="fe-item-name">Música</div></div>
+          <div class="fe-item"><div class="fe-item-icon">📝</div><div class="fe-item-name">mi_texto.txt</div></div>
+          <div class="fe-item"><div class="fe-item-icon">📊</div><div class="fe-item-name">datos.xlsx</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function renderWinExplorer1(body){ body.innerHTML=winExplorerHTML('addr'); }
+function renderWinExplorer2(body){ body.innerHTML=winExplorerHTML('side'); }
+function renderWinExplorer3(body){ body.innerHTML=winExplorerHTML('search'); }
+function renderWinShortcut(body){
+  body.innerHTML=`<div style="padding:20px;text-align:center;background:#1a1a2e;">
+    <div style="font-size:48px;margin-bottom:12px;">⌨️</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+      <kbd style="background:#2d2d3d;padding:10px 18px;border-radius:8px;border:2px solid var(--win);
+        font-size:18px;color:#fff;box-shadow:0 4px 0 rgba(14,165,233,.5);">⊞ Win</kbd>
+      <span style="font-size:20px;color:var(--muted);">+</span>
+      <kbd style="background:#2d2d3d;padding:10px 18px;border-radius:8px;border:2px solid var(--win);
+        font-size:18px;color:#fff;box-shadow:0 4px 0 rgba(14,165,233,.5);">E</kbd>
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,.7);">Este atajo abre el Explorador de archivos<br>desde cualquier lugar en Windows 11</div>
+  </div>`;
+}
+function renderWinFinal(body){ body.innerHTML=winExplorerHTML(''); }
+
+/* ── LINUX RENDERS ── */
+function renderLinDesktop(body){
+  body.innerHTML=`<div class="desktop-sim linux-desk">
+    <div class="linux-topbar">
+      <div class="ltb-apps highlight" id="ltbApps">Aplicaciones</div>
+      <div class="ltb-sep"></div>
+      <div class="ltb-apps">Lugares</div>
+      <div class="ltb-apps">Sistema</div>
+      <div class="ltb-time">10:42</div>
+    </div>
+    <div class="linux-content">
+      <div class="linux-desktop-icon" style="top:20px;left:20px;">
+        <div class="ldi-icon">📁</div><div class="ldi-name">Archivos</div>
+      </div>
+      <div class="linux-desktop-icon" style="top:20px;left:90px;">
+        <div class="ldi-icon">🗑️</div><div class="ldi-name">Papelera</div>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('ltbApps').addEventListener('click', doStep);
+}
+function renderLinMenu(body){
+  body.innerHTML=`<div class="desktop-sim linux-desk">
+    <div class="linux-topbar">
+      <div class="ltb-apps open" style="background:rgba(249,115,22,.2);color:var(--lin);">Aplicaciones</div>
+      <div class="ltb-sep"></div><div class="ltb-apps">Lugares</div>
+      <div class="ltb-time">10:42</div>
+    </div>
+    <div class="linux-appmenu show">
+      <div class="lam-search">🔍 &nbsp;Buscar aplicación…</div>
+      <div class="lam-cat">ACCESORIOS</div>
+      <div class="lam-item">🖩 Calculadora</div>
+      <div class="lam-item">📝 Editor de texto</div>
+      <div class="lam-cat">SISTEMA</div>
+      <div class="lam-item highlight" id="lamFiles">📁 Gestor de archivos</div>
+      <div class="lam-item">⚙️ Configuración</div>
+      <div class="lam-item">💻 Terminal</div>
+    </div>
+  </div>`;
+  document.getElementById('lamFiles').addEventListener('click', doStep);
+}
+function linExplorerHTML(highlightPart){
+  const sideStyle = highlightPart==='side' ? 'background:rgba(249,115,22,.15);border-right:2px solid var(--lin);' : '';
+  const addrStyle = highlightPart==='addr' ? 'background:rgba(249,115,22,.2);border:1.5px solid var(--lin);' : '';
+  return `<div class="desktop-sim" style="padding:8px;background:#121c12;">
+    <div class="fe-window show" style="position:relative;top:0;left:0;right:0;bottom:0;height:260px;">
+      <div class="fe-titlebar" style="background:#1e2e1e;">
+        <div class="fe-dots"><div class="fe-dot" style="background:#ff5f57"></div><div class="fe-dot" style="background:#ffbd2e"></div><div class="fe-dot" style="background:#28ca41"></div></div>
+        <div class="fe-title" style="color:rgba(255,255,255,.7);">Gestor de archivos — Inicio</div>
+      </div>
+      <div class="fe-toolbar" style="background:#182218;">
+        <div class="fe-nav-btn">◀</div><div class="fe-nav-btn">▶</div>
+        <div class="fe-addr" style="${addrStyle}">🏠 /home/usuario</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.4);padding:2px 8px;">🔍</div>
+      </div>
+      <div class="fe-body">
+        <div class="fe-sidebar" style="background:#141e14;${sideStyle}">
+          <div class="fe-sidebar-item active" style="color:var(--lin);">🏠 Inicio</div>
+          <div class="fe-sidebar-item">🖥️ Escritorio</div>
+          <div class="fe-sidebar-item">📥 Descargas</div>
+          <div class="fe-sidebar-item">📄 Documentos</div>
+          <div class="fe-sidebar-item">💾 Dispositivos</div>
+          <div class="fe-sidebar-item">🌐 Red</div>
+        </div>
+        <div class="fe-content" style="background:#0d160d;">
+          <div class="fe-item"><div class="fe-item-icon">📁</div><div class="fe-item-name">Documentos</div></div>
+          <div class="fe-item"><div class="fe-item-icon">📥</div><div class="fe-item-name">Descargas</div></div>
+          <div class="fe-item"><div class="fe-item-icon">🖼️</div><div class="fe-item-name">Imágenes</div></div>
+          <div class="fe-item"><div class="fe-item-icon">🎵</div><div class="fe-item-name">Música</div></div>
+          <div class="fe-item"><div class="fe-item-icon">📝</div><div class="fe-item-name">notas.txt</div></div>
+          <div class="fe-item"><div class="fe-item-icon">🐍</div><div class="fe-item-name">script.py</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function renderLinExplorer1(body){ body.innerHTML=linExplorerHTML('side'); }
+function renderLinExplorer2(body){ body.innerHTML=linExplorerHTML('addr'); }
+function renderLinDesktop2(body){
+  body.innerHTML=`<div class="desktop-sim linux-desk">
+    <div class="linux-topbar">
+      <div class="ltb-apps">Aplicaciones</div><div class="ltb-sep"></div>
+      <div class="ltb-apps">Lugares</div><div class="ltb-time">10:45</div>
+    </div>
+    <div class="linux-content">
+      <div class="linux-desktop-icon highlight" id="linFolderIcon" style="top:20px;left:20px;">
+        <div class="ldi-icon">📁</div><div class="ldi-name">Archivos</div>
+      </div>
+      <div class="linux-desktop-icon" style="top:20px;left:90px;">
+        <div class="ldi-icon">🗑️</div><div class="ldi-name">Papelera</div>
+      </div>
+      <div style="position:absolute;bottom:10px;left:10px;right:10px;
+        background:rgba(0,0,0,.6);border-radius:8px;padding:8px 12px;font-size:11px;color:#aaa;font-family:monospace;">
+        <span style="color:var(--green);">$</span> thunar .
+        <span style="display:inline-block;width:8px;height:14px;background:#aaa;
+          vertical-align:middle;animation:blink .7s step-end infinite;margin-left:2px;"></span>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('linFolderIcon').addEventListener('click', doStep);
+}
+function renderLinFinal(body){ body.innerHTML=linExplorerHTML(''); }
+
+/* ── macOS RENDERS ── */
+function renderMacDesktop(body){
+  body.innerHTML=`<div class="desktop-sim macos-desk">
+    <div class="mac-menubar">
+      <div class="mmb-item">🍎</div>
+      <div class="mmb-item">Finder</div>
+      <div class="mmb-item">Archivo</div>
+      <div class="mmb-item">Edición</div>
+      <div class="mmb-item" style="margin-left:auto;">🔋 📶 🔔</div>
+    </div>
+    <div class="mac-content"></div>
+    <div class="mac-dock">
+      <div class="dock-icon highlight" id="dockFinder" title="Finder">😊</div>
+      <div class="dock-icon">🌐</div>
+      <div class="dock-icon">📧</div>
+      <div class="dock-icon">🎵</div>
+      <div class="dock-icon">⚙️</div>
+    </div>
+  </div>`;
+  document.getElementById('dockFinder').addEventListener('click', doStep);
+}
+function macFinderHTML(highlightPart){
+  const sideStyle = highlightPart==='side'  ? 'background:rgba(167,139,250,.1);' : '';
+  const contStyle = highlightPart==='cont'  ? 'background:rgba(167,139,250,.05);' : '';
+  const toolStyle = highlightPart==='tools' ? 'background:rgba(167,139,250,.15);border-bottom:2px solid var(--mac);' : '';
+  return `<div class="desktop-sim macos-desk" style="padding:8px;">
+    <div class="finder-window show" style="position:relative;top:0;left:0;right:0;bottom:0;height:270px;">
+      <div class="finder-titlebar">
+        <div class="finder-dots">
+          <div class="fe-dot" style="background:#ff5f57;width:11px;height:11px;border-radius:50%;"></div>
+          <div class="fe-dot" style="background:#ffbd2e;width:11px;height:11px;border-radius:50%;"></div>
+          <div class="fe-dot" style="background:#28ca41;width:11px;height:11px;border-radius:50%;"></div>
+        </div>
+        <div class="finder-title">Finder — Inicio</div>
+        <div style="font-size:13px;color:#888;">🔍</div>
+      </div>
+      <div class="finder-toolbar" style="${toolStyle}">
+        <div class="ft-btn">◀</div><div class="ft-btn">▶</div>
+        <div style="flex:1;display:flex;justify-content:center;gap:8px;">
+          <div class="ft-btn" title="Vista iconos">⊞</div>
+          <div class="ft-btn" title="Vista lista">☰</div>
+          <div class="ft-btn" title="Vista columnas">⫿</div>
+        </div>
+        <div style="background:rgba(0,0,0,.08);border-radius:6px;padding:2px 10px;font-size:11px;color:#888;">🔍 Buscar</div>
+      </div>
+      <div class="finder-body">
+        <div class="finder-sidebar" style="${sideStyle}">
+          <div class="fsi active">⭐ Favoritos</div>
+          <div class="fsi">☁️ iCloud</div>
+          <div class="fsi">🏠 Inicio</div>
+          <div class="fsi">🖥️ Escritorio</div>
+          <div class="fsi">📥 Descargas</div>
+          <div class="fsi">💾 Dispositivos</div>
+        </div>
+        <div class="finder-content" style="${contStyle}">
+          <div class="finder-item"><div class="finder-item-icon">📁</div><div class="finder-item-name">Documentos</div></div>
+          <div class="finder-item"><div class="finder-item-icon">📥</div><div class="finder-item-name">Descargas</div></div>
+          <div class="finder-item"><div class="finder-item-icon">🖼️</div><div class="finder-item-name">Imágenes</div></div>
+          <div class="finder-item"><div class="finder-item-icon">🎵</div><div class="finder-item-name">Música</div></div>
+          <div class="finder-item"><div class="finder-item-icon">📝</div><div class="finder-item-name">notas.txt</div></div>
+          <div class="finder-item"><div class="finder-item-icon">📊</div><div class="finder-item-name">hoja.xlsx</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function renderMacFinder1(body){ body.innerHTML=macFinderHTML('side'); }
+function renderMacFinder2(body){ body.innerHTML=macFinderHTML('cont'); }
+function renderMacFinder3(body){ body.innerHTML=macFinderHTML('tools'); }
+function renderMacShortcut(body){
+  body.innerHTML=`<div style="padding:20px;text-align:center;background:#160d2e;">
+    <div style="font-size:48px;margin-bottom:12px;">⌨️</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+      <kbd style="background:#fff;padding:10px 18px;border-radius:8px;border:2px solid var(--mac);
+        font-size:18px;color:#333;box-shadow:0 4px 0 rgba(167,139,250,.5);">⌘ Cmd</kbd>
+      <span style="font-size:20px;color:var(--muted);">+</span>
+      <kbd style="background:#fff;padding:10px 18px;border-radius:8px;border:2px solid var(--mac);
+        font-size:18px;color:#333;box-shadow:0 4px 0 rgba(167,139,250,.5);">N</kbd>
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,.7);">Nueva ventana del Finder<br>Úsalo para trabajar con dos carpetas a la vez</div>
+  </div>`;
+}
+function renderMacFinal(body){ body.innerHTML=macFinderHTML(''); }
+
+/* ── STEP ENGINE ── */
+const TOTAL = 6;
+function initSim(){
+  stepIdx = 0;
+  document.getElementById('finalCard').classList.remove('show');
+  document.getElementById('simBody').style.display = 'block';
+  document.getElementById('btnAction').style.display = 'block';
+  buildSDots();
+  renderCurrentStep();
+}
+
+function buildSDots(){
+  const r = document.getElementById('sdots'); r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='sdot'+(i===0?' cur':''); d.id='sdot-'+i; r.appendChild(d);
+  }
+  document.getElementById('stepTotal').textContent = TOTAL;
+}
+
+function renderCurrentStep(){
+  const s = STEPS[chosenOS][stepIdx];
+  document.getElementById('simLabel').textContent = s.label;
+  document.getElementById('stepNum').textContent  = stepIdx+1;
+  document.getElementById('sprogFill').style.width = (stepIdx/TOTAL*100)+'%';
+  document.getElementById('uniMsg').innerHTML      = s.uni;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('btnAction').textContent = s.actionText;
+  document.getElementById('btnAction').disabled    = false;
+  for(let i=0;i<TOTAL;i++){
+    const d=document.getElementById('sdot-'+i);
+    if(d) d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');
+  }
+  s.render(document.getElementById('simBody'));
+}
+
+function doStep(){
+  const s   = STEPS[chosenOS][stepIdx];
+  const ok  = document.getElementById('stepOk');
+  ok.textContent = '✅ '+s.okMsg;
+  ok.classList.add('show');
+  document.getElementById('btnAction').disabled = true;
+  spawnConf();
+  setTimeout(()=>{
+    ok.classList.remove('show');
+    stepIdx++;
+    if(stepIdx >= TOTAL) showFinal();
+    else renderCurrentStep();
+  },900);
+}
+
+function showFinal(){
+  document.getElementById('simBody').style.display  = 'none';
+  document.getElementById('btnAction').style.display= 'none';
+  document.getElementById('finalCard').classList.add('show');
+  document.getElementById('sprogFill').style.width  = '100%';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.getElementById('sdot-'+i); if(d) d.className='sdot done';
+  }
+  const osName = {win:'Windows 11', lin:'Linux', mac:'macOS'}[chosenOS];
+  const appName= {win:'Explorador de archivos', lin:'Gestor de archivos', mac:'Finder'}[chosenOS];
+  document.getElementById('fcSub').textContent = osName+' · '+appName+' · COMPLETADO';
+  document.getElementById('fcMsg').innerHTML =
+    '¡Genial! 🚀 Ya sabes dónde está el <strong>'+appName+'</strong> en <strong>'+osName+'</strong>, cómo abrirlo paso a paso y cuáles son sus partes principales. ¡Puedes practicarlo ahora mismo en tu computadora!';
+  document.getElementById('uniMsg').innerHTML =
+    '⭐⭐⭐ ¡<strong>Actividad completada</strong>! Aprendiste a usar el <strong>'+appName+'</strong> en '+osName+'. ¡Ya eres un explorador de archivos experto!';
+  document.getElementById('ph-3').className = 'ph done';
+  setTimeout(bigConf, 200);
+}
+
+/* ── FLOW CONTROL ── */
+function goToSec2(){
+  document.getElementById('sec1').style.display = 'none';
+  document.getElementById('sec2').style.display = 'block';
+  document.getElementById('ph-1').className = 'ph done';
+  document.getElementById('ph-2').className = 'ph active';
+  document.getElementById('uniMsg').innerHTML =
+    '🖥️ ¡Muy bien! Ahora elige tu <strong>sistema operativo</strong>. Verás los pasos específicos y las partes de su explorador de archivos.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function chooseOS(os){
+  chosenOS = os;
+  ['win','lin','mac'].forEach(o=>{
+    document.getElementById('osbtn-'+o).classList.remove('chosen');
+    document.getElementById('steps-'+o).classList.remove('show');
+  });
+  document.getElementById('osbtn-'+os).classList.add('chosen');
+  document.getElementById('steps-'+os).classList.add('show');
+  document.getElementById('btnSec2').style.display = 'block';
+  const osName = {win:'Windows 11 🪟', lin:'Linux 🐧', mac:'macOS 🍎'}[os];
+  document.getElementById('uniMsg').innerHTML =
+    '✅ ¡Elegiste <strong>'+osName+'</strong>! Lee los pasos y las partes de la ventana. Cuando estés listo pulsa el botón para ir a la simulación.';
+  setTimeout(()=>document.getElementById('steps-'+os).scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function goToSec3(){
+  document.getElementById('sec2').style.display = 'none';
+  document.getElementById('sec3').style.display = 'block';
+  document.getElementById('ph-2').className = 'ph done';
+  document.getElementById('ph-3').className = 'ph active';
+  document.getElementById('uniMsg').innerHTML =
+    '🎮 ¡Ahora la <strong>simulación</strong>! Sigue los pasos haciendo clic en el escritorio simulado o usando el botón. ¡Tú puedes!';
+  window.scrollTo({top:0,behavior:'smooth'});
+  initSim();
+}
+
+function restartAll(){
+  chosenOS = null; stepIdx = 0;
+  document.getElementById('finalCard').classList.remove('show');
+  document.getElementById('sec3').style.display = 'none';
+  document.getElementById('sec2').style.display = 'none';
+  document.getElementById('sec1').style.display = 'block';
+  document.getElementById('ph-1').className = 'ph active';
+  document.getElementById('ph-2').className = 'ph pending';
+  document.getElementById('ph-3').className = 'ph pending';
+  document.getElementById('uniMsg').innerHTML =
+    '¡Hola, Explorador! 📁 ¡Vamos de nuevo! El <strong>Explorador de Archivos</strong> existe en Windows, Linux y macOS. ¡Elige tu SO!';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── CONFETTI ── */
+function spawnConf(){
+  const colors=['#14b8a6','#06b6d4','#10b981','#ffd93d','#00f5e4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div'); p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${20+Math.random()*60}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*170}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#14b8a6','#06b6d4','#10b981','#ffd93d','#00f5e4','#a78bfa'];
+  for(let i=0;i<55;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div'); p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;
+        animation-duration:.9s;border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p); setTimeout(()=>p.remove(),1000);
+    }, i*28);
+  }
+}
+
+/* ── WIRE ALL EVENTS ── */
+document.getElementById('btnSec1').addEventListener('click', goToSec2);
+document.getElementById('btnSec2').addEventListener('click', goToSec3);
+document.getElementById('btnAction').addEventListener('click', doStep);
+document.getElementById('btnRestart').addEventListener('click', restartAll);
+document.getElementById('osbtn-win').addEventListener('click', ()=> chooseOS('win'));
+document.getElementById('osbtn-lin').addEventListener('click', ()=> chooseOS('lin'));
+document.getElementById('osbtn-mac').addEventListener('click', ()=> chooseOS('mac'));
+</script>
+</body>
+</html>
 
