@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adjuntar Archivos · Gmail y Outlook · Uni Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amber:#f59e0b;--orange:#f97316;--gold:#ffd93d;
+    --gmail:#ea4335;--gmail2:#34a853;--outlook:#0078d4;--outlook2:#00bcf2;
+    --green:#00e676;--red:#ff3d3d;
+    --bg:#060b18;--card:#0f1820;--text:#e8f4ff;--muted:#6a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse at 15% 40%,rgba(245,158,11,.07) 0%,transparent 55%),
+               radial-gradient(ellipse at 85% 20%,rgba(249,115,22,.05) 0%,transparent 55%);
+    pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(245,158,11,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,158,11,.016) 1px,transparent 1px);
+    background-size:55px 55px;pointer-events:none;z-index:0;}
+
+  /* ── HEADER ── */
+  .header{position:relative;z-index:10;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 32px;
+    border-bottom:1px solid rgba(245,158,11,.15);
+    background:rgba(6,11,24,.94);backdrop-filter:blur(14px);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-badge{width:40px;height:40px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:#fff;}
+  .logo-text{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--amber);letter-spacing:2px;}
+  .logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+  .header-badge{font-family:'Orbitron',monospace;font-size:10px;color:var(--amber);
+    letter-spacing:2px;border:1px solid var(--amber);padding:4px 14px;border-radius:2px;
+    background:rgba(245,158,11,.06);}
+
+  .container{position:relative;z-index:5;max-width:920px;margin:0 auto;padding:24px 18px 60px;}
+
+  /* ── UNI BAR ── */
+  .uni-bar{display:flex;align-items:center;gap:18px;background:var(--card);
+    border:1px solid rgba(245,158,11,.22);border-radius:16px;padding:15px 20px;
+    margin-bottom:20px;position:relative;overflow:hidden;}
+  .uni-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold),var(--amber));}
+  .uni-svg{width:62px;height:62px;flex-shrink:0;}
+  .speech{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.22);
+    border-radius:12px;padding:10px 16px;flex:1;}
+  .uni-name{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+  #uniMsg{font-size:14px;line-height:1.55;}
+  #uniMsg strong{color:var(--gold);}
+
+  /* ── PHASE PILLS ── */
+  .phase-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .ph{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+    padding:6px 14px;border-radius:8px;border:1px solid;transition:all .3s;cursor:default;}
+  .ph.active {color:var(--amber);border-color:var(--amber);background:rgba(245,158,11,.08);box-shadow:0 0 12px rgba(245,158,11,.2);}
+  .ph.pending{color:var(--muted);border-color:rgba(255,255,255,.08);}
+  .ph.done   {color:var(--green);border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.07);}
+
+  /* ── CARD BASE ── */
+  .sec-card{background:var(--card);border:1.5px solid rgba(245,158,11,.18);
+    border-radius:22px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);}
+  .sec-topbar{height:4px;background:linear-gradient(90deg,var(--amber),var(--orange),var(--gold));}
+  .sec-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--amber);
+    padding:8px 18px 6px;border-bottom:1px solid rgba(245,158,11,.1);}
+  .sec-body{padding:24px 22px;}
+
+  /* ── INTRO ── */
+  .intro-hero{text-align:center;margin-bottom:22px;}
+  .intro-icon{font-size:56px;margin-bottom:10px;}
+  .intro-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;
+    color:var(--amber);letter-spacing:3px;margin-bottom:8px;}
+  .intro-desc{font-size:15px;line-height:1.75;max-width:640px;margin:0 auto;color:rgba(255,255,255,.85);}
+  .intro-desc strong{color:var(--gold);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .info-panel{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18);
+    border-radius:14px;padding:16px;}
+  .ip-title{font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;}
+  .ip-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;
+    color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:7px;}
+  .ip-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px;}
+
+  .providers-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .prov-card{border-radius:14px;padding:16px;text-align:center;border:1.5px solid;}
+  .prov-card.gmail  {background:rgba(234,67,53,.07);  border-color:rgba(234,67,53,.25);}
+  .prov-card.outlook{background:rgba(0,120,212,.07);  border-color:rgba(0,120,212,.25);}
+  .prov-icon{font-size:32px;margin-bottom:6px;}
+  .prov-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+  .prov-card.gmail   .prov-name{color:var(--gmail);}
+  .prov-card.outlook .prov-name{color:var(--outlook);}
+  .prov-btn-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+  .prov-btn-desc strong{color:var(--gold);}
+
+  .btn-primary{display:block;margin:0 auto;padding:13px 36px;
+    background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:13px;font-family:'Orbitron',monospace;font-size:13px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;
+    box-shadow:0 6px 22px rgba(245,158,11,.35);transition:opacity .18s,transform .18s;}
+  .btn-primary:hover{opacity:.88;transform:translateY(-2px);}
+
+  /* ── PROVIDER SELECTOR ── */
+  .prov-selector{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  .psel{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .22s;}
+  .psel:hover{transform:translateY(-3px);}
+  .psel.gmail:hover,.psel.gmail.chosen  {border-color:var(--gmail);background:rgba(234,67,53,.1);box-shadow:0 8px 24px rgba(234,67,53,.2);}
+  .psel.outlook:hover,.psel.outlook.chosen{border-color:var(--outlook);background:rgba(0,120,212,.1);box-shadow:0 8px 24px rgba(0,120,212,.2);}
+  .psel-icon{font-size:44px;margin-bottom:8px;}
+  .psel-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:4px;}
+  .psel.gmail   .psel-name{color:var(--gmail);}
+  .psel.outlook .psel-name{color:var(--outlook);}
+  .psel-sub{font-size:11px;color:var(--muted);}
+  .or-divider{display:flex;align-items:center;justify-content:center;margin-bottom:14px;gap:10px;}
+  .or-line{flex:1;height:1px;background:rgba(255,255,255,.08);}
+  .or-text{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);}
+  .btn-both{width:100%;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+    color:rgba(255,255,255,.6);border-radius:11px;font-family:'Orbitron',monospace;font-size:10px;
+    letter-spacing:1px;cursor:pointer;transition:all .18s;margin-bottom:4px;}
+  .btn-both:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9);}
+
+  /* ── SIM SHELL ── */
+  .sim-wrap{background:var(--card);border:1.5px solid rgba(245,158,11,.18);
+    border-radius:22px;overflow:hidden;box-shadow:0 22px 65px rgba(0,0,0,.6);margin-bottom:16px;}
+  .sim-topbar-g {height:4px;background:linear-gradient(90deg,var(--gmail),#fbbc04,var(--gmail2),#4285f4);}
+  .sim-topbar-o {height:4px;background:linear-gradient(90deg,var(--outlook),var(--outlook2));}
+  .sim-topbar-b {height:4px;background:linear-gradient(90deg,var(--gmail),var(--outlook));}
+  .sim-label-row{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--amber);
+    padding:7px 18px 5px;border-bottom:1px solid rgba(245,158,11,.1);
+    display:flex;align-items:center;justify-content:space-between;}
+  .sbar{display:flex;align-items:center;gap:10px;padding:8px 18px 4px;}
+  .sdots{display:flex;gap:5px;}
+  .sdot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.15);transition:all .3s;}
+  .sdot.done{background:var(--green);border-color:var(--green);}
+  .sdot.cur {background:var(--amber);border-color:var(--amber);transform:scale(1.4);box-shadow:0 0 8px rgba(245,158,11,.6);}
+  .sprog{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+  .sprog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--orange));transition:width .45s ease;}
+  .slbl{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);white-space:nowrap;}
+  .slbl span{color:var(--amber);}
+  .step-ok{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+    margin:0 18px 6px;border-radius:9px;padding:8px 14px;font-size:12px;
+    color:var(--green);display:none;animation:fadeUp .25s ease;}
+  .step-ok.show{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .sim-body{padding:0;}
+  .action-wrap{padding:10px 16px;border-top:1px solid rgba(245,158,11,.1);}
+  .btn-action{width:100%;padding:12px;
+    background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity .18s,transform .18s;
+    box-shadow:0 4px 16px rgba(245,158,11,.3);}
+  .btn-action:hover{opacity:.85;transform:translateY(-1px);}
+  .btn-action:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+  /* ── GMAIL UI ── */
+  .gmail-shell{background:#f6f8fc;min-height:280px;display:flex;flex-direction:column;}
+  .gmail-topbar{background:#fff;padding:8px 14px;display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid #e0e0e0;}
+  .gmail-logo{font-size:22px;font-weight:900;color:var(--gmail);letter-spacing:-1px;font-family:sans-serif;}
+  .gmail-logo span{color:#4285f4;}
+  .gmail-search{flex:1;background:#eaf1fb;border-radius:24px;padding:6px 16px;
+    font-size:12px;color:#888;display:flex;align-items:center;gap:8px;max-width:400px;}
+  .gmail-body{display:flex;flex:1;}
+  .gmail-sidebar{width:80px;background:#f6f8fc;padding:8px 6px;border-right:1px solid #e8eaed;}
+  .gmail-compose{background:var(--gmail);color:#fff;border:none;border-radius:16px;
+    padding:10px 12px;font-size:12px;font-weight:600;cursor:pointer;width:100%;
+    margin-bottom:10px;transition:all .18s;display:flex;align-items:center;gap:6px;}
+  .gmail-compose.highlight{animation:gpulse .9s ease-in-out infinite;box-shadow:0 0 0 4px rgba(234,67,53,.3);}
+  @keyframes gpulse{0%,100%{box-shadow:0 0 0 0 rgba(234,67,53,0)}50%{box-shadow:0 0 0 6px rgba(234,67,53,.25)}}
+  .gmail-nav{font-size:10px;color:#444;padding:5px 6px;border-radius:16px;cursor:default;margin-bottom:2px;}
+  .gmail-nav.active{background:#d3e3fd;font-weight:600;}
+  .gmail-content{flex:1;padding:8px;}
+  .gmail-inbox-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #f0f0f0;
+    font-size:11px;cursor:default;background:#fff;}
+  .gmail-inbox-row:hover{background:#f5f5f5;}
+  .gir-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+  .gir-name{font-weight:600;color:#202124;width:80px;flex-shrink:0;}
+  .gir-subj{color:#202124;flex:1;}
+  .gir-time{color:#888;font-size:10px;flex-shrink:0;}
+
+  /* Gmail compose window */
+  .gmail-compose-win{position:relative;margin:8px;background:#fff;border-radius:8px;
+    box-shadow:0 4px 16px rgba(0,0,0,.2);border:1px solid #e0e0e0;}
+  .gcw-header{background:#404040;color:#fff;padding:7px 12px;border-radius:8px 8px 0 0;
+    display:flex;align-items:center;justify-content:space-between;font-size:12px;}
+  .gcw-field{border-bottom:1px solid #e8eaed;padding:5px 10px;font-size:12px;color:#444;
+    display:flex;align-items:center;gap:6px;}
+  .gcw-field-label{color:#888;font-size:11px;width:36px;flex-shrink:0;}
+  .gcw-field-val{flex:1;color:#202124;}
+  .gcw-body{padding:8px 10px;font-size:12px;color:#202124;min-height:60px;
+    border-bottom:1px solid #e8eaed;}
+  .gcw-footer{padding:7px 10px;display:flex;align-items:center;gap:8px;}
+  .gcw-send{background:var(--gmail);color:#fff;border:none;border-radius:16px;
+    padding:6px 18px;font-size:12px;font-weight:600;cursor:pointer;}
+  .gcw-clip{font-size:20px;cursor:pointer;color:#444;padding:4px;border-radius:50%;
+    transition:all .18s;}
+  .gcw-clip:hover{background:#f0f0f0;}
+  .gcw-clip.highlight{color:var(--gmail);background:rgba(234,67,53,.1);
+    animation:gpulse .9s ease-in-out infinite;}
+  .gcw-attachment{background:#f8f9fa;border:1px solid #dadce0;border-radius:8px;
+    padding:6px 10px;display:flex;align-items:center;gap:8px;font-size:11px;color:#202124;
+    margin:4px 10px;}
+  .gcw-att-icon{font-size:20px;}
+  .gcw-att-name{flex:1;}
+  .gcw-att-size{color:#888;}
+
+  /* File browser */
+  .file-browser{background:#fff;border-radius:8px;border:1px solid #dadce0;
+    margin:8px;overflow:hidden;}
+  .fb-header{background:#f8f9fa;padding:8px 12px;font-size:12px;font-weight:600;color:#202124;
+    border-bottom:1px solid #dadce0;display:flex;align-items:center;gap:8px;}
+  .fb-path{background:#fff;border:1px solid #dadce0;border-radius:4px;padding:4px 10px;
+    font-size:11px;color:#444;font-family:monospace;flex:1;}
+  .fb-files{padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .fb-file{text-align:center;padding:8px 4px;border-radius:6px;cursor:pointer;font-size:10px;color:#444;}
+  .fb-file:hover{background:#f0f0f0;}
+  .fb-file.selected{background:#d3e3fd;border:1.5px solid #4285f4;}
+  .fb-file.highlight{background:rgba(234,67,53,.08);border:1.5px solid var(--gmail);
+    animation:gpulse .9s ease-in-out infinite;}
+  .fb-file-icon{font-size:26px;margin-bottom:3px;}
+  .fb-footer{padding:8px 12px;border-top:1px solid #dadce0;display:flex;justify-content:flex-end;gap:8px;}
+  .fb-btn{padding:5px 18px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid;}
+  .fb-btn.open{background:#4285f4;color:#fff;border-color:#4285f4;}
+  .fb-btn.open.highlight{animation:gpulse .9s ease-in-out infinite;box-shadow:0 0 0 4px rgba(66,133,244,.3);}
+  .fb-btn.cancel{background:#fff;color:#444;border-color:#dadce0;}
+
+  /* ── OUTLOOK UI ── */
+  .outlook-shell{background:#f3f2f1;min-height:280px;display:flex;flex-direction:column;}
+  .olk-ribbon{background:#0078d4;padding:0;}
+  .olk-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.2);}
+  .olk-tab{padding:7px 14px;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;border-bottom:2px solid transparent;}
+  .olk-tab.active{color:#fff;border-bottom-color:#fff;background:rgba(255,255,255,.12);}
+  .olk-tab.highlight{color:#fff;background:rgba(255,255,255,.2);
+    border-bottom-color:var(--gold);animation:opulse .9s ease-in-out infinite;}
+  @keyframes opulse{0%,100%{box-shadow:inset 0 -2px 0 transparent}50%{box-shadow:inset 0 -2px 0 var(--gold)}}
+  .olk-ribbon-body{background:#fff;border-bottom:1px solid #e1dfdd;padding:6px 14px;
+    display:flex;gap:14px;align-items:flex-start;}
+  .olk-ribbon-group{display:flex;flex-direction:column;align-items:center;
+    border-right:1px solid #e1dfdd;padding-right:12px;margin-right:2px;}
+  .olk-ribbon-group:last-child{border-right:none;}
+  .olk-grp-label{font-size:8px;color:#888;margin-top:4px;letter-spacing:.5px;}
+  .olk-btn{background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:4px;
+    font-size:11px;color:#201f1e;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .15s;}
+  .olk-btn:hover{background:#f3f2f1;}
+  .olk-btn .oi{font-size:20px;}
+  .olk-btn.highlight{background:rgba(0,120,212,.1);color:var(--outlook);
+    animation:opulse2 .9s ease-in-out infinite;}
+  @keyframes opulse2{0%,100%{box-shadow:0 0 0 0 rgba(0,120,212,0)}50%{box-shadow:0 0 0 5px rgba(0,120,212,.2)}}
+
+  .olk-body{display:flex;flex:1;}
+  .olk-sidebar{width:80px;background:#fff;border-right:1px solid #e1dfdd;padding:6px;}
+  .olk-new-btn{background:var(--outlook);color:#fff;border:none;border-radius:2px;
+    padding:8px 6px;font-size:10px;font-weight:600;cursor:pointer;width:100%;
+    margin-bottom:8px;transition:all .18s;display:flex;align-items:center;gap:4px;}
+  .olk-new-btn.highlight{animation:opulse2 .9s ease-in-out infinite;}
+  .olk-nav{font-size:9px;color:#201f1e;padding:4px 6px;border-radius:2px;cursor:default;margin-bottom:2px;}
+  .olk-nav.active{background:#deecf9;color:var(--outlook);}
+  .olk-content{flex:1;padding:8px;}
+  .olk-inbox-row{display:flex;gap:8px;padding:7px 8px;border-bottom:1px solid #edebe9;
+    font-size:11px;cursor:default;background:#fff;align-items:flex-start;}
+  .olk-inbox-row:hover{background:#f3f2f1;}
+  .olk-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;}
+  .olk-name{font-weight:600;color:#201f1e;font-size:11px;}
+  .olk-subj{color:#444;font-size:10px;}
+  .olk-time{color:#888;font-size:9px;flex-shrink:0;margin-left:auto;}
+
+  /* Outlook compose */
+  .olk-compose{background:#fff;border:1px solid #e1dfdd;margin:6px;border-radius:2px;}
+  .olk-compose-header{background:#0078d4;color:#fff;padding:6px 12px;font-size:12px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .olk-field{border-bottom:1px solid #edebe9;padding:5px 10px;font-size:11px;color:#201f1e;
+    display:flex;align-items:center;gap:6px;}
+  .olk-fl{color:#888;font-size:10px;width:40px;flex-shrink:0;}
+  .olk-fv{flex:1;}
+  .olk-body-area{padding:8px 10px;font-size:11px;color:#201f1e;min-height:50px;
+    border-bottom:1px solid #edebe9;}
+  .olk-att-bar{padding:6px 10px;background:#f3f2f1;border-bottom:1px solid #edebe9;
+    font-size:10px;color:#201f1e;display:flex;align-items:center;gap:8px;display:none;}
+  .olk-att-bar.show{display:flex;}
+  .olk-att-chip{background:#fff;border:1px solid #edebe9;border-radius:2px;
+    padding:3px 8px;display:flex;align-items:center;gap:5px;font-size:10px;}
+  .olk-footer{padding:7px 10px;display:flex;align-items:center;gap:8px;}
+  .olk-send-btn{background:var(--outlook);color:#fff;border:none;border-radius:2px;
+    padding:6px 18px;font-size:11px;font-weight:600;cursor:pointer;}
+  .olk-send-btn.highlight{animation:opulse2 .9s ease-in-out infinite;}
+
+  /* Outlook file browser */
+  .olk-file-browser{background:#fff;border-radius:2px;border:1px solid #e1dfdd;margin:6px;overflow:hidden;}
+  .ofb-header{background:#f3f2f1;padding:7px 12px;font-size:11px;font-weight:600;color:#201f1e;
+    border-bottom:1px solid #edebe9;display:flex;align-items:center;gap:8px;}
+  .ofb-path{background:#fff;border:1px solid #edebe9;border-radius:2px;padding:3px 8px;
+    font-size:10px;color:#444;font-family:monospace;flex:1;}
+  .ofb-files{padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .ofb-file{text-align:center;padding:7px 3px;border-radius:2px;cursor:pointer;font-size:9px;color:#201f1e;}
+  .ofb-file:hover{background:#f3f2f1;}
+  .ofb-file.selected{background:#deecf9;border:1px solid #4285f4;}
+  .ofb-file.highlight{background:rgba(0,120,212,.08);border:1.5px solid var(--outlook);
+    animation:opulse2 .9s ease-in-out infinite;}
+  .ofb-file-icon{font-size:24px;margin-bottom:2px;}
+  .ofb-footer{padding:7px 12px;border-top:1px solid #edebe9;display:flex;justify-content:flex-end;gap:8px;}
+  .ofb-btn{padding:4px 16px;border-radius:2px;font-size:11px;cursor:pointer;border:1px solid;}
+  .ofb-btn.open{background:var(--outlook);color:#fff;border-color:var(--outlook);}
+  .ofb-btn.open.highlight{animation:opulse2 .9s ease-in-out infinite;}
+  .ofb-btn.cancel{background:#fff;color:#201f1e;border-color:#8a8886;}
+
+  /* ── SPLIT VIEW (both) ── */
+  .split-view{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .split-col-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+    padding:6px 10px;border-radius:8px 8px 0 0;text-align:center;font-weight:700;}
+  .split-col-label.gmail  {background:rgba(234,67,53,.1);color:var(--gmail);}
+  .split-col-label.outlook{background:rgba(0,120,212,.1);color:var(--outlook);}
+  .split-step{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+    border-radius:0 0 10px 10px;padding:10px 12px;}
+  .split-step-num{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;margin-bottom:5px;}
+  .split-step-num.gmail  {color:var(--gmail);}
+  .split-step-num.outlook{color:var(--outlook);}
+  .split-step-text{font-size:12px;color:rgba(255,255,255,.8);line-height:1.5;margin-bottom:4px;}
+  .split-step-detail{font-size:10px;color:var(--muted);line-height:1.4;}
+  .split-highlight{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);
+    border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;text-align:center;}
+  .split-highlight strong{color:var(--gold);}
+
+  /* ── FINAL ── */
+  .final-card{background:var(--card);border-radius:22px;overflow:hidden;
+    box-shadow:0 28px 70px rgba(0,0,0,.6);display:none;margin-top:16px;}
+  .final-card.show{display:block;}
+  .fc-top{height:5px;background:linear-gradient(90deg,var(--gmail),var(--amber),var(--outlook));}
+  .fc-body{padding:36px 26px;text-align:center;}
+  .fc-stars{font-size:48px;letter-spacing:8px;margin-bottom:10px;
+    animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .fc-title{font-family:'Orbitron',monospace;font-size:19px;font-weight:900;
+    background:linear-gradient(135deg,var(--amber),var(--orange));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+  .fc-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:18px;}
+  .fc-msg{font-size:15px;line-height:1.7;max-width:540px;margin:0 auto 22px;color:rgba(255,255,255,.8);}
+  .fc-msg strong{color:var(--gold);}
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+  .sk{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);
+    border-radius:12px;padding:13px 10px;text-align:center;}
+  .sk-icon{font-size:26px;margin-bottom:5px;}
+  .sk-name{font-family:'Orbitron',monospace;font-size:7px;color:var(--amber);letter-spacing:1px;margin-bottom:3px;}
+  .sk-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+  .diff-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;
+    padding:14px 16px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .diff-col{text-align:left;}
+  .diff-title{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;margin-bottom:7px;}
+  .diff-title.gmail  {color:var(--gmail);}
+  .diff-title.outlook{color:var(--outlook);}
+  .diff-item{font-size:11px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:4px;
+    display:flex;align-items:flex-start;gap:6px;}
+  .diff-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+  .btn-restart{padding:12px 30px;background:linear-gradient(135deg,var(--amber),var(--orange));
+    color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:12px;
+    font-weight:700;letter-spacing:2px;cursor:pointer;}
+
+  @keyframes conf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+  .conf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:conf .85s ease-out forwards;z-index:999;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  @media(max-width:680px){
+    .header{padding:10px 14px;}
+    .container{padding:10px 8px 40px;}
+    .uni-bar{flex-direction:column;align-items:flex-start;}
+    .two-col,.providers-row,.prov-selector,.split-view,.skills-grid,.diff-box{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-badge">UNi</div>
+    <div><div class="logo-text">UNI ACADEMY</div><div class="logo-sub">MI PRIMER CURSO DE COMPUTACIÓN</div></div>
+  </div>
+  <div class="header-badge">📎 ADJUNTAR ARCHIVOS</div>
+</header>
+
+<div class="container">
+
+  <!-- UNI -->
+  <div class="uni-bar">
+    <svg class="uni-svg" viewBox="0 0 80 90" fill="none">
+      <ellipse cx="40" cy="75" rx="22" ry="6" fill="rgba(245,158,11,.13)"/>
+      <rect x="27" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="43" y="68" width="10" height="14" rx="4" fill="#2a1a0a"/>
+      <rect x="25" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="41" y="78" width="14" height="6" rx="3" fill="#3d2510"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" fill="#2a1e0f"/>
+      <rect x="20" y="42" width="40" height="30" rx="10" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".5"/>
+      <circle cx="40" cy="57" r="5" fill="#f59e0b"/>
+      <circle cx="40" cy="57" r="3" fill="#fff" fill-opacity=".5"/>
+      <rect x="8" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <rect x="59" y="44" width="13" height="8" rx="4" fill="#2a1a0a"/>
+      <circle cx="10" cy="56" r="5" fill="#3d2510"/>
+      <circle cx="70" cy="56" r="5" fill="#3d2510"/>
+      <rect x="33" y="35" width="14" height="9" rx="4" fill="#2a1a0a"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" fill="#2a1e0f"/>
+      <rect x="15" y="10" width="50" height="30" rx="14" stroke="#f59e0b" stroke-width="1.5" stroke-opacity=".55"/>
+      <rect x="20" y="16" width="40" height="18" rx="8" fill="#060b18"/>
+      <circle cx="32" cy="25" r="5" fill="#f59e0b"/>
+      <circle cx="32" cy="25" r="3" fill="#fff" fill-opacity=".5"/>
+      <circle cx="48" cy="25" r="5" fill="#f97316"/>
+      <circle cx="48" cy="25" r="3" fill="#fff" fill-opacity=".6"/>
+      <rect x="38" y="3" width="4" height="9" rx="2" fill="#3d2510"/>
+      <circle cx="40" cy="3" r="3" fill="#f59e0b"/>
+      <rect x="10" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+      <rect x="64" y="18" width="6" height="14" rx="3" fill="#3d2510"/>
+    </svg>
+    <div class="speech">
+      <div class="uni-name">// UNI · GUÍA DIGITAL</div>
+      <p id="uniMsg">¡Hola, Explorador! 📎 Hoy aprenderemos a <strong>adjuntar archivos</strong> en un correo electrónico. Funciona en Gmail y Outlook, ¡aunque el botón está en un lugar diferente en cada uno!</p>
+    </div>
+  </div>
+
+  <!-- PHASE PILLS -->
+  <div class="phase-row">
+    <div class="ph active"  id="ph-1">📋 1 · ¿QUÉ ES ADJUNTAR?</div>
+    <div class="ph pending" id="ph-2">📧 2 · ELIGE TU CORREO</div>
+    <div class="ph pending" id="ph-3">🎮 3 · SIMULACIÓN</div>
+  </div>
+
+  <!-- ══ SECCIÓN 1: INTRO ══ -->
+  <div class="sec-card" id="sec1">
+    <div class="sec-topbar"></div>
+    <div class="sec-label">// SECCIÓN 1 · ¿QUÉ SIGNIFICA ADJUNTAR UN ARCHIVO?</div>
+    <div class="sec-body">
+
+      <div class="intro-hero">
+        <div class="intro-icon">📎</div>
+        <div class="intro-title">ADJUNTAR UN ARCHIVO AL EMAIL</div>
+        <div class="intro-desc">
+          Adjuntar es <strong>agregar un archivo</strong> (foto, documento, video…) a tu correo electrónico para enviarlo junto con el texto del mensaje. ¡El destinatario lo recibirá completo!
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="info-panel">
+          <div class="ip-title">// USOS PRINCIPALES</div>
+          <div class="ip-item"><div class="ip-dot"></div>Enviar fotos de familia o vacaciones</div>
+          <div class="ip-item"><div class="ip-dot"></div>Compartir documentos de trabajo o escuela</div>
+          <div class="ip-item"><div class="ip-dot"></div>Mandar recibos o facturas</div>
+          <div class="ip-item"><div class="ip-dot"></div>Enviar presentaciones o videos</div>
+        </div>
+        <div class="info-panel">
+          <div class="ip-title">// BENEFICIOS</div>
+          <div class="ip-item"><div class="ip-dot"></div>Envías archivos sin usar WhatsApp</div>
+          <div class="ip-item"><div class="ip-dot"></div>El destinatario los recibe completos</div>
+          <div class="ip-item"><div class="ip-dot"></div>Puedes enviar varios archivos juntos</div>
+          <div class="ip-item"><div class="ip-dot"></div>Funciona igual en Gmail, Outlook y Yahoo</div>
+        </div>
+      </div>
+
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:12px;text-align:center;">
+        // ¿CÓMO LO HACEMOS? — LO IMPORTANTE
+      </div>
+      <div class="providers-row">
+        <div class="prov-card gmail">
+          <div class="prov-icon">📧</div>
+          <div class="prov-name">GMAIL</div>
+          <div class="prov-btn-desc">El botón de adjuntar es el <strong>ícono de clip 📎</strong> que está <strong>abajo</strong> del área de escritura del mensaje</div>
+        </div>
+        <div class="prov-card outlook">
+          <div class="prov-icon">📬</div>
+          <div class="prov-name">OUTLOOK</div>
+          <div class="prov-btn-desc">El botón está <strong>arriba</strong> en la pestaña <strong>"Insertar"</strong> de la cinta de opciones → "Adjuntar archivo"</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;text-align:center;font-size:13px;color:rgba(255,255,255,.8);">
+        💡 <strong style="color:var(--gold)">Lo importante:</strong> Aunque el botón cambia de lugar, el resultado es <strong style="color:var(--gold)">idéntico</strong>: el archivo llega completo al destinatario.
+      </div>
+
+      <button class="btn-primary" id="btnSec1">ENTENDIDO → ELEGIR MI CORREO 📧</button>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 2: SELECTOR ══ -->
+  <div class="sec-card" id="sec2" style="display:none;">
+    <div class="sec-topbar"></div>
+    <div class="sec-label">// SECCIÓN 2 · ¿QUÉ CORREO USAS?</div>
+    <div class="sec-body">
+
+      <div style="text-align:center;font-size:14px;color:rgba(255,255,255,.7);margin-bottom:20px;line-height:1.7;">
+        Elige tu proveedor de correo para ver la simulación específica,<br>
+        <span style="font-size:12px;color:var(--muted);">o elige "Ver ambos" para comparar los dos al mismo tiempo.</span>
+      </div>
+
+      <div class="prov-selector">
+        <div class="psel gmail" id="psel-gmail">
+          <div class="psel-icon">📧</div>
+          <div class="psel-name">GMAIL</div>
+          <div class="psel-sub">Clip 📎 abajo del mensaje</div>
+        </div>
+        <div class="psel outlook" id="psel-outlook">
+          <div class="psel-icon">📬</div>
+          <div class="psel-name">OUTLOOK</div>
+          <div class="psel-sub">Insertar → Adjuntar arriba</div>
+        </div>
+      </div>
+
+      <div class="or-divider"><div class="or-line"></div><div class="or-text">O</div><div class="or-line"></div></div>
+      <button class="btn-both" id="btnBoth">👁️ VER AMBOS AL MISMO TIEMPO (COMPARAR)</button>
+
+      <button class="btn-primary" id="btnSec2" style="display:none;margin-top:18px;">IR A LA SIMULACIÓN 🎮</button>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 3: SIMULACIÓN ══ -->
+  <div id="sec3" style="display:none;">
+
+    <!-- MODO AMBOS: comparación estática -->
+    <div id="bothView" style="display:none;">
+      <div class="sec-card">
+        <div class="sim-topbar-b"></div>
+        <div class="sec-label">// COMPARACIÓN · GMAIL vs OUTLOOK · PASO A PASO</div>
+        <div class="sec-body" style="padding:18px;">
+          <div class="split-view">
+            <div>
+              <div class="split-col-label gmail">📧 GMAIL — Clip 📎 abajo</div>
+              <div class="split-step">
+                <div class="split-step-num gmail">PASO 1</div>
+                <div class="split-step-text">Haz clic en <strong style="color:var(--gmail)">Redactar</strong></div>
+                <div class="split-step-detail">Botón rojo en la esquina superior izquierda</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num gmail">PASO 2</div>
+                <div class="split-step-text">Rellena <strong>Para</strong>, <strong>Asunto</strong> y escribe tu mensaje</div>
+                <div class="split-step-detail">Como en cualquier correo normal</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;background:rgba(234,67,53,.06);border:1px solid rgba(234,67,53,.2);">
+                <div class="split-step-num gmail">PASO 3 ⭐</div>
+                <div class="split-step-text">Haz clic en el <strong style="color:var(--gmail)">ícono de clip 📎</strong> en la barra de abajo</div>
+                <div class="split-step-detail">Está en la barra de herramientas de la ventana de redacción</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num gmail">PASO 4</div>
+                <div class="split-step-text">Busca tu archivo y haz clic en <strong>Abrir</strong></div>
+                <div class="split-step-detail">Se abre el explorador de archivos de tu computadora</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num gmail">PASO 5</div>
+                <div class="split-step-text">El archivo aparece <strong>debajo del mensaje</strong></div>
+                <div class="split-step-detail">Verás el nombre y tamaño del archivo adjunto</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num gmail">PASO 6</div>
+                <div class="split-step-text">Haz clic en <strong style="color:var(--gmail)">Enviar</strong></div>
+                <div class="split-step-detail">¡Listo! El archivo llega completo al destinatario</div>
+              </div>
+            </div>
+            <div>
+              <div class="split-col-label outlook">📬 OUTLOOK — Insertar arriba</div>
+              <div class="split-step">
+                <div class="split-step-num outlook">PASO 1</div>
+                <div class="split-step-text">Haz clic en <strong style="color:var(--outlook)">Nuevo correo electrónico</strong></div>
+                <div class="split-step-detail">Botón azul en la esquina superior izquierda</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num outlook">PASO 2</div>
+                <div class="split-step-text">Rellena <strong>Para</strong>, <strong>Asunto</strong> y escribe tu mensaje</div>
+                <div class="split-step-detail">Como en cualquier correo normal</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;background:rgba(0,120,212,.06);border:1px solid rgba(0,120,212,.2);">
+                <div class="split-step-num outlook">PASO 3 ⭐</div>
+                <div class="split-step-text">Haz clic en la pestaña <strong style="color:var(--outlook)">Insertar</strong> (arriba)</div>
+                <div class="split-step-detail">En la cinta de opciones que aparece en la parte superior del mensaje</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num outlook">PASO 4</div>
+                <div class="split-step-text">Clic en <strong style="color:var(--outlook)">Adjuntar archivo → Examinar este equipo</strong></div>
+                <div class="split-step-detail">Aparece el botón con un ícono de clip en la cinta</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num outlook">PASO 5</div>
+                <div class="split-step-text">Busca tu archivo y haz clic en <strong>Abrir</strong></div>
+                <div class="split-step-detail">Se abre el explorador de archivos de tu computadora</div>
+              </div>
+              <div class="split-step" style="margin-top:6px;">
+                <div class="split-step-num outlook">PASO 6</div>
+                <div class="split-step-text">El archivo aparece en la <strong>barra de adjuntos</strong> → Haz clic en <strong style="color:var(--outlook)">Enviar</strong></div>
+                <div class="split-step-detail">¡Listo! El archivo llega completo al destinatario</div>
+              </div>
+            </div>
+          </div>
+          <div class="split-highlight">
+            💡 <strong>La gran diferencia:</strong> En Gmail el clip 📎 está <strong>abajo</strong> del compositor. En Outlook el botón está <strong>arriba</strong> en la pestaña "Insertar". ¡Pero el resultado es idéntico!
+          </div>
+          <button class="btn-primary" id="btnBothDone" style="margin-top:18px;">✅ ENTENDIDO → VER RESULTADO FINAL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODO UN PROVEEDOR: simulación interactiva -->
+    <div id="singleView" style="display:none;">
+      <div class="sim-wrap" id="simWrap">
+        <div id="simTopbar"></div>
+        <div class="sim-label-row">
+          <span id="simLabel">// SIMULACIÓN</span>
+          <span id="simProvLabel" style="font-size:10px;"></span>
+        </div>
+        <div class="sbar">
+          <div class="sdots" id="sdots"></div>
+          <div class="sprog"><div class="sprog-fill" id="sprogFill" style="width:0%"></div></div>
+          <div class="slbl">Paso <span id="stepNum">1</span>/<span id="stepTotal">6</span></div>
+        </div>
+        <div class="step-ok" id="stepOk">✅ ¡Muy bien!</div>
+        <div class="sim-body" id="simBody"></div>
+        <div class="action-wrap">
+          <button class="btn-action" id="btnAction">→ SIGUIENTE PASO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINAL CARD -->
+    <div class="final-card" id="finalCard">
+      <div class="fc-top"></div>
+      <div class="fc-body">
+        <div class="fc-stars">⭐⭐⭐</div>
+        <div class="fc-title">¡ARCHIVO ADJUNTADO!</div>
+        <div class="fc-sub" id="fcSub">ACTIVIDAD COMPLETADA</div>
+        <div class="fc-msg" id="fcMsg"></div>
+        <div class="diff-box">
+          <div class="diff-col">
+            <div class="diff-title gmail">📧 GMAIL — RESUMEN</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--gmail)"></div>Clic en Redactar</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--gmail)"></div>Rellena el correo</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--gmail)"></div>Clip 📎 abajo → busca archivo</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--gmail)"></div>Abre → aparece debajo → Envía</div>
+          </div>
+          <div class="diff-col">
+            <div class="diff-title outlook">📬 OUTLOOK — RESUMEN</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--outlook)"></div>Clic en Nuevo correo</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--outlook)"></div>Rellena el correo</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--outlook)"></div>Pestaña Insertar → Adjuntar</div>
+            <div class="diff-item"><div class="diff-dot" style="background:var(--outlook)"></div>Abre → aparece arriba → Envía</div>
+          </div>
+        </div>
+        <div class="skills-grid">
+          <div class="sk"><div class="sk-icon">📎</div><div class="sk-name">ADJUNTAR</div><div class="sk-desc">Sabes agregar archivos a cualquier correo</div></div>
+          <div class="sk"><div class="sk-icon">📧</div><div class="sk-name">GMAIL</div><div class="sk-desc">Clip 📎 en la barra inferior del compositor</div></div>
+          <div class="sk"><div class="sk-icon">📬</div><div class="sk-name">OUTLOOK</div><div class="sk-desc">Pestaña Insertar → Adjuntar archivo arriba</div></div>
+        </div>
+        <button class="btn-restart" id="btnRestart">🔄 &nbsp;VOLVER AL INICIO</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let chosenProv = null; // 'gmail' | 'outlook' | 'both'
+let stepIdx    = 0;
+const TOTAL    = 6;
+
+/* ═══════════════════════════════
+   GMAIL STEP RENDERS
+═══════════════════════════════ */
+const GMAIL_STEPS = [
+  { label:'// GMAIL · BANDEJA DE ENTRADA',
+    provLabel:'📧 GMAIL',
+    uni:'📧 Esta es la <strong>bandeja de entrada de Gmail</strong>. Para adjuntar un archivo, primero necesitas <strong>redactar un nuevo correo</strong>. Haz clic en el botón rojo "Redactar" o pulsa el botón.',
+    actionText:'→ HACER CLIC EN "REDACTAR"',
+    okMsg:'¡Botón Redactar pulsado! Se abre la ventana de redacción.',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell">
+        <div class="gmail-topbar">
+          <div class="gmail-logo">G<span>mail</span></div>
+          <div class="gmail-search">🔍 Buscar correos…</div>
+          <div style="font-size:22px;">👤</div>
+        </div>
+        <div class="gmail-body">
+          <div class="gmail-sidebar">
+            <button class="gmail-compose highlight" id="gCompose">✏️ Redactar</button>
+            <div class="gmail-nav active">📥 Bandeja</div>
+            <div class="gmail-nav">⭐ Destacados</div>
+            <div class="gmail-nav">📤 Enviados</div>
+          </div>
+          <div class="gmail-content">
+            <div class="gmail-inbox-row"><div class="gir-avatar" style="background:#ea4335">M</div><div class="gir-name">Mamá</div><div class="gir-subj">¿Puedes enviarme la foto?</div><div class="gir-time">10:30</div></div>
+            <div class="gmail-inbox-row"><div class="gir-avatar" style="background:#4285f4">J</div><div class="gir-name">Javier</div><div class="gir-subj">Reunión de mañana</div><div class="gir-time">9:15</div></div>
+            <div class="gmail-inbox-row"><div class="gir-avatar" style="background:#34a853">U</div><div class="gir-name">UNI Academy</div><div class="gir-subj">¡Bienvenido al curso!</div><div class="gir-time">Ayer</div></div>
+          </div>
+        </div>
+      </div>`; document.getElementById('gCompose').addEventListener('click', doStep); }
+  },
+  { label:'// GMAIL · VENTANA DE REDACCIÓN',
+    provLabel:'📧 GMAIL',
+    uni:'✅ ¡Se abrió el compositor! Rellena el campo <strong>Para</strong> (destinatario), el <strong>Asunto</strong> y escribe tu mensaje. Luego buscaremos el clip 📎. Pulsa el botón para continuar.',
+    actionText:'→ RELLENAR CAMPOS Y CONTINUAR',
+    okMsg:'¡Campos rellenados! Ahora buscamos el clip 📎.',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell">
+        <div class="gmail-topbar"><div class="gmail-logo">G<span>mail</span></div></div>
+        <div class="gmail-body">
+          <div class="gmail-sidebar">
+            <button class="gmail-compose">✏️ Redactar</button>
+            <div class="gmail-nav active">📥 Bandeja</div>
+          </div>
+          <div class="gmail-content" style="padding:0;position:relative;">
+            <div class="gmail-compose-win">
+              <div class="gcw-header"><span>Mensaje nuevo</span><span>— ✕</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Para</span><span class="gcw-field-val">mama@gmail.com</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Asunto</span><span class="gcw-field-val">Las fotos de la fiesta</span></div>
+              <div class="gcw-body">Hola mamá, te mando las fotos de la fiesta.<br>¡Espero que te gusten!</div>
+              <div class="gcw-footer">
+                <button class="gcw-send">Enviar</button>
+                <span class="gcw-clip">📎</span>
+                <span style="font-size:18px;color:#888;cursor:pointer;">😊</span>
+                <span style="font-size:18px;color:#888;cursor:pointer;">🗑️</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`; }
+  },
+  { label:'// GMAIL · HACER CLIC EN EL CLIP 📎',
+    provLabel:'📧 GMAIL',
+    uni:'📎 ¿Ves el <strong>ícono de clip 📎</strong> en la barra de abajo del compositor? ¡Ese es el botón para adjuntar archivos en Gmail! Haz clic sobre él o pulsa el botón.',
+    actionText:'→ HACER CLIC EN EL CLIP 📎',
+    okMsg:'¡Clip pulsado! Se abre el explorador de archivos.',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell">
+        <div class="gmail-topbar"><div class="gmail-logo">G<span>mail</span></div></div>
+        <div class="gmail-body">
+          <div class="gmail-sidebar"><button class="gmail-compose">✏️ Redactar</button></div>
+          <div class="gmail-content" style="padding:0;">
+            <div class="gmail-compose-win">
+              <div class="gcw-header"><span>Mensaje nuevo</span><span>— ✕</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Para</span><span class="gcw-field-val">mama@gmail.com</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Asunto</span><span class="gcw-field-val">Las fotos de la fiesta</span></div>
+              <div class="gcw-body">Hola mamá, te mando las fotos de la fiesta.</div>
+              <div class="gcw-footer">
+                <button class="gcw-send">Enviar</button>
+                <span class="gcw-clip highlight" id="gClip" title="Adjuntar archivos">📎</span>
+                <span style="font-size:18px;color:#888;cursor:pointer;">😊</span>
+                <span style="font-size:18px;color:#888;cursor:pointer;">🗑️</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`; document.getElementById('gClip').addEventListener('click', doStep); }
+  },
+  { label:'// GMAIL · EXPLORADOR DE ARCHIVOS',
+    provLabel:'📧 GMAIL',
+    uni:'📁 ¡Se abrió el explorador de archivos de tu computadora! Busca el archivo que quieres adjuntar. Haz clic en <strong>"foto_fiesta.jpg"</strong> para seleccionarla, luego pulsa "Abrir".',
+    actionText:'→ SELECCIONAR ARCHIVO Y HACER CLIC EN "ABRIR"',
+    okMsg:'¡Archivo seleccionado y abierto! Volviendo al compositor…',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell" style="background:#f6f8fc;">
+        <div class="gmail-topbar"><div class="gmail-logo">G<span>mail</span></div></div>
+        <div style="padding:6px;">
+          <div class="file-browser">
+            <div class="fb-header">📂 Abrir archivo <div class="fb-path">📁 Imágenes</div></div>
+            <div class="fb-files">
+              <div class="fb-file highlight" id="gFile"><div class="fb-file-icon">🖼️</div>foto_fiesta.jpg</div>
+              <div class="fb-file"><div class="fb-file-icon">🖼️</div>vacaciones.png</div>
+              <div class="fb-file"><div class="fb-file-icon">📝</div>notas.txt</div>
+              <div class="fb-file"><div class="fb-file-icon">📊</div>gastos.xlsx</div>
+              <div class="fb-file"><div class="fb-file-icon">🖼️</div>perfil.jpg</div>
+              <div class="fb-file"><div class="fb-file-icon">📄</div>carta.pdf</div>
+            </div>
+            <div class="fb-footer">
+              <button class="fb-btn cancel">Cancelar</button>
+              <button class="fb-btn open highlight" id="gOpen">Abrir</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.getElementById('gFile').addEventListener('click', ()=>{ document.getElementById('gFile').classList.add('selected'); });
+      document.getElementById('gOpen').addEventListener('click', doStep); }
+  },
+  { label:'// GMAIL · ARCHIVO ADJUNTO LISTO',
+    provLabel:'📧 GMAIL',
+    uni:'🎉 ¡El archivo aparece <strong>debajo del área de texto</strong>! Puedes ver su nombre y tamaño. Ahora solo tienes que hacer clic en <strong>Enviar</strong> para enviarlo.',
+    actionText:'→ HACER CLIC EN "ENVIAR"',
+    okMsg:'¡Correo enviado con el archivo adjunto! ¡Perfecto!',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell">
+        <div class="gmail-topbar"><div class="gmail-logo">G<span>mail</span></div></div>
+        <div class="gmail-body">
+          <div class="gmail-sidebar"><button class="gmail-compose">✏️ Redactar</button></div>
+          <div class="gmail-content" style="padding:0;">
+            <div class="gmail-compose-win">
+              <div class="gcw-header"><span>Mensaje nuevo</span><span>— ✕</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Para</span><span class="gcw-field-val">mama@gmail.com</span></div>
+              <div class="gcw-field"><span class="gcw-field-label">Asunto</span><span class="gcw-field-val">Las fotos de la fiesta</span></div>
+              <div class="gcw-body">Hola mamá, te mando las fotos de la fiesta.</div>
+              <div class="gcw-attachment"><div class="gcw-att-icon">🖼️</div><div class="gcw-att-name">foto_fiesta.jpg</div><div class="gcw-att-size">2.4 MB</div><span style="color:#888;cursor:pointer;">✕</span></div>
+              <div class="gcw-footer">
+                <button class="gcw-send highlight" id="gSend" style="animation:gpulse .9s ease-in-out infinite;">Enviar</button>
+                <span class="gcw-clip">📎</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`; document.getElementById('gSend').addEventListener('click', doStep); }
+  },
+  { label:'// GMAIL · ¡CORREO ENVIADO!',
+    provLabel:'📧 GMAIL',
+    uni:'⭐ ¡<strong>Excelente!</strong> El correo con la foto adjunta fue enviado. Tu mamá recibirá el mensaje con la imagen completa. ¡Ya sabes adjuntar en Gmail!',
+    actionText:'✅ ¡COMPLETAR ACTIVIDAD!',
+    okMsg:'¡Actividad completada! ⭐',
+    render(body){ body.innerHTML=`
+      <div class="gmail-shell">
+        <div class="gmail-topbar"><div class="gmail-logo">G<span>mail</span></div></div>
+        <div style="padding:20px;text-align:center;">
+          <div style="font-size:52px;margin-bottom:10px;">✅</div>
+          <div style="font-family:'Orbitron',monospace;font-size:14px;color:var(--gmail);margin-bottom:8px;">¡MENSAJE ENVIADO!</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;max-width:360px;margin:0 auto;">
+            Tu correo con <strong style="color:var(--gold)">foto_fiesta.jpg</strong> adjunta fue enviado a mamá@gmail.com.<br>
+            Ella lo recibirá en su bandeja de entrada completo.
+          </div>
+          <div style="margin-top:14px;background:rgba(52,168,83,.1);border:1px solid rgba(52,168,83,.3);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(255,255,255,.7);">
+            📎 Clip 📎 (abajo) → seleccionar archivo → Abrir → Enviar
+          </div>
+        </div>
+      </div>`; }
+  },
+];
+
+/* ═══════════════════════════════
+   OUTLOOK STEP RENDERS
+═══════════════════════════════ */
+const OUTLOOK_STEPS = [
+  { label:'// OUTLOOK · BANDEJA DE ENTRADA',
+    provLabel:'📬 OUTLOOK',
+    uni:'📬 Esta es la <strong>bandeja de entrada de Outlook</strong>. Para adjuntar un archivo, primero haz clic en <strong>"Nuevo correo electrónico"</strong>. Pulsa el botón azul o el botón de abajo.',
+    actionText:'→ HACER CLIC EN "NUEVO CORREO"',
+    okMsg:'¡Nuevo correo abierto! Se muestra la ventana de redacción.',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell">
+        <div class="olk-ribbon"><div class="olk-tabs">
+          <div class="olk-tab active">Inicio</div><div class="olk-tab">Enviar/Recibir</div><div class="olk-tab">Carpeta</div>
+        </div></div>
+        <div class="olk-body">
+          <div class="olk-sidebar">
+            <button class="olk-new-btn highlight" id="olkNew">✉️ Nuevo</button>
+            <div class="olk-nav active">📥 Bandeja</div>
+            <div class="olk-nav">📤 Enviados</div>
+            <div class="olk-nav">🗑️ Eliminados</div>
+          </div>
+          <div class="olk-content">
+            <div class="olk-inbox-row"><div class="olk-avatar" style="background:#0078d4">M</div><div style="flex:1"><div class="olk-name">Mamá</div><div class="olk-subj">¿Puedes enviarme la foto?</div></div><div class="olk-time">10:30</div></div>
+            <div class="olk-inbox-row"><div class="olk-avatar" style="background:#107c10">J</div><div style="flex:1"><div class="olk-name">Javier</div><div class="olk-subj">Reunión de mañana</div></div><div class="olk-time">9:15</div></div>
+            <div class="olk-inbox-row"><div class="olk-avatar" style="background:#881798">U</div><div style="flex:1"><div class="olk-name">UNI Academy</div><div class="olk-subj">¡Bienvenido al curso!</div></div><div class="olk-time">Ayer</div></div>
+          </div>
+        </div>
+      </div>`; document.getElementById('olkNew').addEventListener('click', doStep); }
+  },
+  { label:'// OUTLOOK · VENTANA DE REDACCIÓN',
+    provLabel:'📬 OUTLOOK',
+    uni:'✅ ¡Se abrió la ventana de redacción! Rellena <strong>Para</strong>, <strong>Asunto</strong> y escribe tu mensaje. Luego iremos a la pestaña <strong>"Insertar"</strong> para adjuntar. Pulsa el botón.',
+    actionText:'→ RELLENAR CAMPOS Y CONTINUAR',
+    okMsg:'¡Campos rellenados! Ahora vamos a la pestaña "Insertar".',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell">
+        <div class="olk-ribbon"><div class="olk-tabs">
+          <div class="olk-tab active">Mensaje</div><div class="olk-tab">Insertar</div><div class="olk-tab">Opciones</div>
+        </div>
+        <div class="olk-ribbon-body">
+          <div class="olk-ribbon-group"><div style="display:flex;gap:4px;"><button class="olk-btn"><div class="oi">📋</div><div>Pegar</div></button><button class="olk-btn"><div class="oi">✂️</div><div>Cortar</div></button></div><div class="olk-grp-label">Portapapeles</div></div>
+          <div class="olk-ribbon-group"><div style="display:flex;gap:4px;"><button class="olk-btn"><div class="oi">📤</div><div>Enviar</div></button></div><div class="olk-grp-label">Enviar</div></div>
+        </div></div>
+        <div class="olk-compose">
+          <div class="olk-compose-header"><span>Mensaje nuevo</span><span>— □ ✕</span></div>
+          <div class="olk-field"><span class="olk-fl">Para:</span><span class="olk-fv">mama@outlook.com</span></div>
+          <div class="olk-field"><span class="olk-fl">Asunto:</span><span class="olk-fv">Las fotos de la fiesta</span></div>
+          <div class="olk-body-area">Hola mamá, te mando las fotos de la fiesta.<br>¡Espero que te gusten!</div>
+          <div class="olk-footer"><button class="olk-send-btn">Enviar</button></div>
+        </div>
+      </div>`; }
+  },
+  { label:'// OUTLOOK · PESTAÑA "INSERTAR"',
+    provLabel:'📬 OUTLOOK',
+    uni:'📌 Ahora haz clic en la pestaña <strong>"Insertar"</strong> en la parte superior de la ventana del mensaje. Es donde están todas las opciones para agregar cosas al correo, incluido el adjunto.',
+    actionText:'→ HACER CLIC EN LA PESTAÑA "INSERTAR"',
+    okMsg:'¡Pestaña Insertar seleccionada! Aparecen las opciones de inserción.',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell">
+        <div class="olk-ribbon"><div class="olk-tabs">
+          <div class="olk-tab">Mensaje</div>
+          <div class="olk-tab highlight" id="olkInsert">Insertar</div>
+          <div class="olk-tab">Opciones</div>
+        </div></div>
+        <div class="olk-compose">
+          <div class="olk-compose-header"><span>Mensaje nuevo</span><span>— □ ✕</span></div>
+          <div class="olk-field"><span class="olk-fl">Para:</span><span class="olk-fv">mama@outlook.com</span></div>
+          <div class="olk-field"><span class="olk-fl">Asunto:</span><span class="olk-fv">Las fotos de la fiesta</span></div>
+          <div class="olk-body-area">Hola mamá, te mando las fotos de la fiesta.</div>
+          <div class="olk-footer"><button class="olk-send-btn">Enviar</button></div>
+        </div>
+      </div>`; document.getElementById('olkInsert').addEventListener('click', doStep); }
+  },
+  { label:'// OUTLOOK · BOTÓN "ADJUNTAR ARCHIVO"',
+    provLabel:'📬 OUTLOOK',
+    uni:'📎 ¡Ahora ves la cinta "Insertar"! Haz clic en el botón <strong>"Adjuntar archivo"</strong> y luego en <strong>"Examinar este equipo"</strong>. Se abrirá el explorador de archivos.',
+    actionText:'→ CLIC EN "ADJUNTAR ARCHIVO"',
+    okMsg:'¡Adjuntar archivo pulsado! Abriendo explorador de archivos…',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell">
+        <div class="olk-ribbon"><div class="olk-tabs">
+          <div class="olk-tab">Mensaje</div><div class="olk-tab active">Insertar</div>
+        </div>
+        <div class="olk-ribbon-body">
+          <div class="olk-ribbon-group">
+            <button class="olk-btn highlight" id="olkAttach"><div class="oi">📎</div><div>Adjuntar</div></button>
+            <div class="olk-grp-label">Incluir</div>
+          </div>
+          <div class="olk-ribbon-group"><button class="olk-btn"><div class="oi">🖼️</div><div>Imagen</div></button><div class="olk-grp-label">Imágenes</div></div>
+          <div class="olk-ribbon-group"><button class="olk-btn"><div class="oi">🔗</div><div>Vínculo</div></button><div class="olk-grp-label">Vínculos</div></div>
+        </div></div>
+        <div class="olk-compose">
+          <div class="olk-compose-header"><span>Mensaje nuevo</span></div>
+          <div class="olk-field"><span class="olk-fl">Para:</span><span class="olk-fv">mama@outlook.com</span></div>
+          <div class="olk-body-area">Hola mamá, te mando las fotos.</div>
+          <div class="olk-footer"><button class="olk-send-btn">Enviar</button></div>
+        </div>
+      </div>`; document.getElementById('olkAttach').addEventListener('click', doStep); }
+  },
+  { label:'// OUTLOOK · EXPLORADOR DE ARCHIVOS',
+    provLabel:'📬 OUTLOOK',
+    uni:'📁 ¡Se abrió el explorador de archivos! Busca y selecciona <strong>"foto_fiesta.jpg"</strong>. Luego haz clic en <strong>"Abrir"</strong> para adjuntarla al correo.',
+    actionText:'→ SELECCIONAR ARCHIVO Y HACER CLIC EN "ABRIR"',
+    okMsg:'¡Archivo seleccionado! Volviendo a Outlook…',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell" style="background:#f3f2f1;">
+        <div class="olk-ribbon"><div class="olk-tabs"><div class="olk-tab active">Insertar</div></div></div>
+        <div style="padding:6px;">
+          <div class="olk-file-browser">
+            <div class="ofb-header">📂 Insertar archivo adjunto <div class="ofb-path">📁 Imágenes</div></div>
+            <div class="ofb-files">
+              <div class="ofb-file highlight" id="olkFile"><div class="ofb-file-icon">🖼️</div>foto_fiesta.jpg</div>
+              <div class="ofb-file"><div class="ofb-file-icon">🖼️</div>vacaciones.png</div>
+              <div class="ofb-file"><div class="ofb-file-icon">📝</div>notas.txt</div>
+              <div class="ofb-file"><div class="ofb-file-icon">📊</div>gastos.xlsx</div>
+              <div class="ofb-file"><div class="ofb-file-icon">🖼️</div>perfil.jpg</div>
+              <div class="ofb-file"><div class="ofb-file-icon">📄</div>carta.pdf</div>
+            </div>
+            <div class="ofb-footer">
+              <button class="ofb-btn cancel">Cancelar</button>
+              <button class="ofb-btn open highlight" id="olkOpen">Abrir</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+      document.getElementById('olkFile').addEventListener('click', ()=>{ document.getElementById('olkFile').classList.add('selected'); });
+      document.getElementById('olkOpen').addEventListener('click', doStep); }
+  },
+  { label:'// OUTLOOK · ARCHIVO ADJUNTO LISTO',
+    provLabel:'📬 OUTLOOK',
+    uni:'🎉 ¡El archivo aparece en la <strong>barra de adjuntos</strong> debajo del asunto! Ahora haz clic en <strong>Enviar</strong> y el correo con la foto llegará completo.',
+    actionText:'→ HACER CLIC EN "ENVIAR"',
+    okMsg:'¡Correo enviado con el archivo adjunto en Outlook!',
+    render(body){ body.innerHTML=`
+      <div class="outlook-shell">
+        <div class="olk-ribbon"><div class="olk-tabs">
+          <div class="olk-tab active">Mensaje</div><div class="olk-tab">Insertar</div>
+        </div>
+        <div class="olk-ribbon-body">
+          <div class="olk-ribbon-group"><button class="olk-btn"><div class="oi">📋</div><div>Pegar</div></button><div class="olk-grp-label">Portapapeles</div></div>
+        </div></div>
+        <div class="olk-compose">
+          <div class="olk-compose-header"><span>Mensaje nuevo</span></div>
+          <div class="olk-field"><span class="olk-fl">Para:</span><span class="olk-fv">mama@outlook.com</span></div>
+          <div class="olk-field"><span class="olk-fl">Asunto:</span><span class="olk-fv">Las fotos de la fiesta</span></div>
+          <div class="olk-att-bar show"><span style="font-size:12px;color:#444;">Adjuntos:</span><div class="olk-att-chip"><span>🖼️</span>foto_fiesta.jpg (2.4 MB)<span style="color:#888;cursor:pointer;margin-left:4px;">✕</span></div></div>
+          <div class="olk-body-area">Hola mamá, te mando las fotos de la fiesta.</div>
+          <div class="olk-footer"><button class="olk-send-btn highlight" id="olkSend">Enviar</button></div>
+        </div>
+      </div>`; document.getElementById('olkSend').addEventListener('click', doStep); }
+  },
+];
+
+/* ═══════════════════════════════
+   STEP ENGINE
+═══════════════════════════════ */
+const STEPS_MAP = { gmail: GMAIL_STEPS, outlook: OUTLOOK_STEPS };
+
+function initSim(){
+  stepIdx = 0;
+  document.getElementById('finalCard').classList.remove('show');
+  document.getElementById('btnAction').style.display = 'block';
+  document.getElementById('simTopbar').className = chosenProv==='gmail' ? 'sim-topbar-g' : 'sim-topbar-o';
+  document.getElementById('simProvLabel').textContent = chosenProv==='gmail' ? '📧 GMAIL' : '📬 OUTLOOK';
+  document.getElementById('simProvLabel').style.color  = chosenProv==='gmail' ? 'var(--gmail)' : 'var(--outlook)';
+  buildSDots(); renderStep();
+}
+
+function buildSDots(){
+  const r = document.getElementById('sdots'); r.innerHTML='';
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='sdot'+(i===0?' cur':''); d.id='sdot-'+i; r.appendChild(d);
+  }
+  document.getElementById('stepTotal').textContent = TOTAL;
+}
+
+function renderStep(){
+  const s = STEPS_MAP[chosenProv][stepIdx];
+  document.getElementById('simLabel').textContent    = s.label;
+  document.getElementById('stepNum').textContent     = stepIdx+1;
+  document.getElementById('sprogFill').style.width   = (stepIdx/TOTAL*100)+'%';
+  document.getElementById('uniMsg').innerHTML        = s.uni;
+  document.getElementById('stepOk').classList.remove('show');
+  document.getElementById('btnAction').textContent   = s.actionText;
+  document.getElementById('btnAction').disabled      = false;
+  for(let i=0;i<TOTAL;i++){
+    const d=document.getElementById('sdot-'+i);
+    if(d) d.className='sdot'+(i<stepIdx?'done':i===stepIdx?'cur':'');
+  }
+  s.render(document.getElementById('simBody'));
+}
+
+function doStep(){
+  const s   = STEPS_MAP[chosenProv][stepIdx];
+  const ok  = document.getElementById('stepOk');
+  ok.textContent = '✅ '+s.okMsg;
+  ok.classList.add('show');
+  document.getElementById('btnAction').disabled = true;
+  spawnConf();
+  setTimeout(()=>{
+    ok.classList.remove('show');
+    stepIdx++;
+    if(stepIdx >= TOTAL) showFinal(); else renderStep();
+  }, 900);
+}
+
+function showFinal(){
+  document.getElementById('singleView').style.display = 'none';
+  document.getElementById('bothView').style.display   = 'none';
+  document.getElementById('finalCard').classList.add('show');
+  document.getElementById('sprogFill') && (document.getElementById('sprogFill').style.width='100%');
+  for(let i=0;i<TOTAL;i++){const d=document.getElementById('sdot-'+i);if(d)d.className='sdot done';}
+  const n = {gmail:'Gmail 📧', outlook:'Outlook 📬', both:'Gmail y Outlook'}[chosenProv];
+  document.getElementById('fcSub').textContent = n.toUpperCase()+' · COMPLETADO';
+  document.getElementById('fcMsg').innerHTML = '¡Genial! 🚀 Ya sabes adjuntar archivos en <strong>'+n+'</strong>. Aunque el botón está en diferente lugar en cada programa, el resultado es <strong>idéntico</strong>: ¡el archivo llega completo al destinatario!';
+  document.getElementById('uniMsg').innerHTML = '⭐⭐⭐ ¡<strong>Actividad completada</strong>! Ya dominas cómo adjuntar archivos en '+n+'. ¡Comparte fotos, documentos y más!';
+  document.getElementById('ph-3').className='ph done';
+  setTimeout(bigConf, 200);
+}
+
+/* ═══════════════════════════════
+   FLOW CONTROL
+═══════════════════════════════ */
+function goToSec2(){
+  document.getElementById('sec1').style.display='none';
+  document.getElementById('sec2').style.display='block';
+  document.getElementById('ph-1').className='ph done';
+  document.getElementById('ph-2').className='ph active';
+  document.getElementById('uniMsg').innerHTML='📧 ¿Usas <strong>Gmail</strong> o <strong>Outlook</strong>? Elige tu proveedor para ver los pasos exactos. O elige "Ver ambos" para compararlos.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function chooseProv(prov){
+  chosenProv = prov;
+  document.querySelectorAll('.psel').forEach(p=>p.classList.remove('chosen'));
+  document.getElementById('psel-'+prov).classList.add('chosen');
+  document.getElementById('btnSec2').style.display='block';
+  const names={gmail:'Gmail 📧 — Clip abajo', outlook:'Outlook 📬 — Insertar arriba'};
+  document.getElementById('uniMsg').innerHTML='✅ ¡Elegiste <strong>'+names[prov]+'</strong>! Cuando estés listo pulsa el botón para ver la simulación paso a paso.';
+}
+
+function chooseBoth(){
+  chosenProv='both';
+  document.querySelectorAll('.psel').forEach(p=>p.classList.remove('chosen'));
+  document.getElementById('btnSec2').style.display='block';
+  document.getElementById('uniMsg').innerHTML='👁️ ¡Verás <strong>ambos</strong> al mismo tiempo! Una comparación paso a paso de Gmail y Outlook.';
+}
+
+function goToSec3(){
+  document.getElementById('sec2').style.display='none';
+  document.getElementById('sec3').style.display='block';
+  document.getElementById('ph-2').className='ph done';
+  document.getElementById('ph-3').className='ph active';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(chosenProv==='both'){
+    document.getElementById('bothView').style.display='block';
+    document.getElementById('singleView').style.display='none';
+    document.getElementById('uniMsg').innerHTML='👁️ Aquí puedes ver los <strong>6 pasos de Gmail</strong> y los <strong>6 pasos de Outlook</strong> uno al lado del otro. ¡Observa las diferencias!';
+  } else {
+    document.getElementById('singleView').style.display='block';
+    document.getElementById('bothView').style.display='none';
+    document.getElementById('uniMsg').innerHTML='🎮 ¡Ahora la <strong>simulación interactiva</strong>! Sigue los pasos haciendo clic en los elementos resaltados o usa el botón. ¡Tú puedes!';
+    initSim();
+  }
+}
+
+function restartAll(){
+  chosenProv=null; stepIdx=0;
+  ['sec2','sec3'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('sec1').style.display='block';
+  document.getElementById('finalCard').classList.remove('show');
+  document.getElementById('bothView').style.display='none';
+  document.getElementById('singleView').style.display='none';
+  ['1','2','3'].forEach(n=>document.getElementById('ph-'+n).className=n==='1'?'ph active':'ph pending');
+  document.getElementById('uniMsg').innerHTML='¡Hola, Explorador! 📎 Repasemos desde el principio. Aprenderemos a <strong>adjuntar archivos</strong> en Gmail y Outlook.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── CONFETTI ── */
+function spawnConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#ea4335','#0078d4'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div'); p.className='conf';
+    p.style.cssText=`background:${colors[i%colors.length]};left:${20+Math.random()*60}vw;top:${15+Math.random()*25}vh;
+      --tx:${(Math.random()-.5)*180}px;--ty:${(Math.random()-.7)*140}px;--r:${Math.random()*360}deg;
+      border-radius:${Math.random()>.5?'50%':'2px'};`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),950);
+  }
+}
+function bigConf(){
+  const colors=['#f59e0b','#f97316','#ffd93d','#ea4335','#0078d4','#00e676'];
+  for(let i=0;i<55;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div'); p.className='conf';
+      p.style.cssText=`background:${colors[i%colors.length]};left:${10+Math.random()*80}vw;top:${5+Math.random()*25}vh;
+        --tx:${(Math.random()-.5)*280}px;--ty:${80+Math.random()*280}px;--r:${Math.random()*720}deg;
+        animation-duration:.9s;border-radius:${Math.random()>.5?'50%':'2px'};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
+      document.body.appendChild(p); setTimeout(()=>p.remove(),1000);
+    }, i*28);
+  }
+}
+
+/* ── WIRE EVENTS ── */
+document.getElementById('btnSec1').addEventListener('click', goToSec2);
+document.getElementById('btnSec2').addEventListener('click', goToSec3);
+document.getElementById('btnAction').addEventListener('click', doStep);
+document.getElementById('btnRestart').addEventListener('click', restartAll);
+document.getElementById('btnBoth').addEventListener('click', chooseBoth);
+document.getElementById('btnBothDone').addEventListener('click', showFinal);
+document.getElementById('psel-gmail').addEventListener('click', ()=>chooseProv('gmail'));
+document.getElementById('psel-outlook').addEventListener('click', ()=>chooseProv('outlook'));
+</script>
+</body>
+</html>
